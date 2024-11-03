@@ -1,0 +1,14 @@
+#root {
+  width: 60vw;
+  margin: 0 auto;
+  /* position: absolute; */
+  position: relative;
+}
+
+#bokeh_plot {
+  /* display: flex;
+  justify-content: center; */
+  position: absolute; 
+  left: 50%;
+  transform: translateX(-50%);
+}
