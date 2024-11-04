@@ -1,14 +1,15 @@
 #root {
-  width: 60vw;
+  width: 80vw;
   margin: 0 auto;
-  /* position: absolute; */
-  position: relative;
 }
 
-#bokeh_plot {
-  /* display: flex;
-  justify-content: center; */
-  position: absolute; 
-  left: 50%;
-  transform: translateX(-50%);
+.section {
+  margin-top: 20px;
+}
+
+#bokeh-plot-unique {
+  height: 600px;
+}
+#bokeh-plot-bm {
+  height: 1200px;
 }
