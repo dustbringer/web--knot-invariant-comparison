@@ -14,6 +14,7 @@ import Form from "react-bootstrap/Form";
 
 import b1BM from "./data/b1-bm.json";
 import jonesBM from "./data/jones-bm.json";
+import alexanderBM from "./data/alexander-bm.json";
 import a2BM from "./data/a2-bm.json";
 import khovanovBM from "./data/khovanov-bm.json";
 import percentUnique from "./data/percent-unique.json";
@@ -22,27 +23,28 @@ import randomPairs from "./data/random-pairs.json";
 const plotDataUnique = {
   name: "%Unique",
   json: percentUnique,
-  docid: "c2ab9205-16c1-4379-bf69-4291d1d1124f",
+  docid: "895e431f-76bb-4570-a80d-84da99ffc602",
 };
 
 const plotDataRandomPairs = {
   name: "Random Pairs",
   json: randomPairs,
-  docid: "2409df14-78b7-4d37-91f3-4f3beff566a3",
+  docid: "471649ef-a1a4-4b1f-bb30-88fd11743460",
 };
 
 const plotDataBM = [
-  { name: "B1", json: b1BM, docid: "e0c58171-a6db-4c26-8813-988c17bd34f3" },
+  { name: "B1", json: b1BM, docid: "c0f60360-eb61-4cb5-bf8b-56f88f27cc63" },
   {
     name: "Jones",
     json: jonesBM,
-    docid: "9e45558c-8e20-4334-bc53-7a8f0885f5ab",
+    docid: "e6193f97-3905-4290-9119-29183ef0661b",
   },
-  { name: "A2", json: a2BM, docid: "6c50fd12-1b29-4b21-b7e7-ec44c2f2c348" },
+  { name: "Alexander", json: alexanderBM, docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538" },
+  { name: "A2", json: a2BM, docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a" },
   {
     name: "Khovanov",
     json: khovanovBM,
-    docid: "be8b6b79-aede-4004-a647-a99cbc5eb982",
+    docid: "52052191-a21f-4ea6-ba25-101520a057a2",
   },
 ];
 

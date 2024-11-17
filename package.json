@@ -2,14 +2,11 @@
   "name": "web--knot-invariant-comparison",
   "version": "0.1.0",
   "homepage": ".",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "deploy": "pnpm run build && gh-pages -d public",
-    "publish": "gh-pages -d public"
+    "lint": "next lint"
   },
   "dependencies": {
     "@bokeh/bokehjs": "3.5.1",
