@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+// DEV: comment out all
+// BUILD: uncomment
 const nextConfig: NextConfig = {
   // from https://github.com/gregrickaby/nextjs-github-pages
   /**
