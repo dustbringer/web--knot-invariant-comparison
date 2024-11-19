@@ -19,14 +19,14 @@ import Form from "react-bootstrap/Form";
 // import a2BM from "./data/a2-bm.json";
 // import khovanovBM from "./data/khovanov-bm.json";
 // import percentUnique from "./data/percent-unique.json";
-import randomPairs from "./data/random-pairs.json";
+// import randomPairs from "./data/random-pairs.json";
 
 // import b1BM from "./data/partial15/b1-bm.json";
 // import jonesBM from "./data/partial15/jones-bm.json";
 // import alexanderBM from "./data/partial15/alexander-bm.json";
 // import a2BM from "./data/partial15/a2-bm.json";
 // import khovanovBM from "./data/partial15/khovanov-bm.json";
-import percentUnique from "./data/partial15/percent-unique.json";
+// import percentUnique from "./data/partial15/percent-unique.json";
 
 // const plotDataUnique = {
 //   name: "%Unique",
