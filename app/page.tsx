@@ -11,19 +11,56 @@ import * as React from "react";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
+// import Button from "react-bootstrap/Button";
 
-import b1BM from "./data/b1-bm.json";
-import jonesBM from "./data/jones-bm.json";
-import alexanderBM from "./data/alexander-bm.json";
-import a2BM from "./data/a2-bm.json";
-import khovanovBM from "./data/khovanov-bm.json";
-import percentUnique from "./data/percent-unique.json";
+// import b1BM from "./data/b1-bm.json";
+// import jonesBM from "./data/jones-bm.json";
+// import alexanderBM from "./data/alexander-bm.json";
+// import a2BM from "./data/a2-bm.json";
+// import khovanovBM from "./data/khovanov-bm.json";
+// import percentUnique from "./data/percent-unique.json";
 import randomPairs from "./data/random-pairs.json";
 
+// import b1BM from "./data/partial15/b1-bm.json";
+// import jonesBM from "./data/partial15/jones-bm.json";
+// import alexanderBM from "./data/partial15/alexander-bm.json";
+// import a2BM from "./data/partial15/a2-bm.json";
+// import khovanovBM from "./data/partial15/khovanov-bm.json";
+import percentUnique from "./data/partial15/percent-unique.json";
+
+// const plotDataUnique = {
+//   name: "%Unique",
+//   json: percentUnique,
+//   docid: "895e431f-76bb-4570-a80d-84da99ffc602",
+// };
+
+// const plotDataRandomPairs = {
+//   name: "Random Pairs",
+//   json: randomPairs,
+//   docid: "471649ef-a1a4-4b1f-bb30-88fd11743460",
+// };
+
+// const plotDataBM = [
+//   { name: "B1", json: b1BM, docid: "c0f60360-eb61-4cb5-bf8b-56f88f27cc63" },
+//   {
+//     name: "Jones",
+//     json: jonesBM,
+//     docid: "e6193f97-3905-4290-9119-29183ef0661b",
+//   },
+//   { name: "Alexander", json: alexanderBM, docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538" },
+//   { name: "A2", json: a2BM, docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a" },
+//   {
+//     name: "Khovanov",
+//     json: khovanovBM,
+//     docid: "52052191-a21f-4ea6-ba25-101520a057a2",
+//   },
+// ];
+
+// Partial 15
 const plotDataUnique = {
   name: "%Unique",
   json: percentUnique,
-  docid: "895e431f-76bb-4570-a80d-84da99ffc602",
+  docid: "a955a058-4868-41c3-882b-70f8019f5a6c",
 };
 
 const plotDataRandomPairs = {
@@ -32,20 +69,45 @@ const plotDataRandomPairs = {
   docid: "471649ef-a1a4-4b1f-bb30-88fd11743460",
 };
 
-const plotDataBM = [
-  { name: "B1", json: b1BM, docid: "c0f60360-eb61-4cb5-bf8b-56f88f27cc63" },
-  {
-    name: "Jones",
-    json: jonesBM,
-    docid: "e6193f97-3905-4290-9119-29183ef0661b",
-  },
-  { name: "Alexander", json: alexanderBM, docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538" },
-  { name: "A2", json: a2BM, docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a" },
-  {
-    name: "Khovanov",
-    json: khovanovBM,
-    docid: "52052191-a21f-4ea6-ba25-101520a057a2",
-  },
+const plotDataBMName = ["B1", "Jones", "Alexander", "A2", "Khovanov"];
+
+type plotData = {
+  name: string;
+  import: Promise<object>;
+  json: object | undefined;
+  docid: string;
+};
+const plotDataBM: Array<plotData> = [
+  // {
+  //   name: "B1",
+  //   import: import("./data/partial15/b1-bm.json"),
+  //   json: undefined,
+  //   docid: "dd70035f-b353-498e-86ce-d3b4326ebbb9",
+  // },
+  // {
+  //   name: "Jones",
+  //   import: import("./data/partial15/jones-bm.json"),
+  //   json: undefined,
+  //   docid: "da7355b9-5714-4085-892e-341f8fe0b7fe",
+  // },
+  // {
+  //   name: "Alexander",
+  //   import: import("./data/partial15/alexander-bm.json"),
+  //   json: undefined,
+  //   docid: "d0f9851a-31b9-4dc4-85db-4eee6508e3b4",
+  // },
+  // {
+  //   name: "A2",
+  //   import: import("./data/partial15/a2-bm.json"),
+  //   json: undefined,
+  //   docid: "74829661-234e-416a-8958-7a3ce2a9c86a",
+  // },
+  // {
+  //   name: "Khovanov",
+  //   import: import("./data/partial15/khovanov-bm.json"),
+  //   json: undefined,
+  //   docid: "818ca0b9-75a4-4ac2-8a57-7f939fb4b8c4",
+  // },
 ];
 
 export default function Home() {
@@ -56,7 +118,7 @@ export default function Home() {
   };
 
   const showPlot = (
-    data: { json: object; docid: string },
+    data: { json: object | undefined; docid: string },
     className: string
   ) => {
     // source: bokeh html output
@@ -68,18 +130,21 @@ export default function Home() {
     document.getElementById(className)?.replaceChildren();
 
     // Dynamically import to avoid "document doesn't exist" in prerender
-    import("./bokeh/bokeh-widgets.esm.min.js")
-      .then(() => import("./bokeh/bokeh.esm.min.js"))
-      .then((res) => {
-        const Bokeh = res.default;
-        Bokeh.embed.embed_items(JSON.stringify(data.json), [
-          {
-            docid: data.docid,
-            roots: { x: className },
-            root_ids: ["x"],
-          },
-        ]);
-      });
+    console.log(data.json);
+    if (data.json !== undefined) {
+      import("./bokeh/bokeh-widgets.esm.min.js")
+        .then(() => import("./bokeh/bokeh.esm.min.js"))
+        .then((res) => {
+          const Bokeh = res.default;
+          Bokeh.embed.embed_items(JSON.stringify(data.json as object), [
+            {
+              docid: data.docid,
+              roots: { x: className },
+              root_ids: ["x"],
+            },
+          ]);
+        });
+    }
   };
 
   React.useEffect(() => {
@@ -94,11 +159,21 @@ export default function Home() {
     showPlot(data, className);
   }, []);
 
-  React.useEffect(() => {
-    const data = plotDataBM[plot];
-    const className = "bokeh-plot-bm";
-    showPlot(data, className);
-  }, [plot]);
+  // React.useEffect(() => {
+  //   const data = plotDataBM[plot];
+  //   const pms =
+  //     data.json === undefined
+  //       ? data.import.then((json) => {
+  //           console.log(json);
+  //           data.json = json;
+  //         })
+  //       : Promise.resolve();
+
+  //   pms.then(() => {
+  //     const className = "bokeh-plot-bm";
+  //     showPlot(data, className);
+  //   });
+  // }, [plot]);
 
   return (
     <div id="root">
@@ -114,18 +189,23 @@ export default function Home() {
 
       <div className="section">
         <h1>Ballmapper Comparison</h1>
-        <Form.Select
+        {/* <Form.Select
           onChange={onChange}
           value={plot}
           style={{ width: "500px" }}
         >
-          {plotDataBM.map(({ name }, i) => (
+          {plotDataBMName.map((name, i) => (
             <option value={i} key={name}>
               {name}
             </option>
           ))}
         </Form.Select>
-        <div className="bokeh-plot" id="bokeh-plot-bm" />
+        <div className="bokeh-plot" id="bokeh-plot-bm" /> */}
+        <p><a className="link" href="compare-b1.html">B1</a></p>
+        <p><a className="link" href="compare-jones.html">Jones</a></p>
+        <p><a className="link" href="compare-alexander.html">Alexander</a></p>
+        <p><a className="link" href="compare-a2.html">A2</a></p>
+        <p><a className="link" href="compare-khovanov.html">Khovanov</a></p>
       </div>
     </div>
   );
