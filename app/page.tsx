@@ -56,58 +56,61 @@ import percentUnique from "./data/partial15/percent-unique.json";
 //   },
 // ];
 
+type plotData = {
+  name: string;
+  url: string;
+  json: string | undefined;
+  docid: string;
+};
+
 // Partial 15
-const plotDataUnique = {
+const plotDataUnique: plotData = {
   name: "%Unique",
-  json: percentUnique,
+  url: "data/partial15/percent-unique.json",
+  json: undefined,
   docid: "a955a058-4868-41c3-882b-70f8019f5a6c",
 };
 
-const plotDataRandomPairs = {
+const plotDataRandomPairs: plotData = {
   name: "Random Pairs",
-  json: randomPairs,
+  url: "data/random-pairs.json",
+  json: undefined,
   docid: "471649ef-a1a4-4b1f-bb30-88fd11743460",
 };
 
 const plotDataBMName = ["B1", "Jones", "Alexander", "A2", "Khovanov"];
 
-type plotData = {
-  name: string;
-  import: Promise<object>;
-  json: object | undefined;
-  docid: string;
-};
 const plotDataBM: Array<plotData> = [
-  // {
-  //   name: "B1",
-  //   import: import("./data/partial15/b1-bm.json"),
-  //   json: undefined,
-  //   docid: "dd70035f-b353-498e-86ce-d3b4326ebbb9",
-  // },
-  // {
-  //   name: "Jones",
-  //   import: import("./data/partial15/jones-bm.json"),
-  //   json: undefined,
-  //   docid: "da7355b9-5714-4085-892e-341f8fe0b7fe",
-  // },
-  // {
-  //   name: "Alexander",
-  //   import: import("./data/partial15/alexander-bm.json"),
-  //   json: undefined,
-  //   docid: "d0f9851a-31b9-4dc4-85db-4eee6508e3b4",
-  // },
-  // {
-  //   name: "A2",
-  //   import: import("./data/partial15/a2-bm.json"),
-  //   json: undefined,
-  //   docid: "74829661-234e-416a-8958-7a3ce2a9c86a",
-  // },
-  // {
-  //   name: "Khovanov",
-  //   import: import("./data/partial15/khovanov-bm.json"),
-  //   json: undefined,
-  //   docid: "818ca0b9-75a4-4ac2-8a57-7f939fb4b8c4",
-  // },
+  {
+    name: "B1",
+    url: "data/partial15/b1-bm.json",
+    json: undefined,
+    docid: "dd70035f-b353-498e-86ce-d3b4326ebbb9",
+  },
+  {
+    name: "Jones",
+    url: "data/partial15/jones-bm.json",
+    json: undefined,
+    docid: "da7355b9-5714-4085-892e-341f8fe0b7fe",
+  },
+  {
+    name: "Alexander",
+    url: "data/partial15/alexander-bm.json",
+    json: undefined,
+    docid: "d0f9851a-31b9-4dc4-85db-4eee6508e3b4",
+  },
+  {
+    name: "A2",
+    url: "data/partial15/a2-bm.json",
+    json: undefined,
+    docid: "74829661-234e-416a-8958-7a3ce2a9c86a",
+  },
+  {
+    name: "Khovanov",
+    url: "data/partial15/khovanov-bm.json",
+    json: undefined,
+    docid: "818ca0b9-75a4-4ac2-8a57-7f939fb4b8c4",
+  },
 ];
 
 export default function Home() {
@@ -118,7 +121,7 @@ export default function Home() {
   };
 
   const showPlot = (
-    data: { json: object | undefined; docid: string },
+    data: { json: string | undefined; docid: string },
     className: string
   ) => {
     // source: bokeh html output
@@ -130,13 +133,12 @@ export default function Home() {
     document.getElementById(className)?.replaceChildren();
 
     // Dynamically import to avoid "document doesn't exist" in prerender
-    console.log(data.json);
     if (data.json !== undefined) {
       import("./bokeh/bokeh-widgets.esm.min.js")
         .then(() => import("./bokeh/bokeh.esm.min.js"))
         .then((res) => {
           const Bokeh = res.default;
-          Bokeh.embed.embed_items(JSON.stringify(data.json as object), [
+          Bokeh.embed.embed_items(data.json, [
             {
               docid: data.docid,
               roots: { x: className },
@@ -149,31 +151,55 @@ export default function Home() {
 
   React.useEffect(() => {
     const data = plotDataUnique;
-    const className = "bokeh-plot-unique";
-    showPlot(data, className);
+    const pms =
+      data.json === undefined
+        ? fetch(data.url)
+            .then((res) => res.text())
+            .then((res) => {
+              console.log(`Loaded ${data.url}`);
+              data.json = res;
+            })
+        : Promise.resolve();
+    pms.then(() => {
+      const className = "bokeh-plot-unique";
+      showPlot(data, className);
+    });
   }, []);
 
   React.useEffect(() => {
     const data = plotDataRandomPairs;
-    const className = "bokeh-plot-random-pairs";
-    showPlot(data, className);
+    const pms =
+      data.json === undefined
+        ? fetch(data.url)
+            .then((res) => res.text())
+            .then((res) => {
+              console.log(`Loaded ${data.url}`);
+              data.json = res;
+            })
+        : Promise.resolve();
+    pms.then(() => {
+      const className = "bokeh-plot-random-pairs";
+      showPlot(data, className);
+    });
   }, []);
 
-  // React.useEffect(() => {
-  //   const data = plotDataBM[plot];
-  //   const pms =
-  //     data.json === undefined
-  //       ? data.import.then((json) => {
-  //           console.log(json);
-  //           data.json = json;
-  //         })
-  //       : Promise.resolve();
+  React.useEffect(() => {
+    const data = plotDataBM[plot];
+    const pms =
+      data.json === undefined
+        ? fetch(data.url)
+            .then((res) => res.text())
+            .then((res) => {
+              console.log(`Loaded ${data.url}`);
+              data.json = res;
+            })
+        : Promise.resolve();
 
-  //   pms.then(() => {
-  //     const className = "bokeh-plot-bm";
-  //     showPlot(data, className);
-  //   });
-  // }, [plot]);
+    pms.then(() => {
+      const className = "bokeh-plot-bm";
+      showPlot(data, className);
+    });
+  }, [plot]);
 
   return (
     <div id="root">
@@ -189,7 +215,7 @@ export default function Home() {
 
       <div className="section">
         <h1>Ballmapper Comparison</h1>
-        {/* <Form.Select
+        <Form.Select
           onChange={onChange}
           value={plot}
           style={{ width: "500px" }}
@@ -200,12 +226,35 @@ export default function Home() {
             </option>
           ))}
         </Form.Select>
-        <div className="bokeh-plot" id="bokeh-plot-bm" /> */}
-        <p><a className="link" href="compare-b1.html">B1</a></p>
-        <p><a className="link" href="compare-jones.html">Jones</a></p>
-        <p><a className="link" href="compare-alexander.html">Alexander</a></p>
-        <p><a className="link" href="compare-a2.html">A2</a></p>
-        <p><a className="link" href="compare-khovanov.html">Khovanov</a></p>
+        <div className="bokeh-plot" id="bokeh-plot-bm"></div>
+        <div>
+          <h4>(Static links)</h4>
+          <p>
+            <a className="link" href="compare-b1.html">
+              B1
+            </a>
+          </p>
+          <p>
+            <a className="link" href="compare-jones.html">
+              Jones
+            </a>
+          </p>
+          <p>
+            <a className="link" href="compare-alexander.html">
+              Alexander
+            </a>
+          </p>
+          <p>
+            <a className="link" href="compare-a2.html">
+              A2
+            </a>
+          </p>
+          <p>
+            <a className="link" href="compare-khovanov.html">
+              Khovanov
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
