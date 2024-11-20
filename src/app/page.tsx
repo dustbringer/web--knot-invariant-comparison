@@ -73,7 +73,7 @@ const plotDataUnique: plotData = {
 
 const plotDataRandomPairs: plotData = {
   name: "Random Pairs",
-  url: "data/random-pairs.json",
+  url: "data/partial15/random-pairs.json",
   json: undefined,
   docid: "7c4df9fd-1717-4820-8b67-ee71c90ec9f9",
 };
@@ -134,8 +134,8 @@ export default function Home() {
 
     // Dynamically import to avoid "document doesn't exist" in prerender
     if (data.json !== undefined) {
-      import("./bokeh/bokeh-widgets.esm.min.js")
-        .then(() => import("./bokeh/bokeh.esm.min.js"))
+      import("../bokeh/bokeh-widgets.esm.min.js")
+        .then(() => import("../bokeh/bokeh.esm.min.js"))
         .then((res) => {
           const Bokeh = res.default;
           Bokeh.embed.embed_items(data.json, [
@@ -254,6 +254,12 @@ export default function Home() {
               Khovanov
             </a>
           </p>
+        </div>
+        <div>
+          <h3>(Old)</h3>
+          <a className="link" href="14">
+            Up to 14 crossings
+          </a>
         </div>
       </div>
     </div>

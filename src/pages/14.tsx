@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import RootLayout from "../components/Layout";
 
 // import Bokeh from "./bokeh/bokeh.esm.min.js";
 // import "./bokeh/bokeh-widgets.esm.min.js";
@@ -12,14 +13,13 @@ import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 
-import b1BM from "../data/b1-bm.json";
-import jonesBM from "../data/jones-bm.json";
-import alexanderBM from "../data/alexander-bm.json";
-import a2BM from "../data/a2-bm.json";
-import khovanovBM from "../data/khovanov-bm.json";
-import percentUnique from "../data/percent-unique.json";
-import randomPairs from "../data/random-pairs.json";
-
+import b1BM from "../data/14/b1-bm.json";
+import jonesBM from "../data/14/jones-bm.json";
+import alexanderBM from "../data/14/alexander-bm.json";
+import a2BM from "../data/14/a2-bm.json";
+import khovanovBM from "../data/14/khovanov-bm.json";
+import percentUnique from "../data/14/percent-unique.json";
+import randomPairs from "../data/14/random-pairs.json";
 
 const plotDataUnique = {
   name: "%Unique",
@@ -40,7 +40,11 @@ const plotDataBM = [
     json: jonesBM,
     docid: "e6193f97-3905-4290-9119-29183ef0661b",
   },
-  { name: "Alexander", json: alexanderBM, docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538" },
+  {
+    name: "Alexander",
+    json: alexanderBM,
+    docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538",
+  },
   { name: "A2", json: a2BM, docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a" },
   {
     name: "Khovanov",
@@ -97,7 +101,7 @@ export default function Comparison14() {
 
   React.useEffect(() => {
     const data = plotDataBM[plot];
-    const className = "bokeh-plot-bm";
+    const className = "bokeh-plot-bm-14";
     showPlot(data, className);
   }, [plot]);
 
@@ -126,7 +130,7 @@ export default function Comparison14() {
             </option>
           ))}
         </Form.Select>
-        <div className="bokeh-plot" id="bokeh-plot-bm" />
+        <div className="bokeh-plot" id="bokeh-plot-bm-14" />
       </div>
     </div>
   );
