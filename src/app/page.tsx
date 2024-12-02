@@ -13,49 +13,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 // import Button from "react-bootstrap/Button";
 
-// import b1BM from "./data/b1-bm.json";
-// import jonesBM from "./data/jones-bm.json";
-// import alexanderBM from "./data/alexander-bm.json";
-// import a2BM from "./data/a2-bm.json";
-// import khovanovBM from "./data/khovanov-bm.json";
-// import percentUnique from "./data/percent-unique.json";
-// import randomPairs from "./data/random-pairs.json";
-
-// import b1BM from "./data/partial15/b1-bm.json";
-// import jonesBM from "./data/partial15/jones-bm.json";
-// import alexanderBM from "./data/partial15/alexander-bm.json";
-// import a2BM from "./data/partial15/a2-bm.json";
-// import khovanovBM from "./data/partial15/khovanov-bm.json";
-// import percentUnique from "./data/partial15/percent-unique.json";
-
-// const plotDataUnique = {
-//   name: "%Unique",
-//   json: percentUnique,
-//   docid: "895e431f-76bb-4570-a80d-84da99ffc602",
-// };
-
-// const plotDataRandomPairs = {
-//   name: "Random Pairs",
-//   json: randomPairs,
-//   docid: "471649ef-a1a4-4b1f-bb30-88fd11743460",
-// };
-
-// const plotDataBM = [
-//   { name: "B1", json: b1BM, docid: "c0f60360-eb61-4cb5-bf8b-56f88f27cc63" },
-//   {
-//     name: "Jones",
-//     json: jonesBM,
-//     docid: "e6193f97-3905-4290-9119-29183ef0661b",
-//   },
-//   { name: "Alexander", json: alexanderBM, docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538" },
-//   { name: "A2", json: a2BM, docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a" },
-//   {
-//     name: "Khovanov",
-//     json: khovanovBM,
-//     docid: "52052191-a21f-4ea6-ba25-101520a057a2",
-//   },
-// ];
-
 type plotData = {
   name: string;
   url: string;
@@ -63,19 +20,18 @@ type plotData = {
   docid: string;
 };
 
-// Partial 15
 const plotDataUnique: plotData = {
   name: "%Unique",
-  url: "data/partial15/percent-unique.json",
+  url: "data/15/percent-unique.json",
   json: undefined,
-  docid: "a955a058-4868-41c3-882b-70f8019f5a6c",
+  docid: "b78ca7dc-1b9d-4062-818b-ab8946368686",
 };
 
 const plotDataRandomPairs: plotData = {
   name: "Random Pairs",
-  url: "data/partial15/random-pairs.json",
+  url: "data/15/random-pairs.json",
   json: undefined,
-  docid: "7c4df9fd-1717-4820-8b67-ee71c90ec9f9",
+  docid: "1e57dd74-3891-4521-8964-dfffa27de701",
 };
 
 const plotDataBMName = ["B1", "Jones", "Alexander", "A2", "Khovanov"];
@@ -83,33 +39,33 @@ const plotDataBMName = ["B1", "Jones", "Alexander", "A2", "Khovanov"];
 const plotDataBM: Array<plotData> = [
   {
     name: "B1",
-    url: "data/partial15/b1-bm.json",
+    url: "data/15/b1-bm.json",
     json: undefined,
-    docid: "dd70035f-b353-498e-86ce-d3b4326ebbb9",
+    docid: "15419696-ed93-4793-bb28-760709171c5f",
   },
   {
     name: "Jones",
-    url: "data/partial15/jones-bm.json",
+    url: "data/15/jones-bm.json",
     json: undefined,
-    docid: "da7355b9-5714-4085-892e-341f8fe0b7fe",
+    docid: "84ad99c8-07a4-4586-9f60-8c172d23033a",
   },
   {
     name: "Alexander",
-    url: "data/partial15/alexander-bm.json",
+    url: "data/15/alexander-bm.json",
     json: undefined,
-    docid: "d0f9851a-31b9-4dc4-85db-4eee6508e3b4",
+    docid: "8669e811-ff71-43fc-b1b8-454c3f4d815a",
   },
   {
     name: "A2",
-    url: "data/partial15/a2-bm.json",
+    url: "data/15/a2-bm.json",
     json: undefined,
-    docid: "74829661-234e-416a-8958-7a3ce2a9c86a",
+    docid: "c534f534-7182-4d6a-911e-ee84ebf04745",
   },
   {
     name: "Khovanov",
-    url: "data/partial15/khovanov-bm.json",
+    url: "data/15/khovanov-bm.json",
     json: undefined,
-    docid: "818ca0b9-75a4-4ac2-8a57-7f939fb4b8c4",
+    docid: "ad961e52-0300-4978-87fb-cc79ff9170b6",
   },
 ];
 

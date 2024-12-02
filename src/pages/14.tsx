@@ -10,45 +10,61 @@ import RootLayout from "../components/Layout";
 // import "./bokeh/bokeh-mathjax.esm.min.js";
 // import "./bokeh/bokeh-tables.esm.min.js";
 
+import Link from 'next/link'
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 
-import b1BM from "../data/14/b1-bm.json";
-import jonesBM from "../data/14/jones-bm.json";
-import alexanderBM from "../data/14/alexander-bm.json";
-import a2BM from "../data/14/a2-bm.json";
-import khovanovBM from "../data/14/khovanov-bm.json";
-import percentUnique from "../data/14/percent-unique.json";
-import randomPairs from "../data/14/random-pairs.json";
+type plotData = {
+  name: string;
+  url: string;
+  json: string | undefined;
+  docid: string;
+};
 
-const plotDataUnique = {
+const plotDataUnique: plotData = {
   name: "%Unique",
-  json: percentUnique,
+  url: "data/14/percent-unique.json",
+  json: undefined,
   docid: "895e431f-76bb-4570-a80d-84da99ffc602",
 };
 
-const plotDataRandomPairs = {
+const plotDataRandomPairs: plotData = {
   name: "Random Pairs",
-  json: randomPairs,
+  url: "data/14/random-pairs.json",
+  json: undefined,
   docid: "471649ef-a1a4-4b1f-bb30-88fd11743460",
 };
 
-const plotDataBM = [
-  { name: "B1", json: b1BM, docid: "c0f60360-eb61-4cb5-bf8b-56f88f27cc63" },
+const plotDataBM: Array<plotData> = [
+  {
+    name: "B1",
+    url: "data/14/b1-bm.json",
+    json: undefined,
+    docid: "c0f60360-eb61-4cb5-bf8b-56f88f27cc63",
+  },
   {
     name: "Jones",
-    json: jonesBM,
+    url: "data/14/jones-bm.json",
+    json: undefined,
     docid: "e6193f97-3905-4290-9119-29183ef0661b",
   },
   {
     name: "Alexander",
-    json: alexanderBM,
+    url: "data/14/alexander-bm.json",
+    json: undefined,
     docid: "045e0e17-94bb-4bd7-a469-50dcb11d2538",
   },
-  { name: "A2", json: a2BM, docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a" },
+  {
+    name: "A2",
+    url: "data/14/a2-bm.json",
+    json: undefined,
+    docid: "b0b0ef32-8ea4-4890-946d-c8069f08d43a",
+  },
   {
     name: "Khovanov",
-    json: khovanovBM,
+    url: "data/14/khovanov-bm.json",
+    json: undefined,
     docid: "52052191-a21f-4ea6-ba25-101520a057a2",
   },
 ];
@@ -61,7 +77,7 @@ export default function Comparison14() {
   };
 
   const showPlot = (
-    data: { json: object; docid: string },
+    data: { json: string | undefined; docid: string },
     className: string
   ) => {
     // source: bokeh html output
@@ -73,40 +89,79 @@ export default function Comparison14() {
     document.getElementById(className)?.replaceChildren();
 
     // Dynamically import to avoid "document doesn't exist" in prerender
-    import("../bokeh/bokeh-widgets.esm.min.js")
-      .then(() => import("../bokeh/bokeh.esm.min.js"))
-      .then((res) => {
-        const Bokeh = res.default;
-        Bokeh.embed.embed_items(JSON.stringify(data.json), [
-          {
-            docid: data.docid,
-            roots: { x: className },
-            root_ids: ["x"],
-          },
-        ]);
-      });
+    if (data.json !== undefined) {
+      import("../bokeh/bokeh-widgets.esm.min.js")
+        .then(() => import("../bokeh/bokeh.esm.min.js"))
+        .then((res) => {
+          const Bokeh = res.default;
+          Bokeh.embed.embed_items(data.json, [
+            {
+              docid: data.docid,
+              roots: { x: className },
+              root_ids: ["x"],
+            },
+          ]);
+        });
+    }
   };
 
   React.useEffect(() => {
     const data = plotDataUnique;
-    const className = "bokeh-plot-unique";
-    showPlot(data, className);
+    const pms =
+      data.json === undefined
+        ? fetch(data.url)
+            .then((res) => res.text())
+            .then((res) => {
+              console.log(`Loaded ${data.url}`);
+              data.json = res;
+            })
+        : Promise.resolve();
+    pms.then(() => {
+      const className = "bokeh-plot-unique";
+      showPlot(data, className);
+    });
   }, []);
 
   React.useEffect(() => {
     const data = plotDataRandomPairs;
-    const className = "bokeh-plot-random-pairs";
-    showPlot(data, className);
+    const pms =
+      data.json === undefined
+        ? fetch(data.url)
+            .then((res) => res.text())
+            .then((res) => {
+              console.log(`Loaded ${data.url}`);
+              data.json = res;
+            })
+        : Promise.resolve();
+    pms.then(() => {
+      const className = "bokeh-plot-random-pairs";
+      showPlot(data, className);
+    });
   }, []);
 
   React.useEffect(() => {
     const data = plotDataBM[plot];
-    const className = "bokeh-plot-bm-14";
-    showPlot(data, className);
+    const pms =
+      data.json === undefined
+        ? fetch(data.url)
+            .then((res) => res.text())
+            .then((res) => {
+              console.log(`Loaded ${data.url}`);
+              data.json = res;
+            })
+        : Promise.resolve();
+
+    pms.then(() => {
+      const className = "bokeh-plot-bm-14";
+      showPlot(data, className);
+    });
   }, [plot]);
 
   return (
     <div id="root">
+      <Link className="link" href="/">
+        Home
+      </Link>
       <div className="section">
         <h1>Percentage of Unique Values</h1>
         <div className="bokeh-plot" id="bokeh-plot-unique" />
