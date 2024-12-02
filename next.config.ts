@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 // DEV: comment out end
 // BUILD: uncomment
 const nextConfig: NextConfig = {
-  // // from https://github.com/gregrickaby/nextjs-github-pages
+  // from https://github.com/gregrickaby/nextjs-github-pages
   /**
    * Enable static exports for the App Router.
    *
