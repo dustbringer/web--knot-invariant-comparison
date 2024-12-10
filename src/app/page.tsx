@@ -41,7 +41,7 @@ const plotDataBM: Array<plotData> = [
     name: "B1",
     url: "data/15/b1-bm.json",
     json: undefined,
-    docid: "15419696-ed93-4793-bb28-760709171c5f",
+    docid: "b1478073-e36f-46df-bce6-9ecf8cfa6fb4",
   },
   {
     name: "Jones",
