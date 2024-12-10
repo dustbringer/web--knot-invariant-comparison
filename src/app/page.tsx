@@ -171,6 +171,7 @@ export default function Home() {
 
       <div className="section">
         <h1>Ballmapper Comparison</h1>
+        <span>Note: Some selections of the ballmapper exceeds the maximum call stack size of Chromium based browsers. Use e.g. Firefox for this to work.</span>
         <Form.Select
           onChange={onChange}
           value={plot}
