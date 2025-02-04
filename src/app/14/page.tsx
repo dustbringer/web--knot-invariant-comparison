@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import RootLayout from "../components/Layout";
 
 // import Bokeh from "./bokeh/bokeh.esm.min.js";
 // import "./bokeh/bokeh-widgets.esm.min.js";
@@ -10,10 +9,12 @@ import RootLayout from "../components/Layout";
 // import "./bokeh/bokeh-mathjax.esm.min.js";
 // import "./bokeh/bokeh-tables.esm.min.js";
 
-import Link from 'next/link'
+import Link from "next/link";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import Form from "react-bootstrap/Form";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Container from "@/components/Container";
 
 type plotData = {
   name: string;
@@ -72,7 +73,7 @@ const plotDataBM: Array<plotData> = [
 export default function Comparison14() {
   const [plot, setPlot] = React.useState(0);
 
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onChange = (e: SelectChangeEvent<number>) => {
     setPlot(+e.target.value);
   };
 
@@ -90,8 +91,8 @@ export default function Comparison14() {
 
     // Dynamically import to avoid "document doesn't exist" in prerender
     if (data.json !== undefined) {
-      import("../bokeh/bokeh-widgets.esm.min.js")
-        .then(() => import("../bokeh/bokeh.esm.min.js"))
+      import("../../bokeh/bokeh-widgets.esm.min.js")
+        .then(() => import("../../bokeh/bokeh.esm.min.js"))
         .then((res) => {
           const Bokeh = res.default;
           Bokeh.embed.embed_items(data.json, [
@@ -158,7 +159,7 @@ export default function Comparison14() {
   }, [plot]);
 
   return (
-    <div id="root">
+    <Container>
       <Link className="link" href="/">
         Home
       </Link>
@@ -174,19 +175,17 @@ export default function Comparison14() {
 
       <div className="section">
         <h1>Ballmapper Comparison</h1>
-        <Form.Select
-          onChange={onChange}
-          value={plot}
-          style={{ width: "500px" }}
-        >
-          {plotDataBM.map(({ name }, i) => (
-            <option value={i} key={name}>
-              {name}
-            </option>
-          ))}
-        </Form.Select>
+        <FormControl fullWidth sx={{ margin: "10px 0" }}>
+          <Select size="small" value={plot} onChange={onChange}>
+            {plotDataBM.map(({ name }, i) => (
+              <MenuItem value={i} key={name}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <div className="bokeh-plot" id="bokeh-plot-bm-14" />
       </div>
-    </div>
+    </Container>
   );
 }

@@ -9,9 +9,11 @@ import * as React from "react";
 // import "./bokeh/bokeh-mathjax.esm.min.js";
 // import "./bokeh/bokeh-tables.esm.min.js";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import Form from "react-bootstrap/Form";
-// import Button from "react-bootstrap/Button";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+
+import Container from "@/components/Container";
 
 type plotData = {
   name: string;
@@ -72,7 +74,7 @@ const plotDataBM: Array<plotData> = [
 export default function Home() {
   const [plot, setPlot] = React.useState(0);
 
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const onChange = (e: SelectChangeEvent<number>) => {
     setPlot(+e.target.value);
   };
 
@@ -158,7 +160,7 @@ export default function Home() {
   }, [plot]);
 
   return (
-    <div id="root">
+    <Container>
       <div className="section">
         <h1>Percentage of Unique Values</h1>
         <div className="bokeh-plot" id="bokeh-plot-unique" />
@@ -175,17 +177,17 @@ export default function Home() {
           Note: Some selections of the ballmapper exceeds the maximum call stack
           size of Chromium based browsers. Use e.g. Firefox for this to work.
         </span>
-        <Form.Select
-          onChange={onChange}
-          value={plot}
-          style={{ width: "500px" }}
-        >
-          {plotDataBMName.map((name, i) => (
-            <option value={i} key={name}>
-              {name}
-            </option>
-          ))}
-        </Form.Select>
+
+        <FormControl fullWidth sx={{ margin: "10px 0" }}>
+          <Select size="small" value={plot} onChange={onChange}>
+            {plotDataBMName.map((name, i) => (
+              <MenuItem value={i} key={name}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         <div className="bokeh-plot" id="bokeh-plot-bm"></div>
         <div>
           <h4>(Static links)</h4>
@@ -222,6 +224,6 @@ export default function Home() {
           </a>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

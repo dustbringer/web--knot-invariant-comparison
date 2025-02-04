@@ -2,8 +2,13 @@
 
 import * as React from "react";
 
-import Plot from "react-plotly.js";
-import { min, max } from "../scripts/minmax";
+// import Plot from "react-plotly.js";
+// // Plotly nextjs ssr issue fix: https://github.com/plotly/react-plotly.js/issues/272
+import dynamic from "next/dynamic";
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+
+import { min, max } from "../../scripts/minmax";
+import { Shape } from "plotly.js";
 
 function zeros(rows: number, cols: number) {
   return Array(rows)
@@ -34,7 +39,7 @@ function pointsToImage(
   return img;
 }
 
-export default function Roots({
+export function Roots({
   roots,
   width = 1000,
   height = 1000,
@@ -43,6 +48,7 @@ export default function Roots({
   minY = -5,
   maxY = 5,
   showCircle = true,
+  zmax = 500,
 }: {
   roots: Array<[number, number]>;
   width?: number;
@@ -52,11 +58,17 @@ export default function Roots({
   minY?: number;
   maxY?: number;
   showCircle?: boolean;
+  zmax?: number;
 }) {
   // const min_x = min(roots.map(([x, y]) => x));
   // const max_x = max(roots.map(([x, y]) => x));
   // const min_y = min(roots.map(([x, y]) => y));
   // const max_y = max(roots.map(([x, y]) => y));
+  // const maxsize = Math.sqrt(max(roots.map(([x, y]) => x * x + y * y)));
+  // minX = -maxsize;
+  // maxX = maxsize;
+  // minY = -maxsize;
+  // maxY = maxsize;
 
   const image = pointsToImage(roots, width, height, minX, maxX, minY, maxY);
   // console.log(image);
@@ -68,10 +80,10 @@ export default function Roots({
           {
             z: image,
             type: "heatmap",
-            // colorscale: "Hot",
-            colorscale: "Blackbody",
+            colorscale: "Hot",
+            // colorscale: "Blackbody",
             zmin: 0,
-            zmax: 200,
+            zmax: zmax,
           },
         ]}
         config={{
@@ -98,6 +110,66 @@ export default function Roots({
                 },
               ]
             : [],
+        }}
+      />
+    </div>
+  );
+}
+
+export function shapeCircle(
+  zero: [number, number],
+  radius: number
+): Partial<Shape> {
+  return {
+    type: "circle",
+    xref: "x",
+    yref: "y",
+    x0: zero[0] - radius,
+    y0: zero[1] - radius,
+    x1: zero[0] + radius,
+    y1: zero[1] + radius,
+    line: {
+      color: "rgba(144, 238, 144, 0.4)",
+      width: 5,
+    },
+  };
+}
+
+export default function Grid({
+  grid,
+  shapes = [],
+  zmax = 500,
+  width = 1000,
+  height = 1000,
+}: {
+  grid: Array<Array<number>>;
+  shapes: Partial<Shape>[];
+  zmax?: number;
+  width?: number;
+  height?: number;
+}) {
+  return (
+    <div>
+      <Plot
+        data={[
+          {
+            z: grid,
+            type: "heatmap",
+            // colorscale: "Hot",
+            colorscale: "Blackbody",
+            zmin: 0,
+            zmax: zmax,
+          },
+        ]}
+        config={{
+          scrollZoom: true,
+        }}
+        layout={{
+          dragmode: "pan",
+          width: width,
+          height: height,
+          title: "Roots",
+          shapes: shapes,
         }}
       />
     </div>

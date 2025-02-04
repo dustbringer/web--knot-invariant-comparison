@@ -2,33 +2,72 @@
 
 import * as React from "react";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import RootsPlot from "@/components/Roots";
+import Grid, { Roots as RootsPlot, shapeCircle } from "@/components/Plots/Grid";
+import Range from "@/components/Range";
+import Container from "@/components/Container";
+
+// Fast fill with zeros
+function zeros(n: number) {
+  if (n <= 0) {
+    return [];
+  }
+  let arr: Array<number>;
+  (arr = []).length = n;
+  arr.fill(0);
+  return arr;
+}
+function zeros2(x: number, y: number) {
+  if (x < 0 || y < 0) {
+    return [];
+  }
+  let arr: Array<Array<number>>;
+  (arr = []).length = x;
+  for (let i = 0; i < x; i++) {
+    arr[i] = zeros(y);
+  }
+  return arr;
+}
 
 export default function RootsPage() {
-  const [roots, setRoots] = React.useState<Array<[number, number]>>([]);
-
+  const [sliderValue, setSliderValue] = React.useState<number>(7000);
+  const [circle, setCircle] = React.useState<{
+    zero: [number, number];
+    radius: number;
+  }>({ zero: [0, 0], radius: 0 });
+  const [grid, setGrid] = React.useState<Array<Array<number>>>([]);
+  const type = "b1";
   React.useEffect(() => {
-    Promise.all([
-      fetch("knot-alexander-3-16-roots.out").then((res) => res.text()),
-    ]).then((res) => {
-      console.log("Roots started processing");
-      const roots = res.map(
-        (r) =>
-          r.split("\n").map((xy) => xy.split(",").map(Number)) as Array<
-            [number, number]
-          >
-      );
-      console.log(roots.length);
-      const roots2 = roots.flat();
-      setRoots(roots2);
-      console.log("Roots finished processing");
-    });
+    // fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-full.out`)
+    fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`)
+      .then((res) => res.json())
+      .then((res) => {
+        console.log("Roots started processing");
+        const grid = zeros2(res.width, res.height);
+        Object.keys(res.gridSparse).forEach((key) => {
+          const [x, y] = key.split(",").map(Number);
+          grid[y][x] = res.gridSparse[key]; // x,y flipped because that's how plotly likes it
+        });
+
+        setCircle({ zero: res.circleCentre, radius: res.circleRadius });
+        setGrid(grid);
+        console.log("Roots finished processing");
+      });
   }, []);
 
   return (
-    <div id="root">
-      <RootsPlot roots={roots} width={1000} height={1000} />
-    </div>
+    <Container>
+      <Range
+        min={1}
+        max={10000}
+        value={sliderValue}
+        onChange={(e) => setSliderValue(Number(e.target.value))}
+      />
+      {/* <RootsPlot roots={roots} width={800} height={800} zmax={2000} /> */}
+      <Grid
+        grid={grid}
+        shapes={[shapeCircle(circle.zero, circle.radius)]}
+        zmax={sliderValue}
+      />
+    </Container>
   );
 }
