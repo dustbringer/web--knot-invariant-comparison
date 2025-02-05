@@ -14,6 +14,7 @@ export default function Line({
   height = 1000,
   nbins = 20,
   layout = {},
+  style = {},
 }: {
   data: Array<{
     x: Array<number>;
@@ -25,21 +26,20 @@ export default function Line({
   height?: number;
   nbins?: number;
   layout?: Partial<Layout>;
+  style?: object;
 }) {
   return (
-    <div>
-      <Plot
-        data={data.map((d, i) => ({ mode: "lines+markers", ...d }))}
-        config={{
-          scrollZoom: true,
-        }}
-        layout={{
-          dragmode: "pan",
-          width: width,
-          height: height,
-          ...layout,
-        }}
-      />
-    </div>
+    <Plot
+      data={data.map((d, i) => ({ mode: "lines+markers", ...d }))}
+      config={{
+        scrollZoom: true,
+      }}
+      layout={{
+        dragmode: "pan",
+        ...layout,
+      }}
+      useResizeHandler={true}
+      style={{ maxWidth: `${width}px`, height: height, ...style }}
+    />
   );
 }

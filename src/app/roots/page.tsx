@@ -37,8 +37,8 @@ export default function RootsPage() {
   const [grid, setGrid] = React.useState<Array<Array<number>>>([]);
   const type = "b1";
   React.useEffect(() => {
-    // fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-full.out`)
-    fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`)
+    fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-full.out`)
+    // fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`)
       .then((res) => res.json())
       .then((res) => {
         console.log("Roots started processing");

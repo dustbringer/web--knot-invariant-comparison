@@ -5,6 +5,7 @@
 
 body {
   font-family: "Open Sans", "Roboto", "Helvetica", "Arial", "sans-serif";
+  margin: 0;
 }
 
 #root {
@@ -25,4 +26,42 @@ body {
 
 #bokeh-plot-bm-14 {
   height: 1700px;
+}
+
+
+
+
+
+
+
+
+.lasso path {
+  stroke: rgb(80,80,80);
+  stroke-width:2px;
+}
+
+.lasso .drawn {
+  fill-opacity:.05 ;
+}
+
+.lasso .loop_close {
+  fill:none;
+  stroke-dasharray: 4, 4;
+}
+
+.lasso .origin {
+  fill:#3399FF;
+  fill-opacity:.5;
+}
+
+.not_possible {
+  fill:rgb(200,200,200);
+}
+
+.possible {
+  fill:#EC888C;
+}
+
+.selected {
+fill: steelblue;
 }

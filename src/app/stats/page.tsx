@@ -2,6 +2,7 @@
 
 import * as React from "react";
 
+import { styled } from "@mui/material";
 import Switch from "@mui/material/Switch";
 
 // import Plot from "react-plotly.js";
@@ -10,6 +11,7 @@ import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 import Container from "@/components/Container";
+import { DivFlexCenterHJ } from "@/components/styled/Divs";
 import Radio from "@/components/Radio";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
@@ -89,16 +91,16 @@ export default function StatsPage() {
     return ret;
   };
 
-  const effectiveExponents = (arr: Array<number>) => {
-    const ret = [];
-    for (let i = 0; i < arr.length - 1; i++) {
-      ret.push(
-        (Math.log(arr[i]) - Math.log(arr[i + 1])) /
-          (Math.log(i) - Math.log(i + 1))
-      );
-    }
-    return ret;
-  };
+  // const effectiveExponents = (arr: Array<number>) => {
+  //   const ret = [];
+  //   for (let i = 0; i < arr.length - 1; i++) {
+  //     ret.push(
+  //       (Math.log(arr[i]) - Math.log(arr[i + 1])) /
+  //         (Math.log(i) - Math.log(i + 1))
+  //     );
+  //   }
+  //   return ret;
+  // };
 
   return (
     <Container>
@@ -115,124 +117,111 @@ export default function StatsPage() {
           />
           Successive quotients
         </div>
-        <div>
+        {/* <div>
           <Switch
             checked={showEE}
             onChange={(e) => setShowEE(e.target.checked)}
           />
           Effective exponents
-        </div>
+        </div> */}
       </div>
 
-      {/* <Histogram
-        data={dataPairs}
-        width={800}
-        height={600}
-        layout={{
-          xaxis: {
-            title: "Number of comparisons",
-          },
-          yaxis: {
-            title: "Frequency",
-          },
-          legend: {
-            yanchor: "top",
-            y: 0.99,
-            xanchor: "right",
-            x: 0.99,
-          },
-        }}
-      />*/}
-      <Line
-        data={stats[plotName].columns.map((name, i) => ({
-          x: stats[plotName].data.map((d) => d[0]),
-          y: stats[plotName].data.map((d) => d[i + 1]),
-          name: name,
-        }))}
-        width={800}
-        height={600}
-        layout={{
-          xaxis: {
-            title: stats[plotName].xlabel,
-            linecolor: "black",
-            linewidth: 2,
-          },
-          yaxis: {
-            title: stats[plotName].ylabel,
-            linecolor: "black",
-            linewidth: 2,
-            ...(stats[plotName].ylogscale && { type: "log" }),
-            ...(stats[plotName].yrange !== undefined && {
-              range: stats[plotName].yrange,
-            }),
-          },
-          legend: { ...stats[plotName].legend },
-        }}
-      />
-      {showSQ && (
+      <div>
         <Line
           data={stats[plotName].columns.map((name, i) => ({
-            x: stats[plotName].data
-              .slice(0, stats[plotName].data.length - 1)
-              .map((d) => d[0]),
-            y: successiveQuotients(stats[plotName].data.map((d) => d[i + 1])),
+            x: stats[plotName].data.map((d) => d[0]),
+            y: stats[plotName].data.map((d) => d[i + 1]),
             name: name,
           }))}
           width={800}
           height={600}
           layout={{
             xaxis: {
-              title: "Number of crossings",
+              title: stats[plotName].xlabel,
               linecolor: "black",
               linewidth: 2,
             },
             yaxis: {
-              title: "Succesive quotients",
+              title: stats[plotName].ylabel,
               linecolor: "black",
               linewidth: 2,
-              // type: "log",
+              ...(stats[plotName].ylogscale && { type: "log" }),
+              ...(stats[plotName].yrange !== undefined && {
+                range: stats[plotName].yrange,
+              }),
             },
-            legend: {
-              yanchor: "top",
-              y: 0.99,
-              xanchor: "left",
-              x: 0.01,
-            },
+            legend: { ...stats[plotName].legend },
           }}
+          style={{ margin: "0 auto" }}
         />
-      )}
-      {showEE && (
-        <Line
-          data={stats[plotName].columns.map((name, i) => ({
-            x: stats[plotName].data
-              .slice(0, stats[plotName].data.length - 1)
-              .map((d) => d[0]),
-            y: effectiveExponents(stats[plotName].data.map((d) => d[i + 1])),
-            name: name,
-          }))}
-          width={800}
-          height={600}
-          layout={{
-            xaxis: {
-              title: "Number of crossings",
-              linecolor: "black",
-              linewidth: 2,
-            },
-            yaxis: {
-              title: "Effective exponents",
-              linecolor: "black",
-              linewidth: 2,
-              // type: "log",
-            },
-            legend: {
-              yanchor: "top",
-              y: 0.99,
-              xanchor: "left",
-              x: 0.01,
-            },
-          }}
-        />
-      )}
+
+        {showSQ && (
+          <Line
+            data={stats[plotName].columns.map((name, i) => ({
+              x: stats[plotName].data
+                .slice(0, stats[plotName].data.length - 1)
+                .map((d) => d[0]),
+              y: successiveQuotients(stats[plotName].data.map((d) => d[i + 1])),
+              name: name,
+            }))}
+            width={800}
+            height={600}
+            layout={{
+              xaxis: {
+                title: "Number of crossings",
+                linecolor: "black",
+                linewidth: 2,
+              },
+              yaxis: {
+                title: "Succesive quotients",
+                linecolor: "black",
+                linewidth: 2,
+                // type: "log",
+              },
+              legend: {
+                yanchor: "top",
+                y: 0.99,
+                xanchor: "left",
+                x: 0.01,
+              },
+            }}
+            style={{ margin: "0 auto" }}
+          />
+        )}
+        {/* {showEE && (
+          <Line
+            data={stats[plotName].columns.map((name, i) => ({
+              x: stats[plotName].data
+                .slice(0, stats[plotName].data.length - 1)
+                .map((d) => d[0]),
+              y: effectiveExponents(stats[plotName].data.map((d) => d[i + 1])),
+              name: name,
+            }))}
+            width={800}
+            height={600}
+            layout={{
+              xaxis: {
+                title: "Number of crossings",
+                linecolor: "black",
+                linewidth: 2,
+              },
+              yaxis: {
+                title: "Effective exponents",
+                linecolor: "black",
+                linewidth: 2,
+                // type: "log",
+              },
+              legend: {
+                yanchor: "top",
+                y: 0.99,
+                xanchor: "left",
+                x: 0.01,
+              },
+            }}
+            style={{ margin: "0 auto" }}
+          />
+        )} */}
+      </div>
 
       {/* A Box plot */}
       {/* <Plot
