@@ -38,7 +38,7 @@ export default function RootsPage() {
   const type = "b1";
   React.useEffect(() => {
     fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-full.out`)
-    // fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`)
+      // fetch(`root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`)
       .then((res) => res.json())
       .then((res) => {
         console.log("Roots started processing");
@@ -60,7 +60,9 @@ export default function RootsPage() {
         min={1}
         max={10000}
         value={sliderValue}
-        onChange={(e) => setSliderValue(Number(e.target.value))}
+        onChange={(e) =>
+          setSliderValue(Number((e.target as HTMLInputElement)?.value || 1))
+        }
       />
       {/* <RootsPlot roots={roots} width={800} height={800} zmax={2000} /> */}
       <Grid

@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { styled } from "@mui/material";
 import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
 
 // import Plot from "react-plotly.js";
 // // Plotly nextjs ssr issue fix: https://github.com/plotly/react-plotly.js/issues/272
@@ -16,6 +17,7 @@ import Radio from "@/components/Radio";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import stats from "./stats";
+import Link from "@/components/LinkInternal";
 
 export default function StatsPage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
@@ -224,28 +226,13 @@ export default function StatsPage() {
       </div>
 
       {/* A Box plot */}
-      {/* <Plot
-        data={data.map((d) => ({ ...d, type: "box" }))}
-        config={{
-          scrollZoom: true,
-        }}
-        layout={{
-          width: 800,
-          height: 600,
-
-          xaxis: {
-            title: "Invariant",
-            linecolor: "black",
-            linewidth: 2,
-          },
-          yaxis: {
-            title: "Time (s) (log scale)",
-            linecolor: "black",
-            linewidth: 2,
-            type: "log",
-          },
-        }}
-      /> */}
+      <Typography variant="body1">
+        See also the{" "}
+        <Link href="/stats/boxplot" inPlace>
+          average time boxplot
+        </Link>
+        .
+      </Typography>
     </Container>
   );
 }

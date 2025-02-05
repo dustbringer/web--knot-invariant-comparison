@@ -14,7 +14,8 @@ export const colors: Array<[number, number, number]> = [
   [0.404, 0, 0.051],
 ];
 
-export const rgbToText = ([r, g, b]) => `rgb(${r * 255},${g * 255},${b * 255})`;
+export const rgbToText = ([r, g, b]: [number, number, number]) =>
+  `rgb(${r * 255},${g * 255},${b * 255})`;
 
 export default function createGraphSVG({
   inputNodes,
@@ -95,10 +96,10 @@ export default function createGraphSVG({
     // .attr("stroke-width", (d) => d.value)
     .attr("stroke-width", lineStroke);
   link
-    .attr("x1", (d) => x(d.source.x))
-    .attr("x2", (d) => x(d.target.x))
-    .attr("y1", (d) => y(d.source.y))
-    .attr("y2", (d) => y(d.target.y));
+    .attr("x1", (d: LinkDatum) => x((d.source as NodeDatum).x || 0))
+    .attr("x2", (d: LinkDatum) => x((d.target as NodeDatum).x || 0))
+    .attr("y1", (d: LinkDatum) => y((d.source as NodeDatum).y || 0))
+    .attr("y2", (d: LinkDatum) => y((d.target as NodeDatum).y || 0));
 
   const node = svg
     .append("g")
@@ -122,7 +123,11 @@ export default function createGraphSVG({
   /******************** Lasso using d3.drag ********************/
   // From (https://stackoverflow.com/questions/64107576/lasso-plugin-wont-work-with-d3-upgrade-to-v6)
   // lasso selection based on the drag events
-  let nodesRelative = nodes.map((d) => ({ ...d, x: x(d.x), y: y(d.y) }));
+  let nodesRelative = nodes.map((d: NodeDatum) => ({
+    ...d,
+    x: x(d.x || 0),
+    y: y(d.y || 0),
+  }));
   let coords: Array<[number, number]> = [];
   const lineGenerator = d3.line();
 
@@ -225,19 +230,45 @@ export default function createGraphSVG({
 
   function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, undefined>) {
     node
-      .attr("cx", (d) => x(d.x) + event.transform.applyX(x(d.x)))
-      .attr("cy", (d) => y(d.y) + event.transform.applyY(y(d.y)));
-    nodesRelative = nodes.map((d) => ({
+      .attr(
+        "cx",
+        (d: NodeDatum) => x(d.x || 0) + event.transform.applyX(x(d.x || 0))
+      )
+      .attr(
+        "cy",
+        (d: NodeDatum) => y(d.y || 0) + event.transform.applyY(y(d.y || 0))
+      );
+    nodesRelative = nodes.map((d: NodeDatum) => ({
       ...d,
-      x: x(d.x) + event.transform.applyX(x(d.x)),
-      y: y(d.y) + event.transform.applyY(y(d.y)),
+      x: x(d.x || 0) + event.transform.applyX(x(d.x || 0)),
+      y: y(d.y || 0) + event.transform.applyY(y(d.y || 0)),
     }));
 
     link
-      .attr("x1", (d) => x(d.source.x) + event.transform.applyX(x(d.source.x)))
-      .attr("x2", (d) => x(d.target.x) + event.transform.applyX(x(d.target.x)))
-      .attr("y1", (d) => y(d.source.y) + event.transform.applyY(y(d.source.y)))
-      .attr("y2", (d) => y(d.target.y) + event.transform.applyY(y(d.target.y)));
+      .attr(
+        "x1",
+        (d: LinkDatum) =>
+          x((d.source as NodeDatum).x || 0) +
+          event.transform.applyX(x((d.source as NodeDatum).x || 0))
+      )
+      .attr(
+        "x2",
+        (d: LinkDatum) =>
+          x((d.target as NodeDatum).x || 0) +
+          event.transform.applyX(x((d.target as NodeDatum).x || 0))
+      )
+      .attr(
+        "y1",
+        (d: LinkDatum) =>
+          y((d.source as NodeDatum).y || 0) +
+          event.transform.applyY(y((d.source as NodeDatum).y || 0))
+      )
+      .attr(
+        "y2",
+        (d: LinkDatum) =>
+          y((d.target as NodeDatum).y || 0) +
+          event.transform.applyY(y((d.target as NodeDatum).y || 0))
+      );
   }
   const zoom = d3
     .zoom<SVGSVGElement, undefined>()

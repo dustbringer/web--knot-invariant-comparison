@@ -191,7 +191,7 @@ export default function BallmapperPage() {
         (e) => (!e.ctrlKey && !e.shiftKey && !e.button) || e.type === "wheel"
       );
     }
-  }, [lassoEnabled]);
+  }, [lassoEnabled, svgData]);
 
   React.useEffect(() => {
     if (bmCmpNodes.length === 0) {
@@ -227,7 +227,8 @@ export default function BallmapperPage() {
     bmCmpNodes.forEach(
       (d) =>
         (sizes[d.id] =
-          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length / d.size)
+          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
+          (d.size || 1))
     );
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
