@@ -6,6 +6,8 @@ import Grid, { Roots as RootsPlot, shapeCircle } from "@/components/Plots/Grid";
 import Range from "@/components/Range";
 import Container from "@/components/Container";
 
+import staticify from "@/util/staticURLs";
+
 // Fast fill with zeros
 function zeros(n: number) {
   if (n <= 0) {
@@ -37,8 +39,12 @@ export default function RootsPage() {
   const [grid, setGrid] = React.useState<Array<Array<number>>>([]);
   const type = "b1";
   React.useEffect(() => {
-    fetch(`/public-data/root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-full.out`)
-      // fetch(`/public-data/root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`)
+    fetch(
+      staticify(
+        `/static/root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-full.out`
+      )
+    )
+      // fetch(staticify(`/static/root-grid/knot-${type}-3-16-rootsgridsparse-1000x1000-near.out`))
       .then((res) => res.json())
       .then((res) => {
         console.log("Roots started processing");

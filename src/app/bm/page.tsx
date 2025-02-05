@@ -9,12 +9,13 @@ import dynamic from "next/dynamic";
 
 import Box from "@mui/material/Box";
 import Switch from "@mui/material/Switch";
+import Button from "@mui/material/Button";
 
 import * as d3 from "d3";
 
 import Container from "@/components/Container";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
-import { Button } from "@mui/material";
+import staticify from "@/util/staticURLs";
 
 type NodeDatum = {
   id: number;
@@ -74,8 +75,8 @@ export default function BallmapperPage() {
   const inType = "jones";
   React.useEffect(() => {
     Promise.all([
-      fetch(`/public-data/bm/bm-${inType}.edge.out`),
-      fetch(`/public-data/bm/bm-${inType}.pcbl.out`),
+      fetch(staticify(`/static/bm/bm-${inType}.edge.out`)),
+      fetch(staticify(`/static/bm/bm-${inType}.pcbl.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
@@ -115,8 +116,8 @@ export default function BallmapperPage() {
   const cmpType = "alexander";
   React.useEffect(() => {
     Promise.all([
-      fetch(`/public-data/bm/bm-${cmpType}.edge.out`),
-      fetch(`/public-data/bm/bm-${cmpType}.pcbl.out`),
+      fetch(staticify(`/static/bm/bm-${cmpType}.edge.out`)),
+      fetch(staticify(`/static/bm/bm-${cmpType}.pcbl.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {

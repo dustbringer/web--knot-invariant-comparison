@@ -9,18 +9,20 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 import Container from "@/components/Container";
 
+import staticify from "@/util/staticURLs";
+
 export default function StatsBoxPlotPage() {
   const [data, setData] = React.useState<
     Array<{ name?: string; y: Array<number> }>
   >([]);
   React.useEffect(() => {
     Promise.all([
-      fetch(`/public-data/time/knot-a2-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-alexander-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-b1-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-b1-3-14-time-js.out`),
-      fetch(`/public-data/time/knot-jones-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-khovanov-3-14-time-wolfram.out`),
+      fetch(staticify(`/static/time/knot-a2-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-alexander-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-b1-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-b1-3-14-time-js.out`)),
+      fetch(staticify(`/static/time/knot-jones-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-khovanov-3-14-time-wolfram.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {

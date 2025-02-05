@@ -24,12 +24,12 @@ export default function Home() {
         </Typography>
         <ul>
           <li>
-            <Link href="old/14" inPlace>
+            <Link href="/old/14" inPlace>
               Up to 14 crossings
             </Link>
           </li>
           <li>
-            <Link href="old/15" inPlace>
+            <Link href="/old/15" inPlace>
               Up to 15 crossings
             </Link>
           </li>

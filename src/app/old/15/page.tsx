@@ -15,6 +15,8 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 import Container from "@/components/Container";
 
+import staticify from "@/util/staticURLs";
+
 type plotData = {
   name: string;
   url: string;
@@ -24,14 +26,14 @@ type plotData = {
 
 const plotDataUnique: plotData = {
   name: "%Unique",
-  url: "/public-data/old/15/percent-unique.json",
+  url: staticify("/static/old/15/percent-unique.json"),
   json: undefined,
   docid: "b78ca7dc-1b9d-4062-818b-ab8946368686",
 };
 
 const plotDataRandomPairs: plotData = {
   name: "Random Pairs",
-  url: "/public-data/old/15/random-pairs.json",
+  url: staticify("/static/old/15/random-pairs.json"),
   json: undefined,
   docid: "1e57dd74-3891-4521-8964-dfffa27de701",
 };
@@ -41,31 +43,31 @@ const plotDataBMName = ["B1", "Jones", "Alexander", "A2", "Khovanov"];
 const plotDataBM: Array<plotData> = [
   {
     name: "B1",
-    url: "/public-data/old/15/b1-bm.json",
+    url: staticify("/static/old/15/b1-bm.json"),
     json: undefined,
     docid: "b1478073-e36f-46df-bce6-9ecf8cfa6fb4",
   },
   {
     name: "Jones",
-    url: "/public-data/old/15/jones-bm.json",
+    url: staticify("/static/old/15/jones-bm.json"),
     json: undefined,
     docid: "84ad99c8-07a4-4586-9f60-8c172d23033a",
   },
   {
     name: "Alexander",
-    url: "/public-data/old/15/alexander-bm.json",
+    url: staticify("/static/old/15/alexander-bm.json"),
     json: undefined,
     docid: "8669e811-ff71-43fc-b1b8-454c3f4d815a",
   },
   {
     name: "A2",
-    url: "/public-data/old/15/a2-bm.json",
+    url: staticify("/static/old/15/a2-bm.json"),
     json: undefined,
     docid: "c534f534-7182-4d6a-911e-ee84ebf04745",
   },
   {
     name: "Khovanov",
-    url: "/public-data/old/15/khovanov-bm.json",
+    url: staticify("/static/old/15/khovanov-bm.json"),
     json: undefined,
     docid: "ad961e52-0300-4978-87fb-cc79ff9170b6",
   },

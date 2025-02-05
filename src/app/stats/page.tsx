@@ -16,8 +16,10 @@ import { DivFlexCenterHJ } from "@/components/styled/Divs";
 import Radio from "@/components/Radio";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
-import stats from "./stats";
 import Link from "@/components/LinkInternal";
+import stats from "./stats";
+
+import staticify from "@/util/staticURLs";
 
 export default function StatsPage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
@@ -36,12 +38,12 @@ export default function StatsPage() {
   >([]);
   React.useEffect(() => {
     Promise.all([
-      fetch(`/public-data/time/knot-a2-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-alexander-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-b1-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-b1-3-14-time-js.out`),
-      fetch(`/public-data/time/knot-jones-3-14-time-wolfram.out`),
-      fetch(`/public-data/time/knot-khovanov-3-14-time-wolfram.out`),
+      fetch(staticify(`/static/time/knot-a2-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-alexander-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-b1-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-b1-3-14-time-js.out`)),
+      fetch(staticify(`/static/time/knot-jones-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-khovanov-3-14-time-wolfram.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
