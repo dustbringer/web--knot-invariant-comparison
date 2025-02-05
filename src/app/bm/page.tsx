@@ -74,8 +74,8 @@ export default function BallmapperPage() {
   const inType = "jones";
   React.useEffect(() => {
     Promise.all([
-      fetch(`public-data/bm/bm-${inType}.edge.out`),
-      fetch(`public-data/bm/bm-${inType}.pcbl.out`),
+      fetch(`/public-data/bm/bm-${inType}.edge.out`),
+      fetch(`/public-data/bm/bm-${inType}.pcbl.out`),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
@@ -115,8 +115,8 @@ export default function BallmapperPage() {
   const cmpType = "alexander";
   React.useEffect(() => {
     Promise.all([
-      fetch(`public-data/bm/bm-${cmpType}.edge.out`),
-      fetch(`public-data/bm/bm-${cmpType}.pcbl.out`),
+      fetch(`/public-data/bm/bm-${cmpType}.edge.out`),
+      fetch(`/public-data/bm/bm-${cmpType}.pcbl.out`),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
