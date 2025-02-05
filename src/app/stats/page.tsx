@@ -36,12 +36,12 @@ export default function StatsPage() {
   >([]);
   React.useEffect(() => {
     Promise.all([
-      fetch(`time/knot-a2-3-14-time-wolfram.out`),
-      fetch(`time/knot-alexander-3-14-time-wolfram.out`),
-      fetch(`time/knot-b1-3-14-time-wolfram.out`),
-      fetch(`time/knot-b1-3-14-time-js.out`),
-      fetch(`time/knot-jones-3-14-time-wolfram.out`),
-      fetch(`time/knot-khovanov-3-14-time-wolfram.out`),
+      fetch(`/public-data/time/knot-a2-3-14-time-wolfram.out`),
+      fetch(`/public-data/time/knot-alexander-3-14-time-wolfram.out`),
+      fetch(`/public-data/time/knot-b1-3-14-time-wolfram.out`),
+      fetch(`/public-data/time/knot-b1-3-14-time-js.out`),
+      fetch(`/public-data/time/knot-jones-3-14-time-wolfram.out`),
+      fetch(`/public-data/time/knot-khovanov-3-14-time-wolfram.out`),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
