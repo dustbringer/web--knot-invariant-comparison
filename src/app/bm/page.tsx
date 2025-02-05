@@ -7,37 +7,75 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 // const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-import { Box, BreadcrumbsClassKey } from "@mui/material";
+import Box from "@mui/material/Box";
+import Switch from "@mui/material/Switch";
 
 import * as d3 from "d3";
-// import * as d3lasso from "d3-lasso";
-
-// const d3 = Object.assign(d3Code, { lasso: d3lasso.lasso });
-// window.d3 = d3;
 
 import Container from "@/components/Container";
+import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
+import { Button } from "@mui/material";
 
 type NodeDatum = {
-  id: string;
+  id: number;
   size?: number;
   group: number;
 } & d3.SimulationNodeDatum;
 type LinkDatum = { value?: number } & d3.SimulationLinkDatum<NodeDatum>;
 
-const viewboxSetup = (h: number, w: number) => [-w / 4, -h / 4, w / 2, h / 2];
+type SVGData = {
+  svg: d3.Selection<SVGSVGElement, undefined, null, undefined>;
+  node: d3.Selection<
+    d3.BaseType | SVGCircleElement,
+    NodeDatum,
+    SVGGElement,
+    undefined
+  >;
+  link: d3.Selection<
+    d3.BaseType | SVGLineElement,
+    LinkDatum,
+    SVGGElement,
+    undefined
+  >;
+  drag: d3.DragBehavior<SVGSVGElement, undefined, undefined>;
+  zoom: d3.ZoomBehavior<SVGSVGElement, undefined>;
+};
+
+function lerp(start: number, end: number, value: number) {
+  return start * (1 - value) + end * value;
+}
+
+function colorLerp(
+  rgb1: [number, number, number],
+  rgb2: [number, number, number],
+  value: number
+): [number, number, number] {
+  const colorVal = (prop: number) => lerp(rgb1[prop], rgb2[prop], value);
+  return [colorVal(0), colorVal(1), colorVal(2)];
+}
 
 export default function BallmapperPage() {
   const [bmLinks, setBmLinks] = React.useState<Array<LinkDatum>>([]);
   const [bmNodes, setBmNodes] = React.useState<Array<NodeDatum>>([]);
-  const [maxNodeSize, setMaxNodeSize] = React.useState<number>(0);
+  const [bmPCBL, setBmPCBL] = React.useState<Array<Array<number>>>([]);
+  const [bmMaxNodeSize, setBmMaxNodeSize] = React.useState<number>(0);
+  const [lassoEnabled, setLassoEnabled] = React.useState<boolean>(false);
+  const [svgRef, setSvgRef] = React.useState<HTMLDivElement | null>(null);
+  const [svgData, setSvgData] = React.useState<SVGData>();
+  const [selected, setSelected] = React.useState<{ [n: number]: boolean }>({});
 
-  let [selected, setSelected] = React.useState<{ [n: number]: boolean }>({});
+  const [bmCmpLinks, setBmCmpLinks] = React.useState<Array<LinkDatum>>([]);
+  const [bmCmpNodes, setBmCmpNodes] = React.useState<Array<NodeDatum>>([]);
+  const [bmCmpPCBL, setBmCmpPCBL] = React.useState<Array<Array<number>>>([]);
+  const [bmCmpMaxNodeSize, setBmCmpMaxNodeSize] = React.useState<number>(0);
+  const [svgCmpRef, setSvgCmpRef] = React.useState<HTMLDivElement | null>(null);
+  const [svgCmpData, setSvgCmpData] = React.useState<SVGData>();
 
-  const type = "jones";
+  const inType = "jones";
   React.useEffect(() => {
     Promise.all([
-      fetch(`bm/bm-${type}.edge.out`),
-      fetch(`bm/bm-${type}.pcbl.out`),
+      fetch(`bm/bm-${inType}.edge.out`),
+      fetch(`bm/bm-${inType}.pcbl.out`),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
@@ -46,253 +84,193 @@ export default function BallmapperPage() {
           .trim()
           .split("\n")
           .map((line) => line.split(" "));
-        const sizes = res[1]
+        const PCBL = res[1]
           .trim()
           .split("\n")
-          .map((line) => line.split(" ").length);
+          .map((line) => line.split(" "));
+        const sizes = PCBL.map((line) => line.length);
 
-        setMaxNodeSize(Math.max(...sizes));
+        setBmPCBL(PCBL.map((line) => line.map(Number)));
+        setBmMaxNodeSize(Math.max(...sizes));
         setBmNodes(
-          [...new Set(lines.flat())].map((name) => ({
-            id: name,
+          Array.from(Array(PCBL.length).keys()).map((i) => ({
+            id: i + 1,
             group: 0,
-            size: sizes[Number(name) - 1],
+            size: sizes[i],
           }))
         );
 
         setBmLinks(
-          lines.map((edge) => ({ source: edge[0], target: edge[1], value: 1 }))
+          lines.map((edge) => ({
+            source: Number(edge[0]),
+            target: Number(edge[1]),
+            value: 1,
+          }))
         );
 
         console.log("done loading");
       });
   }, []);
 
-  // These get overwritten, so create a copy
-  const nodes = bmNodes.map((d) => ({ ...d }));
-  const links = bmLinks.map((d) => ({ ...d }));
-  // console.log(nodes, links);
+  const cmpType = "alexander";
+  React.useEffect(() => {
+    Promise.all([
+      fetch(`bm/bm-${cmpType}.edge.out`),
+      fetch(`bm/bm-${cmpType}.pcbl.out`),
+    ])
+      .then((res) => Promise.all(res.map((r) => r.text())))
+      .then((res) => {
+        console.log("got it");
+        const lines = res[0]
+          .trim()
+          .split("\n")
+          .map((line) => line.split(" "));
+        const PCBL = res[1]
+          .trim()
+          .split("\n")
+          .map((line) => line.split(" "));
+        const sizes = PCBL.map((line) => line.length);
 
-  // // Specify the color scale.
-  const color = d3.scaleOrdinal(d3.schemeCategory10);
+        setBmCmpPCBL(PCBL.map((line) => line.map(Number)));
+        setBmCmpMaxNodeSize(Math.max(...sizes));
+        setBmCmpNodes(
+          Array.from(Array(PCBL.length).keys()).map((i) => ({
+            id: i + 1,
+            group: 0,
+            size: sizes[i],
+          }))
+        );
 
-  const width = 800;
-  const height = 800;
+        setBmCmpLinks(
+          lines.map((edge) => ({
+            source: Number(edge[0]),
+            target: Number(edge[1]),
+            value: 1,
+          }))
+        );
 
-  // Recale everything to be smaller
-  const x = d3.scaleLinear().domain([0, width]).range([0, 100]);
-  const y = d3.scaleLinear().domain([0, height]).range([0, 100]);
-  // const x = d3.scaleLinear().domain([0, width]).range([0, width]);
-  // const y = d3.scaleLinear().domain([0, height]).range([0, height]);
+        console.log("done loading");
+      });
+  }, []);
 
-  const vb = viewboxSetup(height, width);
-  const svg = d3
-    .create("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("viewBox", vb)
-    // .attr("viewBox", [-width / 2, -height / 2, width, height])
-    .attr("style", "max-width: 100%; height: auto; border: 1px solid black");
-
-  const simulation = d3
-    .forceSimulation(nodes)
-    .force("charge", d3.forceManyBody().strength(-800))
-    .force(
-      "link",
-      d3
-        .forceLink<NodeDatum, LinkDatum>(links)
-        .id((d) => d.id)
-        .distance(20)
-        .strength(0.8)
-        .iterations(80)
-    )
-    // Force toward the origin (default)
-    .force("x", d3.forceX())
-    .force("y", d3.forceY())
-    .stop();
-
-  // Run the simulation to its end, then draw. default 300
-  simulation.tick(100);
-
-  const link = svg
-    .append("g")
-    .attr("stroke", "#999")
-    .attr("stroke-opacity", 0.6)
-    .selectAll("line")
-    .data(links)
-    .join("line")
-    .attr("stroke-width", (d) => d.value);
-  link
-    .attr("x1", (d) => x(d.source.x))
-    .attr("x2", (d) => x(d.target.x))
-    .attr("y1", (d) => y(d.source.y))
-    .attr("y2", (d) => y(d.target.y));
-
-  const nodeRadiusMax = 8;
-  const nodeRadiusMin = 2;
-  const node = svg
-    .append("g")
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 1)
-    .selectAll("circle")
-    .data(nodes)
-    .join("circle")
-    .attr("id", (d) => {
-      return "dot-" + d.id;
-    })
-    .attr(
-      "r",
-      (d: NodeDatum) =>
-        (nodeRadiusMax * (d.size || 1)) / maxNodeSize + nodeRadiusMin
-    )
-    .attr("fill", (d: NodeDatum) => color(String(d.group)));
-  node.attr("cx", (d: NodeDatum) => x(d.x || 0)).attr("cy", (d) => y(d.y || 0));
-
-  /******************** Lasso using d3.drag ********************/
-  // From (https://stackoverflow.com/questions/64107576/lasso-plugin-wont-work-with-d3-upgrade-to-v6)
-  // lasso selection based on the drag events
-  let nodesRelative = nodes.map((d) => ({ ...d, x: x(d.x), y: y(d.y) }));
-  let coords: Array<[number, number]> = [];
-  const lineGenerator = d3.line();
-
-  const pointInPolygon = function (
-    point: [number, number],
-    vs: Array<[number, number]>
-  ) {
-    // console.log(point, vs);
-    // ray-casting algorithm based on
-    // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
-
-    const x = point[0],
-      y = point[1];
-
-    let inside = false;
-    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-      const xi = vs[i][0],
-        yi = vs[i][1];
-      const xj = vs[j][0],
-        yj = vs[j][1];
-
-      const intersect =
-        yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-      if (intersect) inside = !inside;
+  React.useEffect(() => {
+    if (bmNodes.length === 0) {
+      // stops accidentally rendering nothing (after rendering the correct thing)
+      return;
     }
 
-    return inside;
-  };
-
-  function drawPath() {
-    d3.select("#lasso")
-      .style("stroke", "black")
-      .style("stroke-width", 1)
-      .style("fill", "#00000054")
-      .attr("d", lineGenerator(coords));
-  }
-
-  function dragStart() {
-    coords = [];
-    node.attr("fill", (d: NodeDatum) => color(String(d.group)));
-    d3.select("#lasso").remove();
-    svg.append("path").attr("id", "lasso");
-  }
-
-  function dragMove(
-    event: d3.D3DragEvent<SVGSVGElement, undefined, undefined>
-  ) {
-    const mouseX = event.sourceEvent.offsetX;
-    const mouseY = event.sourceEvent.offsetY;
-    coords.push([vb[0] + mouseX / 2, vb[1] + mouseY / 2]);
-    drawPath();
-  }
-
-  function dragEnd() {
-    const selectedDots: { [n: number]: boolean } = {};
-    // node.each((d, i) => {
-    //   const point = [x(d.x), y(d.y)];
-    //   // console.log(point);
-    //   if (pointInPolygon(point, coords)) {
-    //     // d3.select("#dot-" + d.id).attr("fill", "red");
-    //     selectedDots.push(d.id);
-    //   }
-    // });
-    nodesRelative.forEach((d, i) => {
-      const point = [d.x, d.y];
-      // console.log(point);
-      if (pointInPolygon(point as [number, number], coords)) {
-        // d3.select("#dot-" + d.id).attr("fill", "red");
-        selectedDots[d.id] = true;
-      }
+    const { svg, node, link, drag, zoom } = createGraphSVG({
+      inputNodes: bmNodes,
+      inputLinks: bmLinks,
+      width: 800,
+      height: 800,
+      maxNodeSize: bmMaxNodeSize,
+      setSelected,
     });
-    console.log(`select: ${Object.keys(selectedDots).map(Number)}`);
-    Object.keys(selectedDots).length > 0 &&
-      node.attr("fill", (d: NodeDatum) =>
-        color(selectedDots[d.id] ? "1" : "0")
+    setSvgData({ svg, node, link, drag, zoom });
+
+    /******************** Draw svg ********************/
+    // console.log(svg.node());
+    svgRef?.replaceChildren(svg.node() || "Ballmapper loaded with error...");
+  }, [svgRef, bmNodes, bmLinks, bmMaxNodeSize]);
+
+  React.useEffect(() => {
+    const drag = svgData?.drag;
+    const zoom = svgData?.zoom;
+    if (!drag || !zoom) {
+      return;
+    }
+    if (lassoEnabled) {
+      drag.filter((e: DragEvent) => !e.ctrlKey && !e.shiftKey && !e.button);
+      zoom.filter(
+        (e) => ((e.ctrlKey || e.shiftKey) && !e.button) || e.type === "wheel"
       );
+    } else {
+      drag.filter((e: DragEvent) => (e.ctrlKey || e.shiftKey) && !e.button);
+      zoom.filter(
+        (e) => (!e.ctrlKey && !e.shiftKey && !e.button) || e.type === "wheel"
+      );
+    }
+  }, [lassoEnabled]);
 
-    d3.select("#lasso").remove();
-    selected = selectedDots;
-  }
+  React.useEffect(() => {
+    if (bmCmpNodes.length === 0) {
+      // stops accidentally rendering nothing (after rendering the correct thing)
+      return;
+    }
 
-  const drag = d3
-    .drag<SVGSVGElement, undefined, undefined>()
-    .on("start", dragStart)
-    .on("drag", dragMove)
-    .on("end", dragEnd)
-    .filter((e: DragEvent) => {
-      return !e.ctrlKey && !e.shiftKey && !e.button;
+    const { svg, node, link, drag, zoom } = createGraphSVG({
+      inputNodes: bmCmpNodes,
+      inputLinks: bmCmpLinks,
+      width: 800,
+      height: 800,
+      maxNodeSize: bmCmpMaxNodeSize,
+      setSelected: () => {},
+      disableLasso: true,
     });
-  svg.call(drag);
+    setSvgCmpData({ svg, node, link, drag, zoom });
 
-  /******************** Zoom ********************/
-  // Put after lasso because otherwise lasso doesn't work
+    /******************** Draw svg ********************/
+    // console.log(svg.node());
+    svgCmpRef?.replaceChildren(svg.node() || "Ballmapper loaded with error...");
+  }, [svgCmpRef, bmCmpNodes, bmCmpLinks, bmCmpMaxNodeSize]);
 
-  function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, undefined>) {
-    node
-      .attr("cx", (d) => x(d.x) + event.transform.applyX(x(d.x)))
-      .attr("cy", (d) => y(d.y) + event.transform.applyY(y(d.y)));
-    nodesRelative = nodes.map((d) => ({
-      ...d,
-      x: x(d.x) + event.transform.applyX(x(d.x)),
-      y: y(d.y) + event.transform.applyY(y(d.y)),
-    }));
-
-    link
-      .attr("x1", (d) => x(d.source.x) + event.transform.applyX(x(d.source.x)))
-      .attr("x2", (d) => x(d.target.x) + event.transform.applyX(x(d.target.x)))
-      .attr("y1", (d) => y(d.source.y) + event.transform.applyY(y(d.source.y)))
-      .attr("y2", (d) => y(d.target.y) + event.transform.applyY(y(d.target.y)));
-  }
-  const zoom = d3
-    .zoom<SVGSVGElement, undefined>()
-    .extent([
-      [0, 0],
-      [100, 100],
-    ])
-    .scaleExtent([1, 100])
-    .filter((e) => {
-      return ((e.ctrlKey || e.shiftKey) && !e.button) || e.type === "wheel";
-    })
-    .on("zoom", zoomed);
-  svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
-
-  /******************** Draw svg ********************/
-  console.log(svg.node());
-  const svgRef = React.useRef(null);
-  if (svgRef.current) {
-    svgRef.current.replaceWith(svg.node());
-  }
+  const transferSelected = () => {
+    console.log(selected);
+    const pcbl: { [index: number]: boolean } = {};
+    Object.keys(selected).forEach((n) =>
+      bmPCBL[Number(n) - 1].forEach((n) => {
+        pcbl[n] = true;
+      })
+    );
+    const sizes: { [index: number]: number } = {};
+    bmCmpNodes.forEach(
+      (d) =>
+        (sizes[d.id] =
+          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length / d.size)
+    );
+    svgCmpData?.node
+      // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
+      .attr("fill", (d) =>
+        rgbToText(colorLerp(nodeColors[0], nodeColors[1], sizes[d.id]))
+      );
+    console.log(sizes);
+  };
 
   // TODO: Add a reset button
   return (
     <Container>
+      <div>
+        <Switch
+          checked={lassoEnabled}
+          onChange={(e) => setLassoEnabled(e.target.checked)}
+        />
+        Lasso
+      </div>
       <Box
         sx={{
-          border: "1px solid black",
+          // border: "1px solid black",
           display: "flex",
           justifyContent: "center",
         }}
       >
-        <svg ref={svgRef} />
+        <div ref={(node) => setSvgRef(node)} />
+      </Box>
+      <Button
+        variant="contained"
+        sx={{ width: "100px" }}
+        onClick={transferSelected}
+      >
+        Transfer!
+      </Button>
+      <Box
+        sx={{
+          // border: "1px solid black",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div ref={(node) => setSvgCmpRef(node)} />
       </Box>
     </Container>
   );

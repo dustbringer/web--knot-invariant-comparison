@@ -10,7 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 
-import { LinkBare as InternalLink } from "../LinkBoldInternal";
+import { LinkBare as InternalLink } from "../LinkInternal";
 
 import { isSamePrefix } from "../../util/links";
 import type { Link as LinkTy } from "../../data/navLinks";
