@@ -68,7 +68,7 @@ export default function createGraphSVG({
 
   const simulation = d3
     .forceSimulation(nodes)
-    .force("charge", d3.forceManyBody().strength(-800))
+    .force("charge", d3.forceManyBody().strength(-600))
     .force(
       "link",
       d3

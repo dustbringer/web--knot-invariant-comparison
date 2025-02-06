@@ -14,6 +14,7 @@ import Button from "@mui/material/Button";
 import * as d3 from "d3";
 
 import Container from "@/components/Container";
+import Radio from "@/components/Radio";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
 
@@ -56,6 +57,7 @@ function colorLerp(
 }
 
 export default function BallmapperPage() {
+  const [bmType, setBmType] = React.useState<string>("b1");
   const [bmLinks, setBmLinks] = React.useState<Array<LinkDatum>>([]);
   const [bmNodes, setBmNodes] = React.useState<Array<NodeDatum>>([]);
   const [bmPCBL, setBmPCBL] = React.useState<Array<Array<number>>>([]);
@@ -65,6 +67,7 @@ export default function BallmapperPage() {
   const [svgData, setSvgData] = React.useState<SVGData>();
   const [selected, setSelected] = React.useState<{ [n: number]: boolean }>({});
 
+  const [bmCmpType, setBmCmpType] = React.useState<string>("jones");
   const [bmCmpLinks, setBmCmpLinks] = React.useState<Array<LinkDatum>>([]);
   const [bmCmpNodes, setBmCmpNodes] = React.useState<Array<NodeDatum>>([]);
   const [bmCmpPCBL, setBmCmpPCBL] = React.useState<Array<Array<number>>>([]);
@@ -72,15 +75,14 @@ export default function BallmapperPage() {
   const [svgCmpRef, setSvgCmpRef] = React.useState<HTMLDivElement | null>(null);
   const [svgCmpData, setSvgCmpData] = React.useState<SVGData>();
 
-  const inType = "jones";
   React.useEffect(() => {
     Promise.all([
-      fetch(staticify(`/static/bm/bm-${inType}.edge.out`)),
-      fetch(staticify(`/static/bm/bm-${inType}.pcbl.out`)),
+      fetch(staticify(`/static/bm/bm-${bmType}.edge.out`)),
+      fetch(staticify(`/static/bm/bm-${bmType}.pcbl.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
-        console.log("got it");
+        console.log("input bm: got it");
         const lines = res[0]
           .trim()
           .split("\n")
@@ -108,20 +110,20 @@ export default function BallmapperPage() {
             value: 1,
           }))
         );
+        setSelected([]);
 
-        console.log("done loading");
+        console.log("input bm: done loading");
       });
-  }, []);
+  }, [bmType]);
 
-  const cmpType = "alexander";
   React.useEffect(() => {
     Promise.all([
-      fetch(staticify(`/static/bm/bm-${cmpType}.edge.out`)),
-      fetch(staticify(`/static/bm/bm-${cmpType}.pcbl.out`)),
+      fetch(staticify(`/static/bm/bm-${bmCmpType}.edge.out`)),
+      fetch(staticify(`/static/bm/bm-${bmCmpType}.pcbl.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
       .then((res) => {
-        console.log("got it");
+        console.log("output bm: got it");
         const lines = res[0]
           .trim()
           .split("\n")
@@ -150,9 +152,9 @@ export default function BallmapperPage() {
           }))
         );
 
-        console.log("done loading");
+        console.log("output bm: done loading");
       });
-  }, []);
+  }, [bmCmpType]);
 
   React.useEffect(() => {
     if (bmNodes.length === 0) {
@@ -240,8 +242,38 @@ export default function BallmapperPage() {
   };
 
   // TODO: Add a reset button
+  // TODO: Lasso broken when page is resized
+  // TODO: Don't reload to reuse, save all the ones we loaded to a dictionary (add this as a toggle, because some people don't have much memory)
   return (
     <Container>
+      <div>
+        <Radio
+          title="Input"
+          options={[
+            { name: "A2", value: "a2" },
+            { name: "Alexander", value: "alexander" },
+            { name: "B1", value: "b1" },
+            { name: "Jones", value: "jones" },
+            { name: "Khovanov", value: "khovanov" },
+            { name: "KhovanovT1", value: "khovanov-t1" },
+          ]}
+          value={bmType}
+          onChange={(e) => setBmType((e.target as HTMLInputElement).value)}
+        />
+        <Radio
+          title="Output"
+          options={[
+            { name: "A2", value: "a2" },
+            { name: "Alexander", value: "alexander" },
+            { name: "B1", value: "b1" },
+            { name: "Jones", value: "jones" },
+            { name: "Khovanov", value: "khovanov" },
+            { name: "KhovanovT1", value: "khovanov-t1" },
+          ]}
+          value={bmCmpType}
+          onChange={(e) => setBmCmpType((e.target as HTMLInputElement).value)}
+        />
+      </div>
       <div>
         <Switch
           checked={lassoEnabled}
@@ -263,7 +295,7 @@ export default function BallmapperPage() {
         sx={{ width: "100px" }}
         onClick={transferSelected}
       >
-        Transfer!
+        Compare!
       </Button>
       <Box
         sx={{
