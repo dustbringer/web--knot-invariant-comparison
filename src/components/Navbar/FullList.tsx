@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { styled, useTheme } from "@mui/material/styles";
 
-import { LinkBare as InternalLink } from "../LinkInternal";
+import { LinkBare as InternalLink } from "../Link";
 
 import { isSamePrefix } from "../../util/links";
 import type { Link as LinkTy } from "../../data/navLinks";

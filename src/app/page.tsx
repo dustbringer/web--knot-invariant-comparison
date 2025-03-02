@@ -2,25 +2,40 @@
 
 import * as React from "react";
 
-import Container from "@/components/Container";
-import Link from "@/components/LinkInternal";
 import Typography from "@mui/material/Typography";
+
+import Container from "@/components/Container";
+import Link from "@/components/Link";
 
 export default function Home() {
   return (
-    <Container>
-      <Typography
-        variant="h5"
-        gutterBottom
-        sx={{ textAlign: "center", width: "30vw", margin: "20vh auto" }}
-      >
-        Greetings. This website is currently under construction. Please visit one
-        of the links above to see currently available plots.
+    <Container maxWidth="md">
+      <Typography variant="h4" gutterBottom>
+        Knot Invariant Comparison
       </Typography>
-      <hr style={{ width: "300px" }} />
+      <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
+        This webpage contains various interactive plots and comparison tools
+        that supplement the paper [coming soon]. Relevant knot invariant data,
+        scripts and more details on data collection are available on the{" "}
+        <Link href="https://github.com/dtubbenhauer/quantumdata">
+          GitHub page
+        </Link>
+        . All data displayed on this webpage, except average runtime, considers
+        all prime knots (modulo mirrors) up to 16 crossings.
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
+        <strong>Notice!</strong> While the website is expected to work on
+        phones, less care has been put into polishing the mobile experience.
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
+        <strong>Warning!</strong> The <Link href="/bm">Ballmapper</Link> page
+        and old versions of the website fetch large files (~30-50MB per figure).
+        So beware if you have bandwidth limits or slow internet.
+      </Typography>
+      <hr style={{ width: "300px", margin: "2em auto" }} />
       <div>
         <Typography variant="h5" gutterBottom>
-          (Old and buggy pages)
+          (Old and derelict versions of the website)
         </Typography>
         <ul>
           <li>

@@ -22,7 +22,7 @@ export default function MyThemeProvider({
           ...themeLight.palette,
         },
         typography: {
-          ...theme.typography,
+          // ...theme.typography, // commented out because variants have their inbuilt font family which is bad
           ...themeLight.typography,
         },
       })}

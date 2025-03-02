@@ -16,7 +16,7 @@ import { DivFlexCenterHJ } from "@/components/styled/Divs";
 import Radio from "@/components/Radio";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
-import Link from "@/components/LinkInternal";
+import Link from "@/components/Link";
 import stats from "./stats";
 
 import staticify from "@/util/staticURLs";
@@ -107,14 +107,22 @@ export default function StatsPage() {
   // };
 
   return (
-    <Container>
+    <Container maxWidth="md">
       <div>
-        <Radio
-          options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
-          value={plotName}
-          onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
-        />
-        <div>
+        <div style={{ marginBottom: "1em" }}>
+          <Typography variant="body1">
+            Select interactive plots shown in the paper.
+          </Typography>
+          <Radio
+            options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
+            value={plotName}
+            onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
+          />
+        </div>
+        <div style={{ marginBottom: "1em" }}>
+          <Typography variant="body1">
+            Toggle successive quotients to see the corresponding plot.
+          </Typography>
           <Switch
             checked={showSQ}
             onChange={(e) => setShowSQ(e.target.checked)}
@@ -131,6 +139,9 @@ export default function StatsPage() {
       </div>
 
       <div>
+        <Typography variant="body1">
+          <i>Interactive</i> plot: zoom, pan and toggle your desired invariants!
+        </Typography>
         <Line
           data={stats[plotName].columns.map((name, i) => ({
             x: stats[plotName].data.map((d) => d[0]),
@@ -231,7 +242,7 @@ export default function StatsPage() {
       <Typography variant="body1">
         See also the{" "}
         <Link href="/stats/boxplot" inPlace>
-          average time boxplot
+          computation time boxplot
         </Link>
         .
       </Typography>

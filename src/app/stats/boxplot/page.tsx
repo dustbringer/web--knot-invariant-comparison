@@ -7,7 +7,10 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
+import Typography from "@mui/material/Typography";
+
 import Container from "@/components/Container";
+import Link from "@/components/Link";
 
 import staticify from "@/util/staticURLs";
 
@@ -44,12 +47,17 @@ export default function StatsBoxPlotPage() {
   }, []);
 
   return (
-    <Container>
+    <Container maxWidth="md">
+      <Typography variant="body1">
+        A <Link href="https://en.wikipedia.org/wiki/Box_plot">boxplot</Link> of
+        computation times for knots up to 14 crossings.
+      </Typography>
       {/* A Box plot */}
       <Plot
         data={data.map((d) => ({ ...d, type: "box" }))}
         config={{
           scrollZoom: true,
+          responsive: true,
         }}
         layout={{
           width: 800,
@@ -67,7 +75,12 @@ export default function StatsBoxPlotPage() {
             type: "log",
           },
         }}
+        style={{ margin: "0 auto", width: "100%", height: "100%" }}
       />
+      <Typography variant="body1">
+        The vertical axis has a logarithmic scale, so too-small-to-be-non-zero
+        time values fall off the bottom.
+      </Typography>
     </Container>
   );
 }

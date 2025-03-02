@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 // import { useMediaQuery } from "react-responsive";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-import { LinkBare as InternalLink } from "../LinkInternal";
+import { LinkBare as InternalLink } from "../Link";
 
 import { useTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";

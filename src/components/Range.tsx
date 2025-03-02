@@ -7,10 +7,12 @@ function Range({
   min,
   value,
   onChange,
+  step = 1,
 }: {
   max: number;
   min: number;
   value: number;
+  step?: number;
   onChange: (event: Event) => void;
 }) {
   return (
@@ -19,7 +21,7 @@ function Range({
         valueLabelDisplay="auto"
         min={min}
         max={max}
-        step={10}
+        step={step}
         defaultValue={min}
         value={value}
         onChange={onChange}

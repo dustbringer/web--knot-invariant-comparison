@@ -2,12 +2,14 @@
 
 import * as React from "react";
 
+import Typography from "@mui/material/Typography";
+
 import Grid, { Roots as RootsPlot, shapeCircle } from "@/components/Plots/Grid";
 import Range from "@/components/Range";
 import Container from "@/components/Container";
+import Radio from "@/components/Radio";
 
 import staticify from "@/util/staticURLs";
-import Radio from "@/components/Radio";
 
 // Fast fill with zeros
 function zeros(n: number) {
@@ -64,43 +66,87 @@ export default function RootsPage() {
   }, [type, resolution]);
 
   return (
-    <Container>
-      <Radio
-        title="Type"
-        options={[
-          { name: "A2", value: "a2" },
-          { name: "Alexander", value: "alexander" },
-          { name: "B1", value: "b1" },
-          { name: "Jones", value: "jones" },
-          { name: "KhovanovT1", value: "khovanov-t1" },
-        ]}
-        value={type}
-        onChange={(e) => setType((e.target as HTMLInputElement).value)}
-      />
-      <Radio
-        title="Resolution"
-        options={[
-          { name: "Full", value: "full" },
-          { name: "Near", value: "near" },
-        ]}
-        value={resolution}
-        onChange={(e) => setResolution((e.target as HTMLInputElement).value)}
-      />
-      Brightness (lower = brighter)
-      <Range
-        min={1}
-        max={10000}
-        value={sliderValue}
-        onChange={(e) =>
-          setSliderValue(Number((e.target as HTMLInputElement)?.value || 1))
-        }
-      />
+    <Container maxWidth="md">
+      <Typography variant="body1">
+        Select interactive root plot and resolution as shown in the paper.
+      </Typography>
+      <div
+        style={{
+          margin: "0 .5em",
+          marginBottom: "1em",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Radio
+          title="Type"
+          options={[
+            { name: "A2", value: "a2" },
+            { name: "Alexander", value: "alexander" },
+            { name: "B1", value: "b1" },
+            { name: "Jones", value: "jones" },
+            { name: "KhovanovT1", value: "khovanov-t1" },
+          ]}
+          value={type}
+          onChange={(e) => setType((e.target as HTMLInputElement).value)}
+        />
+        <Radio
+          title="Resolution"
+          options={[
+            { name: "Full", value: "full" },
+            { name: "Near", value: "near" },
+          ]}
+          value={resolution}
+          onChange={(e) => setResolution((e.target as HTMLInputElement).value)}
+        />
+        <ul style={{ margin: "0" }}>
+          <li>
+            Full resolution: zoomed just enough to display every root of given
+            invariant.
+          </li>
+          <li>
+            Near resolution: arbitrarily chosen fixed zoom for comparing
+            invariants.
+          </li>
+        </ul>
+      </div>
+
+      <div style={{ marginBottom: "1em" }}>
+        <Typography variant="body1">
+          Brightness of the plot (lower = brighter).
+        </Typography>
+        <Range
+          min={1}
+          max={10000}
+          value={sliderValue}
+          onChange={(e) =>
+            setSliderValue(Number((e.target as HTMLInputElement)?.value || 1))
+          }
+        />
+      </div>
+
+      <Typography variant="body1">
+        <i>Interactive</i> plot: zoom and pan!
+      </Typography>
+      <ul style={{ margin: "0" }}>
+        <li>
+          Every plot is centered around the center of the complex plane. The
+          faint green circle indicates the unit circle.
+        </li>
+        <li>
+          The brightness of a pixel on the plot indicates how many roots appear
+          there.
+        </li>
+      </ul>
       {/* <RootsPlot roots={roots} width={800} height={800} zmax={2000} /> */}
-      <Grid
-        grid={grid}
-        shapes={[shapeCircle(circle.zero, circle.radius)]}
-        zmax={sliderValue}
-      />
+
+      <div style={{ margin: "0 auto" }}>
+        <Grid
+          grid={grid}
+          shapes={[shapeCircle(circle.zero, circle.radius)]}
+          zmax={sliderValue}
+        />
+      </div>
     </Container>
   );
 }

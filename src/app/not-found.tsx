@@ -1,7 +1,7 @@
 import Container from "@/components/Container";
 import { DivFlexCenterVJA } from "@/components/styled/Divs";
 import { Typography } from "@mui/material";
-import Link from "@/components/LinkInternal";
+import Link from "@/components/Link";
 
 export default function NotFound() {
   return (

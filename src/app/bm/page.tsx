@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 // const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import Switch from "@mui/material/Switch";
 import Button from "@mui/material/Button";
 
@@ -241,46 +242,91 @@ export default function BallmapperPage() {
     console.log(sizes);
   };
 
+  // Features
+  // TODO: Disable the compare button when one of them is being loaded
+  // TODO: Add hover to show what each node is (with a toggle to turn it off)
   // TODO: Add a reset button
+  // TODO: Don't refetch to reuse, save all the ones we loaded to a dictionary (add this as a toggle, because some people don't have much memory)
+  // TODO: Change node size when zooming or resizing (it's too small on phone)
+
+  // Bugs
+  // TODO: Fix how highlighting works on the first one, also when one of them is switched
   // TODO: Lasso broken when page is resized
-  // TODO: Don't reload to reuse, save all the ones we loaded to a dictionary (add this as a toggle, because some people don't have much memory)
   return (
     <Container>
-      <div>
-        <Radio
-          title="Input"
-          options={[
-            { name: "A2", value: "a2" },
-            { name: "Alexander", value: "alexander" },
-            { name: "B1", value: "b1" },
-            { name: "Jones", value: "jones" },
-            { name: "Khovanov", value: "khovanov" },
-            { name: "KhovanovT1", value: "khovanov-t1" },
-          ]}
-          value={bmType}
-          onChange={(e) => setBmType((e.target as HTMLInputElement).value)}
-        />
-        <Radio
-          title="Output"
-          options={[
-            { name: "A2", value: "a2" },
-            { name: "Alexander", value: "alexander" },
-            { name: "B1", value: "b1" },
-            { name: "Jones", value: "jones" },
-            { name: "Khovanov", value: "khovanov" },
-            { name: "KhovanovT1", value: "khovanov-t1" },
-          ]}
-          value={bmCmpType}
-          onChange={(e) => setBmCmpType((e.target as HTMLInputElement).value)}
-        />
+      <div
+        style={{
+          marginBottom: "1em",
+        }}
+      >
+        <Typography variant="body1">
+          Select invariants to compare their ballmappers. <i>Input</i> has
+          selectable nodes, which is compared to <i>Output</i> by pressing the
+          [Compare!] button.
+        </Typography>
+        <div
+          style={{
+            margin: "0 .5em",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Radio
+            title="Input"
+            options={[
+              { name: "A2", value: "a2" },
+              { name: "Alexander", value: "alexander" },
+              { name: "B1", value: "b1" },
+              { name: "Jones", value: "jones" },
+              { name: "Khovanov", value: "khovanov" },
+              { name: "KhovanovT1", value: "khovanov-t1" },
+            ]}
+            value={bmType}
+            onChange={(e) => setBmType((e.target as HTMLInputElement).value)}
+          />
+          <Radio
+            title="Output"
+            options={[
+              { name: "A2", value: "a2" },
+              { name: "Alexander", value: "alexander" },
+              { name: "B1", value: "b1" },
+              { name: "Jones", value: "jones" },
+              { name: "Khovanov", value: "khovanov" },
+              { name: "KhovanovT1", value: "khovanov-t1" },
+            ]}
+            value={bmCmpType}
+            onChange={(e) => setBmCmpType((e.target as HTMLInputElement).value)}
+          />
+        </div>
       </div>
-      <div>
-        <Switch
-          checked={lassoEnabled}
-          onChange={(e) => setLassoEnabled(e.target.checked)}
-        />
-        Lasso
+      <div style={{ marginBottom: "1em" }}>
+        <Typography variant="body1">
+          Toggle lasso selection on the first ballmapper. For your convenience,
+          holding [Ctrl] or [Shift] keys will temporarily switch between pan and
+          lasso mode.
+        </Typography>
+        <div>
+          <Switch
+            checked={lassoEnabled}
+            onChange={(e) => setLassoEnabled(e.target.checked)}
+          />
+          Lasso
+        </div>
       </div>
+      <Typography variant="body1">
+        <i>Interactive</i> plot: zoom, pan and select!
+      </Typography>
+      <ul style={{ margin: "0" }}>
+        <li>Size of nodes (barely) indicates how many knots inside.</li>
+        <li>
+          Color of nodes indicate percentage of knots selected. Nodes are
+          semi-transparent so their color is not completely accurate when
+          overlapping.
+        </li>
+        <li>
+          <strong>Coming soon:</strong> quality of life features.
+        </li>
+      </ul>
       <Box
         sx={{
           // border: "1px solid black",

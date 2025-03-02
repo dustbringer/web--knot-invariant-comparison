@@ -139,8 +139,8 @@ export default function Grid({
   grid,
   shapes = [],
   zmax = 500,
-  width = 1000,
-  height = 1000,
+  width = 800,
+  height = 800,
 }: {
   grid: Array<Array<number>>;
   shapes: Partial<Shape>[];
@@ -168,7 +168,6 @@ export default function Grid({
           dragmode: "pan",
           width: width,
           height: height,
-          title: "Roots",
           shapes: shapes,
         }}
       />
