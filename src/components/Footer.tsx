@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import { styled } from "@mui/material/styles";
@@ -75,28 +75,11 @@ function Footer() {
         <StyledToolbar variant="dense">
           <StyledContainer maxWidth="md">
             <DivRowSpaceBetween>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#717171",
-                  fontSize: "0.75rem",
-                }}
-              >
-                Copyright &copy; {`${currYear} `}
-                <Link
-                  href="https://github.com/dustbringer"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  underline="hover"
-                  sx={{ fontWeight: "bold", color: "#717171" }}
-                >
-                  dustbringer
-                </Link>
-              </Typography>
+              <Typography> </Typography>
               <SocialIcons>
                 <IconButton
                   Icon={GitHubIcon}
-                  href="https://github.com/dustbringer"
+                  href="https://github.com/dustbringer/web--knot-invariant-comparison"
                   // size="large"
                 />
               </SocialIcons>
