@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { v4 as uuidv4 } from "uuid";
 
 type NodeDatum = {
   id: number;
@@ -34,10 +35,12 @@ export default function createGraphSVG({
   setSelected: (selected: { [n: number]: boolean }) => void;
   disableLasso?: boolean;
 }) {
+  const container = d3.create("div");
+
   const nodeStroke = 1;
   const nodeRadiusMax = 12;
   const nodeRadiusMin = 4;
-  const lineStroke = 2;
+  const lineStroke = 2.5;
 
   // These get overwritten, so create a copy
   const nodes = inputNodes.map((d) => ({ ...d }));
@@ -59,12 +62,15 @@ export default function createGraphSVG({
   // const y = d3.scaleLinear().domain([0, height]).range([0, height]);
 
   const vb = viewboxSetup(height, width);
-  const svg = d3
-    .create("svg")
+  const svg = container
+    .append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox", vb)
-    .attr("style", "max-width: 100%; height: auto; border: 1px solid black");
+    .attr(
+      "style",
+      "max-width: 100%; height: auto; border: 1px solid #333; display: block"
+    );
 
   const simulation = d3
     .forceSimulation(nodes)
@@ -200,10 +206,9 @@ export default function createGraphSVG({
       }
     });
     console.log(`select: ${Object.keys(selectedDots).map(Number)}`);
-    Object.keys(selectedDots).length > 0 &&
-      node.attr("fill", (d: NodeDatum) =>
-        selectedDots[d.id] ? rgbToText(colors[1]) : rgbToText(colors[0])
-      );
+    node.attr("fill", (d: NodeDatum) =>
+      selectedDots[d.id] ? rgbToText(colors[1]) : rgbToText(colors[0])
+    );
 
     d3.select("#lasso").remove();
     setSelected(selectedDots);
@@ -237,6 +242,12 @@ export default function createGraphSVG({
       .attr(
         "cy",
         (d: NodeDatum) => y(d.y || 0) + event.transform.applyY(y(d.y || 0))
+      )
+      .attr(
+        "r",
+        (d: NodeDatum) =>
+          Math.sqrt(event.transform.k * 0.25) *
+          ((nodeRadiusMax * (d.size || 1)) / maxNodeSize + nodeRadiusMin)
       );
     nodesRelative = nodes.map((d: NodeDatum) => ({
       ...d,
@@ -282,5 +293,35 @@ export default function createGraphSVG({
     })
     .on("zoom", zoomed);
   svg.call(zoom).call(zoom.transform, d3.zoomIdentity.scale(3)); // set initial scale
-  return { svg, node, link, drag, zoom };
+
+  // Tooltip
+  // (based off https://d3-graph-gallery.com/graph/interactivity_tooltip.html and https://observablehq.com/@clhenrick/tooltip-d3-convention)
+  const tooltip = container
+    .append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px");
+
+  const mouseOver = (e: MouseEvent, d: NodeDatum) => {
+    // console.log(e, d);
+    tooltip.html(`#${d.id}<br>size: ${d.size}`).style("visibility", "visible");
+  };
+  const mouseMove = (e: MouseEvent, d: NodeDatum) => {
+    tooltip
+      .style("top", e.pageY + 30 + "px")
+      .style("left", e.pageX + 30 + "px");
+  };
+  const mouseLeave = (e: MouseEvent, d: NodeDatum) => {
+    tooltip.style("visibility", "hidden");
+  };
+  node
+    .on("mouseover", mouseOver)
+    .on("mousemove", mouseMove)
+    .on("mouseleave", mouseLeave);
+
+  return { container, svg, node, link, drag, zoom, tooltip };
 }

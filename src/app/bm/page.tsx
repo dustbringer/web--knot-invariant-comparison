@@ -16,6 +16,7 @@ import * as d3 from "d3";
 
 import Container from "@/components/Container";
 import Radio from "@/components/Radio";
+import Link from "@/components/Link";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
 
@@ -27,6 +28,7 @@ type NodeDatum = {
 type LinkDatum = { value?: number } & d3.SimulationLinkDatum<NodeDatum>;
 
 type SVGData = {
+  container: d3.Selection<HTMLDivElement, undefined, null, undefined>;
   svg: d3.Selection<SVGSVGElement, undefined, null, undefined>;
   node: d3.Selection<
     d3.BaseType | SVGCircleElement,
@@ -42,6 +44,7 @@ type SVGData = {
   >;
   drag: d3.DragBehavior<SVGSVGElement, undefined, undefined>;
   zoom: d3.ZoomBehavior<SVGSVGElement, undefined>;
+  tooltip: d3.Selection<HTMLDivElement, undefined, null, undefined>;
 };
 
 function lerp(start: number, end: number, value: number) {
@@ -63,6 +66,7 @@ export default function BallmapperPage() {
   const [bmNodes, setBmNodes] = React.useState<Array<NodeDatum>>([]);
   const [bmPCBL, setBmPCBL] = React.useState<Array<Array<number>>>([]);
   const [bmMaxNodeSize, setBmMaxNodeSize] = React.useState<number>(0);
+  const [bmLoaded, setBmLoaded] = React.useState<boolean>(false);
   const [lassoEnabled, setLassoEnabled] = React.useState<boolean>(false);
   const [svgRef, setSvgRef] = React.useState<HTMLDivElement | null>(null);
   const [svgData, setSvgData] = React.useState<SVGData>();
@@ -73,10 +77,12 @@ export default function BallmapperPage() {
   const [bmCmpNodes, setBmCmpNodes] = React.useState<Array<NodeDatum>>([]);
   const [bmCmpPCBL, setBmCmpPCBL] = React.useState<Array<Array<number>>>([]);
   const [bmCmpMaxNodeSize, setBmCmpMaxNodeSize] = React.useState<number>(0);
+  const [bmCmpLoaded, setBmCmpLoaded] = React.useState<boolean>(false);
   const [svgCmpRef, setSvgCmpRef] = React.useState<HTMLDivElement | null>(null);
   const [svgCmpData, setSvgCmpData] = React.useState<SVGData>();
 
   React.useEffect(() => {
+    setBmLoaded(false);
     Promise.all([
       fetch(staticify(`/static/bm/bm-${bmType}.edge.out`)),
       fetch(staticify(`/static/bm/bm-${bmType}.pcbl.out`)),
@@ -118,6 +124,7 @@ export default function BallmapperPage() {
   }, [bmType]);
 
   React.useEffect(() => {
+    setBmCmpLoaded(false);
     Promise.all([
       fetch(staticify(`/static/bm/bm-${bmCmpType}.edge.out`)),
       fetch(staticify(`/static/bm/bm-${bmCmpType}.pcbl.out`)),
@@ -163,7 +170,7 @@ export default function BallmapperPage() {
       return;
     }
 
-    const { svg, node, link, drag, zoom } = createGraphSVG({
+    const { container, svg, node, link, drag, zoom, tooltip } = createGraphSVG({
       inputNodes: bmNodes,
       inputLinks: bmLinks,
       width: 800,
@@ -171,11 +178,15 @@ export default function BallmapperPage() {
       maxNodeSize: bmMaxNodeSize,
       setSelected,
     });
-    setSvgData({ svg, node, link, drag, zoom });
+    setSvgData({ container, svg, node, link, drag, zoom, tooltip });
 
     /******************** Draw svg ********************/
     // console.log(svg.node());
-    svgRef?.replaceChildren(svg.node() || "Ballmapper loaded with error...");
+    svgRef?.replaceChildren(
+      container.node() || "Ballmapper loaded with error..."
+    );
+
+    setBmLoaded(true);
   }, [svgRef, bmNodes, bmLinks, bmMaxNodeSize]);
 
   React.useEffect(() => {
@@ -203,7 +214,7 @@ export default function BallmapperPage() {
       return;
     }
 
-    const { svg, node, link, drag, zoom } = createGraphSVG({
+    const { container, svg, node, link, drag, zoom, tooltip } = createGraphSVG({
       inputNodes: bmCmpNodes,
       inputLinks: bmCmpLinks,
       width: 800,
@@ -212,11 +223,15 @@ export default function BallmapperPage() {
       setSelected: () => {},
       disableLasso: true,
     });
-    setSvgCmpData({ svg, node, link, drag, zoom });
+    setSvgCmpData({ container, svg, node, link, drag, zoom, tooltip });
 
     /******************** Draw svg ********************/
     // console.log(svg.node());
-    svgCmpRef?.replaceChildren(svg.node() || "Ballmapper loaded with error...");
+    svgCmpRef?.replaceChildren(
+      container.node() || "Ballmapper loaded with error..."
+    );
+
+    setBmCmpLoaded(true);
   }, [svgCmpRef, bmCmpNodes, bmCmpLinks, bmCmpMaxNodeSize]);
 
   const transferSelected = () => {
@@ -227,38 +242,44 @@ export default function BallmapperPage() {
         pcbl[n] = true;
       })
     );
-    const sizes: { [index: number]: number } = {};
+    const sizes: { [index: number]: [number, number, number] } = {};
     bmCmpNodes.forEach(
       (d) =>
-        (sizes[d.id] =
+        (sizes[d.id] = [
           bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
-          (d.size || 1))
+            (d.size || 1),
+          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length,
+          d.size || 1,
+        ])
     );
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
       .attr("fill", (d) =>
-        rgbToText(colorLerp(nodeColors[0], nodeColors[1], sizes[d.id]))
+        rgbToText(colorLerp(nodeColors[0], nodeColors[1], sizes[d.id][0]))
       );
+    svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
+      svgCmpData?.tooltip
+        .html(
+          `#${d.id}<br>size: ${sizes[d.id][1]}/${d.size} (${Math.round(
+            (10000 * sizes[d.id][0]) / 100
+          )}%)`
+        )
+        .style("visibility", "visible");
+    });
+
     console.log(sizes);
   };
 
   // Features
   // TODO: Disable the compare button when one of them is being loaded
-  // TODO: Add hover to show what each node is (with a toggle to turn it off)
-  // TODO: Add a reset button
   // TODO: Don't refetch to reuse, save all the ones we loaded to a dictionary (add this as a toggle, because some people don't have much memory)
   // TODO: Change node size when zooming or resizing (it's too small on phone)
 
   // Bugs
-  // TODO: Fix how highlighting works on the first one, also when one of them is switched
   // TODO: Lasso broken when page is resized
   return (
     <Container>
-      <div
-        style={{
-          marginBottom: "1em",
-        }}
-      >
+      <div>
         <Typography variant="body1">
           Select invariants to compare their ballmappers. <i>Input</i> has
           selectable nodes, which is compared to <i>Output</i> by pressing the
@@ -299,7 +320,26 @@ export default function BallmapperPage() {
           />
         </div>
       </div>
-      <div style={{ marginBottom: "1em" }}>
+      <Typography variant="body1">
+        <i>Interactive</i> plot: zoom, pan, hover and select!
+      </Typography>
+      <ul style={{ margin: "0", marginBottom: "1em" }}>
+        <li>Size of nodes (barely) indicates how many knots inside.</li>
+        <li>
+          Hover over nodes to see their indexing and coverage (for comparison
+          ballmapper). Color of nodes indicate percentage of knots selected.
+          Nodes are semi-transparent so their color is not completely accurate
+          when overlapping. To see which knots live inside each node, see [
+          <Link href="/static/bm/bm-a2.pcbl.out">A2</Link>,{" "}
+          <Link href="/static/bm/bm-alexander.pcbl.out">Alexander</Link>,{" "}
+          <Link href="/static/bm/bm-b1.pcbl.out">B1</Link>,{" "}
+          <Link href="/static/bm/bm-jones.pcbl.out">Jones</Link>,{" "}
+          <Link href="/static/bm/bm-khovanov.pcbl.out">Khovanov</Link>,{" "}
+          <Link href="/static/bm/bm-khovanov-t1.pcbl.out">KhovanovT1</Link>].
+        </li>
+      </ul>
+
+      <div>
         <Typography variant="body1">
           Toggle lasso selection on the first ballmapper. For your convenience,
           holding [Ctrl] or [Shift] keys will temporarily switch between pan and
@@ -313,20 +353,6 @@ export default function BallmapperPage() {
           Lasso
         </div>
       </div>
-      <Typography variant="body1">
-        <i>Interactive</i> plot: zoom, pan and select!
-      </Typography>
-      <ul style={{ margin: "0" }}>
-        <li>Size of nodes (barely) indicates how many knots inside.</li>
-        <li>
-          Color of nodes indicate percentage of knots selected. Nodes are
-          semi-transparent so their color is not completely accurate when
-          overlapping.
-        </li>
-        <li>
-          <strong>Coming soon:</strong> quality of life features.
-        </li>
-      </ul>
       <Box
         sx={{
           // border: "1px solid black",
@@ -338,7 +364,9 @@ export default function BallmapperPage() {
       </Box>
       <Button
         variant="contained"
-        sx={{ width: "100px" }}
+        disableElevation
+        disabled={!(bmLoaded && bmCmpLoaded)}
+        sx={{ width: "100px", margin: "5px auto" }}
         onClick={transferSelected}
       >
         Compare!

@@ -22,7 +22,8 @@
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028",
     "react-force-graph": "^1.45.5",
-    "react-plotly.js": "^2.6.0"
+    "react-plotly.js": "^2.6.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",
