@@ -15,8 +15,10 @@ export default function Home() {
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
         This webpage contains various interactive plots and comparison tools
-        that supplement the paper [coming soon]. Relevant knot invariant data,
-        scripts and more details on data collection are available on the{" "}
+        that supplement the paper{" "}
+        <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>. Relevant
+        knot invariant data, scripts and more details on data collection are
+        available on the{" "}
         <Link href="https://github.com/dtubbenhauer/quantumdata">
           GitHub page
         </Link>
