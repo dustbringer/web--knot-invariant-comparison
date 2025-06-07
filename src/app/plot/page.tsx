@@ -162,7 +162,7 @@ export default function PlotPage() {
             },
           }}
           sx={{ marginTop: "8px", marginBottom: "8px" }}
-          value={textSQ}
+          value={textEE}
           onChange={(e) => setTextSQ(e.target.value)}
         />
         <Button
@@ -192,7 +192,7 @@ export default function PlotPage() {
             },
           }}
           sx={{ marginTop: "8px", marginBottom: "8px" }}
-          value={textEE}
+          value={textSQ}
           onChange={(e) => setTextEE(e.target.value)}
         />
         <Button
