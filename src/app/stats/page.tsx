@@ -6,6 +6,14 @@ import { styled } from "@mui/material";
 import Switch from "@mui/material/Switch";
 import Typography from "@mui/material/Typography";
 
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+
 // import Plot from "react-plotly.js";
 // // Plotly nextjs ssr issue fix: https://github.com/plotly/react-plotly.js/issues/272
 import dynamic from "next/dynamic";
@@ -24,7 +32,8 @@ import staticify from "@/util/staticURLs";
 export default function StatsPage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
-  const [showEE, setShowEE] = React.useState<boolean>(false);
+  // const [showEE, setShowEE] = React.useState<boolean>(false);
+  const [showTable, setShowTable] = React.useState<boolean>(true);
 
   // const [dataPairs, setDataPairs] = React.useState<
   //   Array<{ x: Array<number>; name?: string }>
@@ -32,37 +41,6 @@ export default function StatsPage() {
   // const [dataUnique, setDataUnique] = React.useState<
   //   Array<{ x: Array<number>; y: Array<number>; name?: string }>
   // >([]);
-
-  const [data, setData] = React.useState<
-    Array<{ name?: string; y: Array<number> }>
-  >([]);
-  React.useEffect(() => {
-    Promise.all([
-      fetch(staticify(`/static/time/knot-a2-3-14-time-wolfram.out`)),
-      fetch(staticify(`/static/time/knot-alexander-3-14-time-wolfram.out`)),
-      fetch(staticify(`/static/time/knot-b1-3-14-time-wolfram.out`)),
-      fetch(staticify(`/static/time/knot-b1-3-14-time-js.out`)),
-      fetch(staticify(`/static/time/knot-jones-3-14-time-wolfram.out`)),
-      fetch(staticify(`/static/time/knot-khovanov-3-14-time-wolfram.out`)),
-    ])
-      .then((res) => Promise.all(res.map((r) => r.text())))
-      .then((res) => {
-        const names = [
-          "A2",
-          "Alexander",
-          "B1 (R-matrix)",
-          "B1 (Skein theory)",
-          "Jones",
-          "Khovanov",
-        ];
-        setData(
-          res.map((text, i) => ({
-            y: text.split("\n").map(Number),
-            name: names[i],
-          }))
-        );
-      });
-  }, []);
 
   // React.useEffect(() => {
   //   Promise.all([
@@ -121,13 +99,22 @@ export default function StatsPage() {
         </div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
-            Toggle successive quotients to see the corresponding plot.
+            Toggle successive quotients plot and data table.
           </Typography>
-          <Switch
-            checked={showSQ}
-            onChange={(e) => setShowSQ(e.target.checked)}
-          />
-          Successive quotients
+          <div>
+            <Switch
+              checked={showSQ}
+              onChange={(e) => setShowSQ(e.target.checked)}
+            />
+            Successive quotients
+          </div>
+          <div>
+            <Switch
+              checked={showTable}
+              onChange={(e) => setShowTable(e.target.checked)}
+            />
+            Table
+          </div>
         </div>
         {/* <div>
           <Switch
@@ -236,6 +223,61 @@ export default function StatsPage() {
             style={{ margin: "0 auto" }}
           />
         )} */}
+        {showTable && (
+          <TableContainer
+            sx={{
+              margin: "1em 0",
+              border: "1px solid lightgrey",
+              borderRadius: "5px",
+            }}
+          >
+            <Table
+              sx={{
+                minWidth: 650,
+              }}
+              size="small"
+            >
+              <TableHead>
+                <TableRow
+                  sx={{
+                    backgroundColor: "#f0f0f0",
+                  }}
+                >
+                  {["n", ...stats[plotName].columns].map((name) => (
+                    <TableCell
+                      key={name}
+                      sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
+                    >
+                      {name}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {stats[plotName].data.map((row, i) => (
+                  <TableRow
+                    key={`row${i}`}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      "&:nth-of-type(odd)": {
+                        backgroundColor: "white",
+                      },
+                      "&:nth-of-type(even)": {
+                        backgroundColor: "#f7f7f7",
+                      },
+                    }} // last element has no bottom border
+                  >
+                    {row.map((n, j) => (
+                      <TableCell key={`row${i},col${j}`}>
+                        {isNaN(n) ? "-" : n}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
 
       {/* A Box plot */}
