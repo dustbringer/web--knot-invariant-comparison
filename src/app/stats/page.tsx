@@ -96,6 +96,10 @@ export default function StatsPage() {
             value={plotName}
             onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
           />
+          <Typography variant="body1">
+            (Note: Certain computable values have data up to 18 crossings. We
+            are not 100% certain on the 18 crossing data.)
+          </Typography>
         </div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
