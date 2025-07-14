@@ -25,6 +25,7 @@ export default function StatsBoxPlotPage() {
       fetch(staticify(`/static/time/knot-b1-3-14-time-wolfram.out`)),
       fetch(staticify(`/static/time/knot-b1-3-14-time-js.out`)),
       fetch(staticify(`/static/time/knot-jones-3-14-time-wolfram.out`)),
+      fetch(staticify(`/static/time/knot-jones-3-14-time-js.out`)),
       fetch(staticify(`/static/time/knot-khovanov-3-14-time-wolfram.out`)),
     ])
       .then((res) => Promise.all(res.map((r) => r.text())))
@@ -34,7 +35,8 @@ export default function StatsBoxPlotPage() {
           "Alexander",
           "B1 (R-matrix)",
           "B1 (Skein theory)",
-          "Jones",
+          "Jones (R-matrix)",
+          "Jones (Skein theory)",
           "Khovanov",
         ];
         setData(
