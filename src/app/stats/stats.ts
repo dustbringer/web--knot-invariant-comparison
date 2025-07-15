@@ -36,8 +36,8 @@ const stats: {
       "Alexander",
       "B1 (R-matrix)",
       "B1 (Skein theory)",
-      "Jones",
-      "Jones (JS)",
+      "Jones (R-matrix)",
+      "Jones (Skein theory)",
       "Khovanov",
     ],
     data: [
