@@ -313,8 +313,8 @@ const stats: {
       [18, 40.102, 1047.6666, NaN, 581.3157, 283.2307],
     ],
   },
-  maxSpan: {
-    ylabel: "Maximum span",
+  maxSpread: {
+    ylabel: "Maximum spread",
     xlabel: "Number of crossings",
     ylogscale: false,
     legend: {
@@ -343,8 +343,8 @@ const stats: {
       [18, 59, 17, NaN, 19, 39],
     ],
   },
-  avgSpan: {
-    ylabel: "Average span",
+  avgSpread: {
+    ylabel: "Average spread",
     xlabel: "Number of crossings",
     ylogscale: false,
     legend: {
