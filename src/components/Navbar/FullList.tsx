@@ -6,7 +6,7 @@ import { styled, useTheme } from "@mui/material/styles";
 
 import { LinkBare as InternalLink } from "../Link";
 
-import { isSamePrefix } from "../../util/links";
+import { isSameLink, isSamePrefix } from "../../util/links";
 import type { Link as LinkTy } from "../../data/navLinks";
 import { removeKey } from "../../util/objects";
 
@@ -142,12 +142,12 @@ function FullList({
         <li key={link.name + link.path}>
           <NavLink
             href={link.path}
-            iscurrent={isSamePrefix(location.pathname, link.path)}
+            iscurrent={isSameLink(link.path, location.pathname)}
           >
             {link.name}
           </NavLink>
           <Underline
-            show={isSamePrefix(location.pathname, link.path)}
+            show={isSameLink(link.path, location.pathname)}
             dist={underlineDist}
           />
         </li>
