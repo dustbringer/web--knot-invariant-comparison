@@ -30,9 +30,7 @@ import stats from "./stats";
 import staticify from "@/util/staticURLs";
 
 export default function StatsPage() {
-  const [plotName, setPlotName] = React.useState<string>("unique");
-  const [showSQ, setShowSQ] = React.useState<boolean>(false);
-  // const [showEE, setShowEE] = React.useState<boolean>(false);
+  const [plotName, setPlotName] = React.useState<string>("khovanovFamily");
   const [showTable, setShowTable] = React.useState<boolean>(true);
 
   // const [dataPairs, setDataPairs] = React.useState<
@@ -89,7 +87,7 @@ export default function StatsPage() {
       <div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
-            Select interactive plots shown in [<Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>].
+            Select interactive plots shown in the paper.
           </Typography>
           <Radio
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
@@ -97,21 +95,12 @@ export default function StatsPage() {
             onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
           />
           <Typography variant="body1">
-            (Note: Certain computable invariants have data up to 18 crossings. We
+            (Note: Certain computable values have data up to 18 crossings. We
             are not 100% certain on the 18 crossing data.)
           </Typography>
         </div>
         <div style={{ marginBottom: "1em" }}>
-          <Typography variant="body1">
-            Toggle successive quotients plot and data table.
-          </Typography>
-          <div>
-            <Switch
-              checked={showSQ}
-              onChange={(e) => setShowSQ(e.target.checked)}
-            />
-            Successive quotients
-          </div>
+          <Typography variant="body1">Toggle data table.</Typography>
           <div>
             <Switch
               checked={showTable}
@@ -161,72 +150,6 @@ export default function StatsPage() {
           style={{ margin: "0 auto" }}
         />
 
-        {showSQ && (
-          <Line
-            data={stats[plotName].columns.map((name, i) => ({
-              x: stats[plotName].data
-                .slice(0, stats[plotName].data.length - 1)
-                .map((d) => d[0]),
-              y: successiveQuotients(stats[plotName].data.map((d) => d[i + 1])),
-              name: name,
-            }))}
-            width={800}
-            height={600}
-            layout={{
-              xaxis: {
-                title: "Number of crossings",
-                linecolor: "black",
-                linewidth: 2,
-              },
-              yaxis: {
-                title: "Succesive quotients",
-                linecolor: "black",
-                linewidth: 2,
-                // type: "log",
-              },
-              legend: {
-                yanchor: "top",
-                y: 0.99,
-                xanchor: "left",
-                x: 0.01,
-              },
-            }}
-            style={{ margin: "0 auto" }}
-          />
-        )}
-        {/* {showEE && (
-          <Line
-            data={stats[plotName].columns.map((name, i) => ({
-              x: stats[plotName].data
-                .slice(0, stats[plotName].data.length - 1)
-                .map((d) => d[0]),
-              y: effectiveExponents(stats[plotName].data.map((d) => d[i + 1])),
-              name: name,
-            }))}
-            width={800}
-            height={600}
-            layout={{
-              xaxis: {
-                title: "Number of crossings",
-                linecolor: "black",
-                linewidth: 2,
-              },
-              yaxis: {
-                title: "Effective exponents",
-                linecolor: "black",
-                linewidth: 2,
-                // type: "log",
-              },
-              legend: {
-                yanchor: "top",
-                y: 0.99,
-                xanchor: "left",
-                x: 0.01,
-              },
-            }}
-            style={{ margin: "0 auto" }}
-          />
-        )} */}
         {showTable && (
           <TableContainer
             sx={{
@@ -283,15 +206,6 @@ export default function StatsPage() {
           </TableContainer>
         )}
       </div>
-
-      {/* A Box plot */}
-      <Typography variant="body1">
-        See also the{" "}
-        <Link href="/stats/boxplot" inPlace>
-          computation time boxplot
-        </Link>
-        .
-      </Typography>
     </Container>
   );
 }
