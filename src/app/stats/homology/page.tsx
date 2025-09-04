@@ -152,10 +152,10 @@ export default function StatsPage() {
 
         {plotName === "homflyFamily" && (
           <Typography sx={{ color: "red" }}>
-            <strong>WARNING:</strong> HOMFLYPT homology for 12 and 13 crossings
-            is incomplete, so the data points are only for partial data. There
-            are 4+215=219 of 2176 and 249+5549=5798 of 9988 missing, for 12 and
-            13 crossings respectively.
+            <strong>WARNING:</strong> HOMFLYPT homology calculations for 12 and
+            13 crossings are incomplete. The data assumes the missing data are
+            all unique. There are 4+215=219 of 2176 and 249+5549=5798 of 9988
+            missing, for 12 and 13 crossings respectively.
           </Typography>
         )}
 
