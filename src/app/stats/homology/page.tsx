@@ -154,7 +154,7 @@ export default function StatsPage() {
           <Typography sx={{ color: "red" }}>
             <strong>WARNING:</strong> HOMFLYPT homology calculations for 12 and
             13 crossings are incomplete. The data assumes the missing data are
-            all unique. There are 4+215=219 of 2176 and 249+5549=5798 of 9988
+            all unique. There are 4+215=219 of 2176 and 250+5534=5784 of 9988
             missing, for 12 and 13 crossings respectively.
           </Typography>
         )}
