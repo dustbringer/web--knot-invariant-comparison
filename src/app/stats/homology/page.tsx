@@ -87,7 +87,12 @@ export default function StatsPage() {
       <div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
-            Select interactive plots shown in the paper.
+            Supplement to <em>On detection probabilities of link invariants</em>{" "}
+            [<Link href="https://arxiv.org/abs/2509.05574">arXiv</Link>;{" "}
+            <Link href="https://github.com/dtubbenhauer/knotdetection">
+              GitHub
+            </Link>
+            ].
           </Typography>
           <Radio
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}

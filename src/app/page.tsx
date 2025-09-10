@@ -15,15 +15,16 @@ export default function Home() {
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
         This webpage contains various interactive plots and comparison tools
-        that supplement the paper{" "}
-        <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>. Relevant
-        knot invariant data, scripts and more details on data collection are
-        available on the{" "}
-        <Link href="https://github.com/dtubbenhauer/quantumdata">
-          GitHub page
-        </Link>
-        . All data displayed on this webpage, except average runtime, considers
-        all prime knots (modulo mirrors) up to 16 crossings.
+        that supplement the papers [
+        <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>;{" "}
+        <Link href="https://github.com/dtubbenhauer/quantumdata">GitHub</Link>]
+        and [<Link href="https://arxiv.org/abs/2509.05574">arXiv</Link>;{" "}
+        <Link href="https://github.com/dtubbenhauer/knotdetection">GitHub</Link>
+        ]. Relevant knot invariant data, scripts and more details on data
+        collection are available on the corresponding GitHub pages. Most data
+        displayed on this webpage considers all prime knots (modulo mirrors) up
+        to 16 crossings. More computable invariants have data up to 18
+        crossings, while harder invariants have lower values.
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
         <strong>Notice!</strong> While the website is expected to work on

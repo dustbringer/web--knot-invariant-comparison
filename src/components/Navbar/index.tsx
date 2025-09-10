@@ -117,7 +117,7 @@ function Navbar() {
                   sx={styles.icon}
                 />*/}
                 <TitleTypography variant="h5">
-                  <code>home page</code>
+                  <code>knot inv comparison</code>
                 </TitleTypography>
               </StyledDivRowSpaceBetween>
             </MyLink>

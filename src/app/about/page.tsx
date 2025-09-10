@@ -47,8 +47,8 @@ export default function AboutPage() {
         </li>
         <li>
           <Typography component="i">Email address:</Typography>{" "}
-          <Link href="mailto:victor.zhang3@student.unsw.edu.au">
-            victor.zhang3@student.unsw.edu.au
+          <Link href="mailto:victor.l.zhang@unsw.edu.au">
+            victor.l.zhang@unsw.edu.au
           </Link>
         </li>
       </ul>

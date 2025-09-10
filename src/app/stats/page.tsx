@@ -98,8 +98,12 @@ export default function StatsPage() {
       <div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
-            Select interactive plots shown in [
-            <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>].
+            Supplement to <em>Big data comparison of quantum invariants</em> [
+            <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>;{" "}
+            <Link href="https://github.com/dtubbenhauer/quantumdata">
+              GitHub
+            </Link>
+            ].
           </Typography>
           <Radios
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
