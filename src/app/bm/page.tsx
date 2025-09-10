@@ -15,7 +15,7 @@ import Button from "@mui/material/Button";
 import * as d3 from "d3";
 
 import Container from "@/components/Container";
-import Radio from "@/components/Radio";
+import Radio from "@/components/Radios";
 import Link from "@/components/Link";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";

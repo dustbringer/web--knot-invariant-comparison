@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import Grid, { Roots as RootsPlot, shapeCircle } from "@/components/Plots/Grid";
 import Range from "@/components/Range";
 import Container from "@/components/Container";
-import Radio from "@/components/Radio";
+import Radio from "@/components/Radios";
 
 import staticify from "@/util/staticURLs";
 

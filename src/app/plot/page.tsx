@@ -17,7 +17,7 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 import Container from "@/components/Container";
 import { DivFlexCenterHJ } from "@/components/styled/Divs";
-import Radio from "@/components/Radio";
+import Radio from "@/components/Radios";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";

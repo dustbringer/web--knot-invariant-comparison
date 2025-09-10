@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { styled } from "@mui/material";
+import { Box, Button, styled } from "@mui/material";
 import Switch from "@mui/material/Switch";
 import Typography from "@mui/material/Typography";
 
@@ -21,16 +21,25 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 import Container from "@/components/Container";
 import { DivFlexCenterHJ } from "@/components/styled/Divs";
-import Radio from "@/components/Radio";
+import Radios from "@/components/Radios";
+import Checkboxes from "@/components/Checkboxes";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
 import stats from "./stats";
+import statsComb from "./statsComb";
 
 import staticify from "@/util/staticURLs";
+import { range } from "@/util/array-util";
 
 export default function StatsPage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
+  const [plotUniqueCombName, setPlotUniqueCombName] =
+    React.useState<string>("J+KT1");
+  const [uniqueCombsChecked, setUniqueCombsChecked] = React.useState<{
+    [name: string]: boolean;
+    // }>({ A2: true, A: true, B1: true, J: true, K: true });
+  }>({ J: true, KT1: true });
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
   // const [showEE, setShowEE] = React.useState<boolean>(false);
   const [showTable, setShowTable] = React.useState<boolean>(true);
@@ -85,20 +94,21 @@ export default function StatsPage() {
   // };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
-            Select interactive plots shown in [<Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>].
+            Select interactive plots shown in [
+            <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>].
           </Typography>
-          <Radio
+          <Radios
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
             value={plotName}
             onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
           />
           <Typography variant="body1">
-            (Note: Certain computable invariants have data up to 18 crossings. We
-            are not 100% certain on the 18 crossing data.)
+            (Note: Certain computable invariants have data up to 18 crossings.
+            We are not 100% certain on the 18 crossing data.)
           </Typography>
         </div>
         <div style={{ marginBottom: "1em" }}>
@@ -130,17 +140,31 @@ export default function StatsPage() {
       </div>
 
       <div>
-        <Typography variant="body1">
+        <Typography variant="body1" gutterBottom>
           <i>Interactive</i> plot: zoom, pan and toggle your desired invariants!
         </Typography>
         <Line
-          data={stats[plotName].columns.map((name, i) => ({
-            x: stats[plotName].data.map((d) => d[0]),
-            y: stats[plotName].data.map((d) => d[i + 1]),
-            name: name,
-          }))}
-          width={800}
-          height={600}
+          data={(() => {
+            const abbr = stats[plotName].abbreviate;
+            const output = stats[plotName][
+              abbr ? "columnsAbbr" : "columns" // when to abbreviate
+            ].map((name, i) => ({
+              x: stats[plotName].data.map((d) => d[0]),
+              y: stats[plotName].data.map((d) => d[i + 1]),
+              name: name,
+            }));
+            if (plotName === "unique") {
+              output.push({
+                x: statsComb(plotUniqueCombName).map((_, i) => i + 3),
+                y: statsComb(plotUniqueCombName),
+                name: plotUniqueCombName,
+              });
+            }
+            return output;
+          })()}
+          // original: width={800} height={600}
+          width={1200}
+          height={900}
           layout={{
             xaxis: {
               title: stats[plotName].xlabel,
@@ -163,7 +187,9 @@ export default function StatsPage() {
 
         {showSQ && (
           <Line
-            data={stats[plotName].columns.map((name, i) => ({
+            data={stats[plotName][
+              stats[plotName].abbreviate ? "columnsAbbr" : "columns" // when to abbreviate
+            ].map((name, i) => ({
               x: stats[plotName].data
                 .slice(0, stats[plotName].data.length - 1)
                 .map((d) => d[0]),
@@ -227,6 +253,56 @@ export default function StatsPage() {
             style={{ margin: "0 auto" }}
           />
         )} */}
+        {plotName === "unique" && (
+          <>
+            <Typography variant="body1">
+              Choose your own combination:
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Checkboxes
+                options={stats["unique"].columnsAbbr.map((k) => ({
+                  name: k,
+                  value: k,
+                }))}
+                checked={uniqueCombsChecked}
+                onChange={(name, e) =>
+                  setUniqueCombsChecked(
+                    (obj) =>
+                      ({
+                        ...obj,
+                        [name]: (e.target as HTMLInputElement).checked,
+                      } as { [name: string]: boolean })
+                  )
+                }
+              />
+              {/* TODO: A help dialogue for which combinations are cool */}
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() =>
+                  setPlotUniqueCombName(
+                    stats["unique"].columnsAbbr
+                      .filter((name) => uniqueCombsChecked[name])
+                      .join("+")
+                  )
+                }
+                disabled={
+                  Object.values(uniqueCombsChecked).filter((v) => v).length < 2
+                }
+                disableElevation
+              >
+                Change
+              </Button>
+            </Box>
+          </>
+        )}
         {showTable && (
           <TableContainer
             sx={{
@@ -247,14 +323,27 @@ export default function StatsPage() {
                     backgroundColor: "#f0f0f0",
                   }}
                 >
-                  {["n", ...stats[plotName].columns].map((name) => (
-                    <TableCell
-                      key={name}
-                      sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
-                    >
-                      {name}
-                    </TableCell>
-                  ))}
+                  {(
+                    [
+                      ["n", "n"],
+                      ...range(0, stats[plotName].columns.length).map((i) => [
+                        stats[plotName].columns[i],
+                        stats[plotName].columnsAbbr[i],
+                      ]),
+                      [plotUniqueCombName, plotUniqueCombName],
+                    ] as [string, string][]
+                  ).map((name) => {
+                    const isAbbr = stats[plotName].abbreviate;
+                    return (
+                      <TableCell
+                        key={name[0]}
+                        sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
+                        title={name[0]}
+                      >
+                        {isAbbr ? name[1] : name[0]}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -276,6 +365,13 @@ export default function StatsPage() {
                         {isNaN(n) ? "-" : n}
                       </TableCell>
                     ))}
+
+                    {/* For combs */}
+                    <TableCell key={`row${i},col;combs`}>
+                      {isNaN(statsComb(plotUniqueCombName)[i])
+                        ? "-"
+                        : statsComb(plotUniqueCombName)[i]}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
