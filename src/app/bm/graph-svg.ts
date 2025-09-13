@@ -74,24 +74,24 @@ export default function createGraphSVG({
 
   const simulation = d3
     .forceSimulation(nodes)
-    .force("charge", d3.forceManyBody().strength(-500))
+    .force("charge", d3.forceManyBody().strength(-300))
     .force(
       "link",
       d3
       .forceLink<NodeDatum, LinkDatum>(links)
       .id((d) => d.id)
-      .distance(30)
-      .strength(0.3)
-      .iterations(40)
+      .distance(40)
+      .strength(0.2)
+      .iterations(50)
     )
     // Force toward the center
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("x", d3.forceX())
-    .force("y", d3.forceY())
+    .force("x", d3.forceX(width / 2))
+    .force("y", d3.forceY(height / 2))
+    // .force("center", d3.forceCenter(width / 2, height / 2))
     .stop();
 
   // Run the simulation to its end, then draw. default 300
-  simulation.tick(100);
+  simulation.tick(50);
 
   const link = svg
     .append("g")
