@@ -17,6 +17,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028)
+      '@matejmazur/react-katex':
+        specifier: ^3.1.3
+        version: 3.1.3(katex@0.16.22)(react@19.0.0-rc-02c0e824-20241028)
       '@mui/icons-material':
         specifier: ^6.4.2
         version: 6.4.2(@mui/material@6.4.2(@emotion/react@11.14.0(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react-dom@19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028))(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028)
@@ -403,6 +406,13 @@ packages:
   '@maplibre/maplibre-gl-style-spec@20.4.0':
     resolution: {integrity: sha512-AzBy3095fTFPjDjmWpR2w6HVRAZJ6hQZUCwk5Plz6EyfnfuQW1odeW5i2Ai47Y6TBA2hQnC+azscjBSALpaWgw==}
     hasBin: true
+
+  '@matejmazur/react-katex@3.1.3':
+    resolution: {integrity: sha512-rBp7mJ9An7ktNoU653BWOYdO4FoR4YNwofHZi+vaytX/nWbIlmHVIF+X8VFOn6c3WYmrLT5FFBjKqCZ1sjR5uQ==}
+    engines: {node: '>=12', yarn: '>=1.1'}
+    peerDependencies:
+      katex: '>=0.9'
+      react: '>=16'
 
   '@mui/core-downloads-tracker@6.4.2':
     resolution: {integrity: sha512-Qmod9fHsFWrtLxdSkZ4iDLRz2AUKt3C2ZEimuY+qKlQGVKJDNS5DuSlNOAgqfHFDq8mzB17ATN6HFcThwJlvUw==}
@@ -1227,6 +1237,10 @@ packages:
   commander@7.2.0:
     resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
     engines: {node: '>= 10'}
+
+  commander@8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
 
   commander@9.2.0:
     resolution: {integrity: sha512-e2i4wANQiSXgnrBlIatyHtP1odfUp0BbV5Y5nEGbxtIrStkEOAAzCUirvLBNXHLr7kwLvJl6V+4V3XV9x7Wd9w==}
@@ -2444,6 +2458,10 @@ packages:
   kapsule@1.16.0:
     resolution: {integrity: sha512-4f/z/Luu0cEXmagCwaFyzvfZai2HKgB4CQLwmsMUA+jlUbW94HfFSX+TWZxzWoMSO6b6aR+FD2Xd5z88VYZJTw==}
     engines: {node: '>=12'}
+
+  katex@0.16.22:
+    resolution: {integrity: sha512-XCHRdUw4lf3SKBaJe4EvgqIuWwkPSo9XoeO8GjQW94Bp7TWv9hNhzZjZ+OH9yf1UmLygb7DIT5GSFQiyt16zYg==}
+    hasBin: true
 
   kdbush@3.0.0:
     resolution: {integrity: sha512-hRkd6/XW4HTsA9vjVpY9tuXJYLSlelnkTmVFu4M9/7MIYQtFcHpbugAU7UbOfjOiVSVYl2fqgBuJ32JUmRo5Ew==}
@@ -3979,6 +3997,11 @@ snapshots:
       rw: 1.3.3
       tinyqueue: 3.0.0
 
+  '@matejmazur/react-katex@3.1.3(katex@0.16.22)(react@19.0.0-rc-02c0e824-20241028)':
+    dependencies:
+      katex: 0.16.22
+      react: 19.0.0-rc-02c0e824-20241028
+
   '@mui/core-downloads-tracker@6.4.2': {}
 
   '@mui/icons-material@6.4.2(@mui/material@6.4.2(@emotion/react@11.14.0(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react-dom@19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028))(react@19.0.0-rc-02c0e824-20241028))(@types/react@18.3.12)(react@19.0.0-rc-02c0e824-20241028)':
@@ -4941,6 +4964,8 @@ snapshots:
   commander@2.20.3: {}
 
   commander@7.2.0: {}
+
+  commander@8.3.0: {}
 
   commander@9.2.0: {}
 
@@ -6401,6 +6426,10 @@ snapshots:
   kapsule@1.16.0:
     dependencies:
       lodash-es: 4.17.21
+
+  katex@0.16.22:
+    dependencies:
+      commander: 8.3.0
 
   kdbush@3.0.0: {}
 
