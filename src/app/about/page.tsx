@@ -14,6 +14,24 @@ export default function AboutPage() {
       <Typography variant="h4" gutterBottom>
         Contact Details
       </Typography>
+      <Typography variant="h6">Abel Lacabanne</Typography>
+      <ul>
+        <li>
+          <Typography component="i">Address:</Typography> Laboratoire de
+          Mathématiques Blaise Pascal (UMR 6620), Université Clermont Auvergne,
+          Campus Universitaire des Cézeaux, 3 place Vasarely, 63178 Aubière
+          Cedex, France
+        </li>
+        <li>
+          <Typography component="i">Website:</Typography>{" "}
+          <Link href="https://www.normalesup.org/~lacabanne/">www.normalesup.org/~lacabanne/</Link>
+        </li>
+        <li>
+          <Typography component="i">Email address:</Typography>{" "}
+          <Link href="mailto:abel.lacabanne@uca.fr">abel.lacabanne@uca.fr</Link>
+        </li>
+      </ul>
+
       <Typography variant="h6">Daniel Tubbenhauer</Typography>
       <ul>
         <li>
@@ -32,6 +50,25 @@ export default function AboutPage() {
           </Link>
         </li>
       </ul>
+
+      <Typography variant="h6">Pedro Vaz</Typography>
+      <ul>
+        <li>
+          <Typography component="i">Address:</Typography> Institut de Recherche en Mathématique et Physique, Université catholique de Louvain, Che-
+min du Cyclotron 2, 1348 Louvain-la-Neuve, Belgium
+        </li>
+        <li>
+          <Typography component="i">Website:</Typography>{" "}
+          <Link href="https://perso.uclouvain.be/pedro.vaz/">perso.uclouvain.be/pedro.vaz/</Link>
+        </li>
+        <li>
+          <Typography component="i">Email address:</Typography>{" "}
+          <Link href="mailto:pedro.vaz@uclouvain.be">
+            pedro.vaz@uclouvain.be
+          </Link>
+        </li>
+      </ul>
+
       <Typography variant="h6">Victor Zhang</Typography>
       <ul>
         <li>
