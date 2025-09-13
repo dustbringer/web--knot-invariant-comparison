@@ -270,8 +270,25 @@ export default function BallmapperPage() {
     console.log(sizes);
   };
 
+  const options = [
+    { name: "A2", value: "a2" },
+    { name: "Alexander", value: "alexander" },
+    { name: "B1", value: "b1" },
+    { name: "HFK2", value: "hfk2" },
+    { name: "HFK2T1", value: "hfk2-t1" },
+    { name: "HOMFLYPT", value: "homflypt-e=0.5" },
+    // { name: "HOMFLYPT", value: "homflypt-e=1" },
+    // { name: "HOMFLYPTHomology", value: "homflypt-partial-3-11-e=0.5" },
+    { name: "HOMFLYPTHomology", value: "homflypt-partial-3-11-e=1" },
+    { name: "Jones", value: "jones" },
+    { name: "Khovanov", value: "khovanov" },
+    { name: "KhovanovT1", value: "khovanov-t1" },
+    { name: "KhovanovOdd", value: "khodd" },
+    { name: "KR3", value: "kr3-3-15-e=0.5" },
+    // { name: "KR3", value: "kr3-3-15-e=1" },
+  ];
+
   // Features
-  // TODO: Disable the compare button when one of them is being loaded
   // TODO: Don't refetch to reuse, save all the ones we loaded to a dictionary (add this as a toggle, because some people don't have much memory)
   // TODO: Change node size when zooming or resizing (it's too small on phone)
 
@@ -294,27 +311,13 @@ export default function BallmapperPage() {
         >
           <Radio
             title="Input"
-            options={[
-              { name: "A2", value: "a2" },
-              { name: "Alexander", value: "alexander" },
-              { name: "B1", value: "b1" },
-              { name: "Jones", value: "jones" },
-              { name: "Khovanov", value: "khovanov" },
-              { name: "KhovanovT1", value: "khovanov-t1" },
-            ]}
+            options={options}
             value={bmType}
             onChange={(e) => setBmType((e.target as HTMLInputElement).value)}
           />
           <Radio
             title="Output"
-            options={[
-              { name: "A2", value: "a2" },
-              { name: "Alexander", value: "alexander" },
-              { name: "B1", value: "b1" },
-              { name: "Jones", value: "jones" },
-              { name: "Khovanov", value: "khovanov" },
-              { name: "KhovanovT1", value: "khovanov-t1" },
-            ]}
+            options={options}
             value={bmCmpType}
             onChange={(e) => setBmCmpType((e.target as HTMLInputElement).value)}
           />
@@ -330,12 +333,18 @@ export default function BallmapperPage() {
           ballmapper). Color of nodes indicate percentage of knots selected.
           Nodes are semi-transparent so their color is not completely accurate
           when overlapping. To see which knots live inside each node, see [
-          <Link href="/static/bm/bm-a2.pcbl.out">A2</Link>,{" "}
-          <Link href="/static/bm/bm-alexander.pcbl.out">Alexander</Link>,{" "}
-          <Link href="/static/bm/bm-b1.pcbl.out">B1</Link>,{" "}
-          <Link href="/static/bm/bm-jones.pcbl.out">Jones</Link>,{" "}
-          <Link href="/static/bm/bm-khovanov.pcbl.out">Khovanov</Link>,{" "}
-          <Link href="/static/bm/bm-khovanov-t1.pcbl.out">KhovanovT1</Link>].
+          {options.map((option, i) => (
+            <>
+              <Link
+                href={`/static/bm/bm-${option.value}.pcbl.out`}
+                key={option.value}
+              >
+                {option.name}
+              </Link>
+              {i !== options.length - 1 && ", "}
+            </>
+          ))}
+          ].
         </li>
       </ul>
 

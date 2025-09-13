@@ -74,17 +74,18 @@ export default function createGraphSVG({
 
   const simulation = d3
     .forceSimulation(nodes)
-    .force("charge", d3.forceManyBody().strength(-600))
+    .force("charge", d3.forceManyBody().strength(-500))
     .force(
       "link",
       d3
-        .forceLink<NodeDatum, LinkDatum>(links)
-        .id((d) => d.id)
-        .distance(20)
-        .strength(0.8)
-        .iterations(80)
+      .forceLink<NodeDatum, LinkDatum>(links)
+      .id((d) => d.id)
+      .distance(30)
+      .strength(0.3)
+      .iterations(40)
     )
-    // Force toward the origin (default)
+    // Force toward the center
+    .force("center", d3.forceCenter(width / 2, height / 2))
     .force("x", d3.forceX())
     .force("y", d3.forceY())
     .stop();
@@ -235,14 +236,8 @@ export default function createGraphSVG({
 
   function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, undefined>) {
     node
-      .attr(
-        "cx",
-        (d: NodeDatum) => x(d.x || 0) + event.transform.applyX(x(d.x || 0))
-      )
-      .attr(
-        "cy",
-        (d: NodeDatum) => y(d.y || 0) + event.transform.applyY(y(d.y || 0))
-      )
+      .attr("cx", (d: NodeDatum) => event.transform.applyX(x(d.x || 0)))
+      .attr("cy", (d: NodeDatum) => event.transform.applyY(y(d.y || 0)))
       .attr(
         "r",
         (d: NodeDatum) =>
@@ -251,48 +246,36 @@ export default function createGraphSVG({
       );
     nodesRelative = nodes.map((d: NodeDatum) => ({
       ...d,
-      x: x(d.x || 0) + event.transform.applyX(x(d.x || 0)),
-      y: y(d.y || 0) + event.transform.applyY(y(d.y || 0)),
+      x: event.transform.applyX(x(d.x || 0)),
+      y: event.transform.applyY(y(d.y || 0)),
     }));
 
     link
-      .attr(
-        "x1",
-        (d: LinkDatum) =>
-          x((d.source as NodeDatum).x || 0) +
-          event.transform.applyX(x((d.source as NodeDatum).x || 0))
+      .attr("x1", (d: LinkDatum) =>
+        event.transform.applyX(x((d.source as NodeDatum).x || 0))
       )
-      .attr(
-        "x2",
-        (d: LinkDatum) =>
-          x((d.target as NodeDatum).x || 0) +
-          event.transform.applyX(x((d.target as NodeDatum).x || 0))
+      .attr("x2", (d: LinkDatum) =>
+        event.transform.applyX(x((d.target as NodeDatum).x || 0))
       )
-      .attr(
-        "y1",
-        (d: LinkDatum) =>
-          y((d.source as NodeDatum).y || 0) +
-          event.transform.applyY(y((d.source as NodeDatum).y || 0))
+      .attr("y1", (d: LinkDatum) =>
+        event.transform.applyY(y((d.source as NodeDatum).y || 0))
       )
-      .attr(
-        "y2",
-        (d: LinkDatum) =>
-          y((d.target as NodeDatum).y || 0) +
-          event.transform.applyY(y((d.target as NodeDatum).y || 0))
+      .attr("y2", (d: LinkDatum) =>
+        event.transform.applyY(y((d.target as NodeDatum).y || 0))
       );
   }
   const zoom = d3
     .zoom<SVGSVGElement, undefined>()
     .extent([
       [0, 0],
-      [100, 100],
+      [width, height],
     ])
-    .scaleExtent([1, 500])
+    .scaleExtent([0.5, 500])
     .filter((e) => {
       return !e.button || e.type === "wheel";
     })
     .on("zoom", zoomed);
-  svg.call(zoom).call(zoom.transform, d3.zoomIdentity.scale(3)); // set initial scale
+  svg.call(zoom.transform, d3.zoomIdentity.scale(3)).call(zoom); // set initial scale
 
   // Tooltip
   // (based off https://d3-graph-gallery.com/graph/interactivity_tooltip.html and https://observablehq.com/@clhenrick/tooltip-d3-convention)
