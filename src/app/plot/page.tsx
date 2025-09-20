@@ -163,13 +163,13 @@ export default function PlotPage() {
           }}
           sx={{ marginTop: "8px", marginBottom: "8px" }}
           value={textEE}
-          onChange={(e) => setTextSQ(e.target.value)}
+          onChange={(e) => setTextEE(e.target.value)}
         />
         <Button
           variant="contained"
           disableElevation
           sx={{ margin: "5px 0" }}
-          onClick={(e) => setTextSQ(text)}
+          onClick={(e) => setTextEE(text)}
         >
           Copy from Line
         </Button>
@@ -193,13 +193,13 @@ export default function PlotPage() {
           }}
           sx={{ marginTop: "8px", marginBottom: "8px" }}
           value={textSQ}
-          onChange={(e) => setTextEE(e.target.value)}
+          onChange={(e) => setTextSQ(e.target.value)}
         />
         <Button
           variant="contained"
           disableElevation
           sx={{ margin: "5px 0" }}
-          onClick={(e) => setTextEE(text)}
+          onClick={(e) => setTextSQ(text)}
         >
           Copy from Line
         </Button>

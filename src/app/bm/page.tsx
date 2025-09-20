@@ -326,18 +326,21 @@ export default function BallmapperPage() {
         </div>
         <Typography variant="body1">
           <em>Note:</em>
-          <ul style={{ margin: "0", marginBottom: "1em" }}>
-            <li>
-              Everything is for knots up to 16 crossings; except
-              HOMFLYPTHomology (3-11 crossings) and KR3 (3-15) crossings.
-            </li>
-            <li>
-              Everything is normalised with ballmapper <TeX>\epsilon = 0.5</TeX>; except
-              for A2 and HOMFLYPTHomology with <TeX>\epsilon = 1</TeX>.
-            </li>
-            <li>HOMFLYPTHomology was calculated over knots in a different order, so do not expect comparisons to work with it.</li>
-          </ul>
         </Typography>
+        <ul style={{ margin: "0", marginBottom: "1em" }}>
+          <li>
+            Everything is for knots up to 16 crossings; except HOMFLYPTHomology
+            (3-11 crossings) and KR3 (3-15) crossings.
+          </li>
+          <li>
+            Everything is normalised with ballmapper <TeX>\epsilon = 0.5</TeX>;
+            except for A2 and HOMFLYPTHomology with <TeX>\epsilon = 1</TeX>.
+          </li>
+          <li>
+            HOMFLYPTHomology was calculated over knots in a different order, so
+            do not expect comparisons to work with it.
+          </li>
+        </ul>
       </div>
       <Typography variant="body1">
         <i>Interactive</i> plot: zoom, pan, hover and select!
