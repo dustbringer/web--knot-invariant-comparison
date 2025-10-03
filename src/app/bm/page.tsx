@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 // const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Switch from "@mui/material/Switch";
 import Button from "@mui/material/Button";
@@ -89,6 +90,7 @@ export default function BallmapperPage() {
   const [checkedHighlight, setCheckedHighlight] = React.useState<{
     [s: string]: boolean;
   }>({});
+  const [knotsText, setKnotsText] = React.useState<string>("");
   const [types, setTypes] = React.useState<Array<string> | null>(null);
 
   React.useEffect(() => {
@@ -286,29 +288,9 @@ export default function BallmapperPage() {
     console.log(sizes);
   };
 
-  const highlight = async () => {
+  const highlight = async (ps: Array<number>) => {
     const pcbl: { [index: number]: boolean } = {};
-    let newTypes: Array<string> = types || [];
-    if (types === null) {
-      // Fill types if it is empty
-      newTypes = (
-        await fetch(staticify(`/static/bm/types-3-16.out`)).then((res) =>
-          res.text()
-        )
-      )
-        .trim()
-        .split("\n");
-      setTypes(newTypes);
-    }
-
-    const checked = ["a", "n", "t", "s", "h"].filter(
-      (c) => checkedHighlight[c]
-    );
-    newTypes?.forEach((t, i) => {
-      if (checked.every((c) => t.includes(c))) {
-        pcbl[i] = true;
-      }
-    });
+    ps.forEach((n) => (pcbl[n] = true));
 
     const sizes: { [index: number]: [number, number, number] } = {};
     bmCmpNodes.forEach(
@@ -353,6 +335,40 @@ export default function BallmapperPage() {
     });
 
     console.log(sizes);
+  };
+
+  const highlightType = async () => {
+    let newTypes: Array<string> = types || [];
+    if (types === null) {
+      // Fill types if it is empty
+      newTypes = (
+        await fetch(staticify(`/static/bm/types-3-16.out`)).then((res) =>
+          res.text()
+        )
+      )
+        .trim()
+        .split("\n");
+      setTypes(newTypes);
+    }
+
+    const checked = ["a", "n", "t", "s", "h"].filter(
+      (c) => checkedHighlight[c]
+    );
+    const output: Array<number> = [];
+    newTypes?.forEach((t, i) => {
+      if (checked.every((c) => t.includes(c))) {
+        output.push(i);
+      }
+    });
+    highlight(output);
+  };
+
+  const highlightSpecific = async () => {
+    const idxs = knotsText
+      .split(",")
+      .map((s) => Number(s))
+      .filter((n) => !isNaN(n));
+    highlight(idxs);
   };
 
   const options = [
@@ -530,8 +546,29 @@ export default function BallmapperPage() {
             )
           }
         />
-        <Button variant="contained" size="small" onClick={highlight}>
+        <Button variant="contained" size="small" onClick={highlightType}>
           Intersect
+        </Button>
+      </Box>
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <TextField
+          label="knots"
+          variant="outlined"
+          size="small"
+          value={knotsText}
+          onChange={(e) => {
+            setKnotsText(e.target.value);
+          }}
+        />
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={highlightSpecific}
+        >
+          Highlight
         </Button>
       </Box>
       <Box
