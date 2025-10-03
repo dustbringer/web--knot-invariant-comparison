@@ -21,6 +21,7 @@ import Radio from "@/components/Radios";
 import Link from "@/components/Link";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
+import Checkboxes from "@/components/Checkboxes";
 
 type NodeDatum = {
   id: number;
@@ -82,6 +83,13 @@ export default function BallmapperPage() {
   const [bmCmpLoaded, setBmCmpLoaded] = React.useState<boolean>(false);
   const [svgCmpRef, setSvgCmpRef] = React.useState<HTMLDivElement | null>(null);
   const [svgCmpData, setSvgCmpData] = React.useState<SVGData>();
+
+  const [useSolidHighlight, setUseSolidHighlight] =
+    React.useState<boolean>(false);
+  const [checkedHighlight, setCheckedHighlight] = React.useState<{
+    [s: string]: boolean;
+  }>({});
+  const [types, setTypes] = React.useState<Array<string> | null>(null);
 
   React.useEffect(() => {
     setBmLoaded(false);
@@ -257,8 +265,83 @@ export default function BallmapperPage() {
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
       .attr("fill", (d) =>
-        rgbToText(colorLerp(nodeColors[0], nodeColors[1], sizes[d.id][0]))
+        rgbToText(
+          colorLerp(
+            nodeColors[0],
+            nodeColors[1],
+            useSolidHighlight ? (sizes[d.id][0] > 0 ? 1 : 0) : sizes[d.id][0]
+          )
+        )
       );
+    svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
+      svgCmpData?.tooltip
+        .html(
+          `#${d.id}<br>size: ${sizes[d.id][1]}/${d.size} (${Math.round(
+            (10000 * sizes[d.id][0]) / 100
+          )}%)`
+        )
+        .style("visibility", "visible");
+    });
+
+    console.log(sizes);
+  };
+
+  const highlight = async () => {
+    const pcbl: { [index: number]: boolean } = {};
+    let newTypes: Array<string> = types || [];
+    if (types === null) {
+      // Fill types if it is empty
+      newTypes = (
+        await fetch(staticify(`/static/bm/types-3-16.out`)).then((res) =>
+          res.text()
+        )
+      )
+        .trim()
+        .split("\n");
+      setTypes(newTypes);
+    }
+
+    const checked = ["a", "n", "t", "s", "h"].filter(
+      (c) => checkedHighlight[c]
+    );
+    newTypes?.forEach((t, i) => {
+      if (checked.every((c) => t.includes(c))) {
+        pcbl[i] = true;
+      }
+    });
+
+    const sizes: { [index: number]: [number, number, number] } = {};
+    bmCmpNodes.forEach(
+      (d) =>
+        (sizes[d.id] = [
+          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
+            (d.size || 1),
+          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length,
+          d.size || 1,
+        ])
+    );
+
+    // // Highglight things
+    // svgData?.node
+    //   // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
+    //   .attr("fill", (d) =>
+    //     rgbToText(
+    //       colorLerp(nodeColors[0], nodeColors[1], sizes[d.id][0] > 0 ? 1 : 0)
+    //     )
+    //   );
+    svgCmpData?.node
+      // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
+      .attr("fill", (d) =>
+        rgbToText(
+          colorLerp(
+            nodeColors[0],
+            nodeColors[1],
+            useSolidHighlight ? (sizes[d.id][0] > 0 ? 1 : 0) : sizes[d.id][0]
+          )
+        )
+      );
+
+    // Mouseover
     svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
       svgCmpData?.tooltip
         .html(
@@ -306,7 +389,7 @@ export default function BallmapperPage() {
         </Typography>
         <div
           style={{
-            margin: "0 .5em",
+            margin: "0.5em",
             display: "flex",
             flexDirection: "column",
           }}
@@ -381,6 +464,7 @@ export default function BallmapperPage() {
           Lasso
         </div>
       </div>
+
       <Box
         sx={{
           // border: "1px solid black",
@@ -407,6 +491,57 @@ export default function BallmapperPage() {
         }}
       >
         <div ref={(node) => setSvgCmpRef(node)} />
+      </Box>
+
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Checkboxes
+          options={[
+            {
+              name: "alternating",
+              value: "a",
+            },
+            {
+              name: "non-alternating",
+              value: "n",
+            },
+            {
+              name: "torus",
+              value: "t",
+            },
+            {
+              name: "satellite",
+              value: "s",
+            },
+            {
+              name: "hyperbolic",
+              value: "h",
+            },
+          ]}
+          checked={checkedHighlight}
+          onChange={(name, e) =>
+            setCheckedHighlight(
+              (obj) =>
+                ({
+                  ...obj,
+                  [name]: (e.target as HTMLInputElement).checked,
+                } as { [name: string]: boolean })
+            )
+          }
+        />
+        <Button variant="contained" size="small" onClick={highlight}>
+          Intersect
+        </Button>
+      </Box>
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Switch
+          checked={useSolidHighlight}
+          onChange={(e) => setUseSolidHighlight(e.target.checked)}
+        />
+        Solid Highlighting
       </Box>
     </Container>
   );

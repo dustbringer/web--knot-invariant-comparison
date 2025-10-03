@@ -26,8 +26,10 @@ import Checkboxes from "@/components/Checkboxes";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
-import stats from "./stats";
-import statsComb from "./statsComb";
+import statsAll from "./stats";
+import statsA from "./stats_a";
+import statsN from "./stats_n";
+import statsAllComb from "./statsComb";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
@@ -40,39 +42,21 @@ export default function StatsPage() {
     [name: string]: boolean;
     // }>({ A2: true, A: true, B1: true, J: true, K: true });
   }>({ J: true, KT1: true });
+  const [classChecked, setClassChecked] = React.useState<string>("all");
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
   // const [showEE, setShowEE] = React.useState<boolean>(false);
   const [showTable, setShowTable] = React.useState<boolean>(true);
+  const [stats, setStats] = React.useState(statsAll);
 
-  // const [dataPairs, setDataPairs] = React.useState<
-  //   Array<{ x: Array<number>; name?: string }>
-  // >([]);
-  // const [dataUnique, setDataUnique] = React.useState<
-  //   Array<{ x: Array<number>; y: Array<number>; name?: string }>
-  // >([]);
-
-  // React.useEffect(() => {
-  //   Promise.all([
-  //     fetch(`random-pairs-a2-3-16-vect.out`),
-  //     fetch(`random-pairs-alexander-3-16-vect.out`),
-  //     // fetch(`random-pairs-b1-3-15-vect.out`),
-  //     fetch(`random-pairs-jones-3-16-vect.out`),
-  //     fetch(`random-pairs-khovanov-3-16-vect.out`),
-  //     fetch(`random-pairs-khovanov-t1-3-16-vect.out`),
-  //   ])
-  //     .then((res) => Promise.all(res.map((r) => r.text())))
-  //     .then((res) => {
-  //       const names = ["A2", "Alexander", "Jones", "Khovanov", "KhovanovT1"];
-  //       console.log("Started Pairs processing");
-  //       setDataPairs(
-  //         res.map((text, i) => ({
-  //           x: text.split("\n").map(Number),
-  //           name: names[i],
-  //         }))
-  //       );
-  //       console.log("Finished Pairs processing");
-  //     });
-  // }, []);
+  React.useEffect(() => {
+    if (classChecked === "all") {
+      setStats(statsAll);
+    } else if (classChecked === "a") {
+      setStats((stats) => ({ ...stats, unique: statsA.unique }));
+    } else if (classChecked === "n") {
+      setStats((stats) => ({ ...stats, unique: statsN.unique }));
+    }
+  }, [classChecked]);
 
   const successiveQuotients = (arr: Array<number>) => {
     const ret = [];
@@ -115,6 +99,29 @@ export default function StatsPage() {
             We are not 100% certain on the 18 crossing data.)
           </Typography>
         </div>
+        {plotName === "unique" && (
+          <div style={{ marginBottom: "1em" }}>
+            <Typography variant="body1">
+              Restrict to a class of knots
+            </Typography>
+            <div>
+              <Radios
+                options={[
+                  { name: "all", value: "all" },
+                  { name: "alternating", value: "a" },
+                  { name: "non-alternating", value: "n" },
+                  // { name: "torus", value: "t" },
+                  // { name: "satellite", value: "s" }, // there are some invariants that can't distinguish all of these
+                  // { name: "hyperbolic", value: "h" },
+                ]}
+                value={classChecked}
+                onChange={(e) =>
+                  setClassChecked((e.target as HTMLInputElement).value)
+                }
+              />
+            </div>
+          </div>
+        )}
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
             Toggle successive quotients plot and data table.
@@ -157,10 +164,14 @@ export default function StatsPage() {
               y: stats[plotName].data.map((d) => d[i + 1]),
               name: name,
             }));
-            if (plotName === "unique") {
+
+            {
+              /* TODO: Add more for other classChecked */
+            }
+            if (plotName === "unique" && classChecked === "all") {
               output.push({
-                x: statsComb(plotUniqueCombName).map((_, i) => i + 3),
-                y: statsComb(plotUniqueCombName),
+                x: statsAllComb(plotUniqueCombName).map((_, i) => i + 3),
+                y: statsAllComb(plotUniqueCombName),
                 name: plotUniqueCombName,
               });
             }
@@ -257,7 +268,9 @@ export default function StatsPage() {
             style={{ margin: "0 auto" }}
           />
         )} */}
-        {plotName === "unique" && (
+
+        {/* TODO: Add more for other classChecked */}
+        {plotName === "unique" && classChecked === "all" && (
           <>
             <Typography variant="body1">
               Choose your own combination:
@@ -334,7 +347,11 @@ export default function StatsPage() {
                         stats[plotName].columns[i],
                         stats[plotName].columnsAbbr[i],
                       ]),
-                      [plotUniqueCombName, plotUniqueCombName],
+
+                      /* TODO: Add more for other classChecked */
+                      ...(plotName === "unique" && classChecked === "all"
+                        ? [[plotUniqueCombName, plotUniqueCombName]]
+                        : []),
                     ] as [string, string][]
                   ).map((name) => {
                     const isAbbr = stats[plotName].abbreviate;
@@ -370,12 +387,15 @@ export default function StatsPage() {
                       </TableCell>
                     ))}
 
+                    {/* TODO: Add more for other classChecked */}
                     {/* For combs */}
-                    <TableCell key={`row${i},col;combs`}>
-                      {isNaN(statsComb(plotUniqueCombName)[i])
-                        ? "-"
-                        : statsComb(plotUniqueCombName)[i]}
-                    </TableCell>
+                    {plotName === "unique" && classChecked === "all" && (
+                      <TableCell key={`row${i},col;combs`}>
+                        {isNaN(statsAllComb(plotUniqueCombName)[i])
+                          ? "-"
+                          : statsAllComb(plotUniqueCombName)[i]}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
