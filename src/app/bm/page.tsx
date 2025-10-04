@@ -366,7 +366,7 @@ export default function BallmapperPage() {
   const highlightSpecific = async () => {
     const idxs = knotsText
       .split(",")
-      .map((s) => Number(s))
+      .map((s) => Number(s) + 1)
       .filter((n) => !isNaN(n));
     highlight(idxs);
   };
