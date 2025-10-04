@@ -437,7 +437,7 @@ export default function BallmapperPage() {
           </li>
           <li>
             HOMFLYPTHomology was calculated over knots in a different order, so
-            do not expect comparisons to work with it.
+            do not expect comparisons or highlighting to be correct.
           </li>
         </ul>
       </div>
@@ -546,7 +546,12 @@ export default function BallmapperPage() {
             )
           }
         />
-        <Button variant="contained" size="small" onClick={highlightType}>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={highlightType}
+          disableElevation
+        >
           Intersect
         </Button>
       </Box>
@@ -561,12 +566,18 @@ export default function BallmapperPage() {
           onChange={(e) => {
             setKnotsText(e.target.value);
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              highlightSpecific();
+            }
+          }}
         />
         <Button
           sx={{ margin: "0 5px" }}
           variant="contained"
           size="small"
           onClick={highlightSpecific}
+          disableElevation
         >
           Highlight
         </Button>
