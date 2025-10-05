@@ -290,7 +290,7 @@ export default function BallmapperPage() {
 
   const highlight = async (ps: Array<number>) => {
     const pcbl: { [index: number]: boolean } = {};
-    ps.forEach((n) => (pcbl[n] = true));
+    ps.forEach((n) => (pcbl[n + 1] = true));
 
     const sizes: { [index: number]: [number, number, number] } = {};
     bmCmpNodes.forEach(
@@ -366,7 +366,7 @@ export default function BallmapperPage() {
   const highlightSpecific = async () => {
     const idxs = knotsText
       .split(",")
-      .map((s) => Number(s) + 1)
+      .map((s) => Number(s))
       .filter((n) => !isNaN(n));
     highlight(idxs);
   };
