@@ -27,7 +27,7 @@ export default function Home() {
         crossings, while harder invariants have lower values.
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
-        A online calculator for the Jones polynomial is{" "}
+        An online calculator for the Jones polynomial is{" "}
         <Link href="/calc/jones" inPlace>
           here
         </Link>

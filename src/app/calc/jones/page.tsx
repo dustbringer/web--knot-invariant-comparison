@@ -133,7 +133,10 @@ export default function JonesCalcPage() {
           <TeX>{polyToString(poly)}</TeX>
         </Typography>
 
-        <Typography variant="body2" sx={{ fontFamily: "Roboto Mono" }}>
+        <Typography
+          variant="body2"
+          sx={{ fontFamily: "Roboto Mono", overflowWrap: "break-word" }}
+        >
           {JSON.stringify(poly)}
         </Typography>
       </div>
