@@ -179,7 +179,7 @@ export function kauffmanBracket(kIn: Knot): PolyBase {
     // outputKnots = outputKnotsTemp;
 
     // Using json stringify as a "same" measure
-    let outputKnotsTemp: { [hash: string]: [Poly[], Knot] } = {};
+    const outputKnotsTemp: { [hash: string]: [Poly[], Knot] } = {};
     for (let i = 0; i < outputKnots.length; i++) {
       const sortedKnot = sortKnot(outputKnots[i][1]);
       const hash = JSON.stringify(sortKnot(outputKnots[i][1]));
