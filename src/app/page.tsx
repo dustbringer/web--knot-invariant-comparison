@@ -27,6 +27,13 @@ export default function Home() {
         crossings, while harder invariants have lower values.
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
+        A online calculator for the Jones polynomial is{" "}
+        <Link href="/calc/jones" inPlace>
+          here
+        </Link>
+        .
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
         <strong>Notice!</strong> While the website is expected to work on
         phones, less care has been put into polishing the mobile experience.
       </Typography>

@@ -29,6 +29,9 @@ importers:
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
       d3:
         specifier: ^7.9.0
         version: 7.9.0
@@ -53,6 +56,9 @@ importers:
       react-plotly.js:
         specifier: ^2.6.0
         version: 2.6.0(plotly.js@2.35.3(mapbox-gl@1.13.3)(webpack@5.97.1))(react@19.0.0-rc-02c0e824-20241028)
+      typebox:
+        specifier: ^1.0.31
+        version: 1.0.31
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -3442,6 +3448,9 @@ packages:
 
   type@2.7.3:
     resolution: {integrity: sha512-8j+1QmAbPvLZow5Qpi6NCaN8FB60p/6x8/vfNqOk/hC+HuvFZhL4+WfekuhQLiqFZXOgQdrs3B+XxEmCc6b3FQ==}
+
+  typebox@1.0.31:
+    resolution: {integrity: sha512-1oyHHk5/+KDTN1I3neMbbQRofgMtC3H5yETFl7a9YcoOnUi59vBQYdD3lfMEvQ5KDs2iVz9lhGmCICRNU7jrbg==}
 
   typed-array-buffer@1.0.2:
     resolution: {integrity: sha512-gEymJYKZtKXzzBzM4jqa9w6Q1Jjm7x2d+sh19AdsD4wqnMPDYyvwpsIc2Q/835kHuo3BEQ7CjelGhfTsoBb2MQ==}
@@ -7599,6 +7608,8 @@ snapshots:
   type-fest@0.20.2: {}
 
   type@2.7.3: {}
+
+  typebox@1.0.31: {}
 
   typed-array-buffer@1.0.2:
     dependencies:
