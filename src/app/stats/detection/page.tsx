@@ -27,16 +27,36 @@ import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
 import statsAll from "./stats";
+import statsA from "./stats_a";
+import statsN from "./stats_n";
+import statsAllComb from "./statsComb";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
 
-export default function StatsPage() {
-  const [plotName, setPlotName] = React.useState<string>("avgtime");
+export default function DetectionPage() {
+  const [plotName, setPlotName] = React.useState<string>("unique");
+  const [plotUniqueCombName, setPlotUniqueCombName] =
+    React.useState<string>("J+KT1");
+  const [uniqueCombsChecked, setUniqueCombsChecked] = React.useState<{
+    [name: string]: boolean;
+    // }>({ A2: true, A: true, B1: true, J: true, K: true });
+  }>({ J: true, KT1: true });
+  const [classChecked, setClassChecked] = React.useState<string>("all");
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
   // const [showEE, setShowEE] = React.useState<boolean>(false);
   const [showTable, setShowTable] = React.useState<boolean>(true);
   const [stats, setStats] = React.useState(statsAll);
+
+  React.useEffect(() => {
+    if (classChecked === "all") {
+      setStats(statsAll);
+    } else if (classChecked === "a") {
+      setStats((stats) => ({ ...stats, unique: statsA.unique }));
+    } else if (classChecked === "n") {
+      setStats((stats) => ({ ...stats, unique: statsN.unique }));
+    }
+  }, [classChecked]);
 
   const successiveQuotients = (arr: Array<number>) => {
     const ret = [];
@@ -67,9 +87,9 @@ export default function StatsPage() {
             <Link href="https://github.com/dtubbenhauer/quantumdata">
               GitHub
             </Link>
-            ]. For detection data of the polynomials, see{" "}
-            <Link href="/stats/detection" inPlace>
-              Detection
+            ]. For statistics of the polynomials, see{" "}
+            <Link href="/stats" inPlace>
+              Stats
             </Link>
             .
           </Typography>
@@ -83,6 +103,29 @@ export default function StatsPage() {
             We are not 100% certain on the 18 crossing data.)
           </Typography>
         </div>
+        {plotName === "unique" && (
+          <div style={{ marginBottom: "1em" }}>
+            <Typography variant="body1">
+              Restrict to a class of knots
+            </Typography>
+            <div>
+              <Radios
+                options={[
+                  { name: "all", value: "all" },
+                  { name: "alternating", value: "a" },
+                  { name: "non-alternating", value: "n" },
+                  // { name: "torus", value: "t" },
+                  // { name: "satellite", value: "s" }, // there are some invariants that can't distinguish all of these
+                  // { name: "hyperbolic", value: "h" },
+                ]}
+                value={classChecked}
+                onChange={(e) =>
+                  setClassChecked((e.target as HTMLInputElement).value)
+                }
+              />
+            </div>
+          </div>
+        )}
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
             Toggle successive quotients plot and data table.
@@ -126,6 +169,16 @@ export default function StatsPage() {
               name: name,
             }));
 
+            {
+              /* TODO: Add more for other classChecked */
+            }
+            if (plotName === "unique" && classChecked === "all") {
+              output.push({
+                x: statsAllComb(plotUniqueCombName).map((_, i) => i + 3),
+                y: statsAllComb(plotUniqueCombName),
+                name: plotUniqueCombName,
+              });
+            }
             return output;
           })()}
           // original: width={800} height={600}
@@ -220,6 +273,57 @@ export default function StatsPage() {
           />
         )} */}
 
+        {/* TODO: Add more for other classChecked */}
+        {plotName === "unique" && classChecked === "all" && (
+          <>
+            <Typography variant="body1">
+              Choose your own combination:
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Checkboxes
+                options={stats["unique"].columnsAbbr.map((k) => ({
+                  name: k,
+                  value: k,
+                }))}
+                checked={uniqueCombsChecked}
+                onChange={(name, e) =>
+                  setUniqueCombsChecked(
+                    (obj) =>
+                      ({
+                        ...obj,
+                        [name]: (e.target as HTMLInputElement).checked,
+                      } as { [name: string]: boolean })
+                  )
+                }
+              />
+              {/* TODO: A help dialogue for which combinations are cool */}
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() =>
+                  setPlotUniqueCombName(
+                    stats["unique"].columnsAbbr
+                      .filter((name) => uniqueCombsChecked[name])
+                      .join("+")
+                  )
+                }
+                disabled={
+                  Object.values(uniqueCombsChecked).filter((v) => v).length < 2
+                }
+                disableElevation
+              >
+                Change
+              </Button>
+            </Box>
+          </>
+        )}
         {showTable && (
           <TableContainer
             sx={{
@@ -247,6 +351,11 @@ export default function StatsPage() {
                         stats[plotName].columns[i],
                         stats[plotName].columnsAbbr[i],
                       ]),
+
+                      /* TODO: Add more for other classChecked */
+                      ...(plotName === "unique" && classChecked === "all"
+                        ? [[plotUniqueCombName, plotUniqueCombName]]
+                        : []),
                     ] as [string, string][]
                   ).map((name) => {
                     const isAbbr = stats[plotName].abbreviate;
@@ -281,6 +390,16 @@ export default function StatsPage() {
                         {isNaN(n) ? "-" : n}
                       </TableCell>
                     ))}
+
+                    {/* TODO: Add more for other classChecked */}
+                    {/* For combs */}
+                    {plotName === "unique" && classChecked === "all" && (
+                      <TableCell key={`row${i},col;combs`}>
+                        {isNaN(statsAllComb(plotUniqueCombName)[i])
+                          ? "-"
+                          : statsAllComb(plotUniqueCombName)[i]}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -288,15 +407,6 @@ export default function StatsPage() {
           </TableContainer>
         )}
       </div>
-
-      {/* A Box plot */}
-      <Typography variant="body1">
-        See also the{" "}
-        <Link href="/stats/boxplot" inPlace>
-          computation time boxplot
-        </Link>
-        .
-      </Typography>
     </Container>
   );
 }

@@ -24,7 +24,7 @@ import DropdownList from "./DropdownList";
 
 import navLinks from "../../data/navLinks";
 
-const RESPONSIVE_WIDTH = "755px";
+const RESPONSIVE_WIDTH = "855px";
 
 // const styles = {
 //   icon: {
@@ -107,7 +107,7 @@ function Navbar() {
     <div>
       <AppBar position="static" color="transparent" elevation={0}>
         <StyledToolbar variant="dense">
-          <StyledContainer maxWidth="md">
+          <StyledContainer maxWidth="lg">
             <MyLink href="/" inPlace>
               <StyledDivRowSpaceBetween>
                 {/* Icon */}

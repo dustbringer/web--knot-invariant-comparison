@@ -29,9 +29,10 @@ import stats from "./stats";
 
 import staticify from "@/util/staticURLs";
 
-export default function HomologyPage() {
-  const [plotName, setPlotName] = React.useState<string>("khovanovFamily");
+export default function ModPPage() {
+  const [plotName, setPlotName] = React.useState<string>("count");
   const [showTable, setShowTable] = React.useState<boolean>(true);
+  const [showSQ, setShowSQ] = React.useState<boolean>(false);
 
   const successiveQuotients = (arr: Array<number>) => {
     const ret = [];
@@ -56,26 +57,34 @@ export default function HomologyPage() {
     <Container maxWidth="md">
       <div>
         <div style={{ marginBottom: "1em" }}>
-          <Typography variant="body1">
+          {/* <Typography variant="body1">
             Supplement to <em>On detection probabilities of link invariants</em>{" "}
             [<Link href="https://arxiv.org/abs/2509.05574">arXiv</Link>;{" "}
             <Link href="https://github.com/dtubbenhauer/knotdetection">
               GitHub
             </Link>
             ].
+          </Typography> */}
+          <Typography variant="body1">
+            Data for Jones polynomial with coefficients reduced mod p.
           </Typography>
           <Radio
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
             value={plotName}
             onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
           />
-          <Typography variant="body1">
-            (Note: Certain computable values have data up to 18 crossings. We
-            are not 100% certain on the 18 crossing data.)
-          </Typography>
         </div>
         <div style={{ marginBottom: "1em" }}>
-          <Typography variant="body1">Toggle data table.</Typography>
+          <Typography variant="body1">
+            Toggle successive quotients plot and data table.
+          </Typography>
+          <div>
+            <Switch
+              checked={showSQ}
+              onChange={(e) => setShowSQ(e.target.checked)}
+            />
+            Successive quotients
+          </div>
           <div>
             <Switch
               checked={showTable}
@@ -95,7 +104,7 @@ export default function HomologyPage() {
 
       <div>
         <Typography variant="body1">
-          <i>Interactive</i> plot: zoom, pan and toggle your desired invariants!
+          <i>Interactive</i> plot: zoom, pan and toggle your desired options!
         </Typography>
         <Line
           data={stats[plotName].columns.map((name, i) => ({
@@ -125,13 +134,38 @@ export default function HomologyPage() {
           style={{ margin: "0 auto" }}
         />
 
-        {plotName === "homflyFamily" && (
-          <Typography sx={{ color: "red" }}>
-            <strong>WARNING:</strong> HOMFLYPT homology calculations for 12 and
-            13 crossings are incomplete. The data assumes the missing data are
-            all unique. There are 4+215=219 of 2176 and 250+5534=5784 of 9988
-            missing, for 12 and 13 crossings respectively.
-          </Typography>
+        {showSQ && (
+          <Line
+            data={stats[plotName]["columns"].map((name, i) => ({
+              x: stats[plotName].data
+                .slice(0, stats[plotName].data.length - 1)
+                .map((d) => d[0]),
+              y: successiveQuotients(stats[plotName].data.map((d) => d[i + 1])),
+              name: name,
+            }))}
+            width={800}
+            height={600}
+            layout={{
+              xaxis: {
+                title: "Number of crossings",
+                linecolor: "black",
+                linewidth: 2,
+              },
+              yaxis: {
+                title: "Succesive quotients",
+                linecolor: "black",
+                linewidth: 2,
+                // type: "log",
+              },
+              legend: {
+                yanchor: "top",
+                y: 0.99,
+                xanchor: "left",
+                x: 0.01,
+              },
+            }}
+            style={{ margin: "0 auto" }}
+          />
         )}
 
         {showTable && (
