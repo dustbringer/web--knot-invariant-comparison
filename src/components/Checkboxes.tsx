@@ -9,6 +9,7 @@ export default function Checkboxes({
   title,
   options,
   checked,
+  disabled,
   onChange = () => {},
 }: {
   title?: string;
@@ -17,6 +18,7 @@ export default function Checkboxes({
     value: string;
   }>;
   checked: { [name: string]: boolean };
+  disabled?: { [name: string]: boolean };
   onChange?: (name: string, e: React.ChangeEvent<HTMLElement>) => void;
 }) {
   return (
@@ -29,6 +31,7 @@ export default function Checkboxes({
             key={value}
             control={
               <MUICheckbox
+                disabled={disabled ? !!disabled[value] : false}
                 checked={!!checked[value]}
                 onChange={(e) => onChange(value, e)}
               />

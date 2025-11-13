@@ -99,8 +99,8 @@ export default function HomologyPage() {
         </Typography>
         <Line
           data={stats[plotName].columns.map((name, i) => ({
-            x: stats[plotName].data.map((d) => d[0]),
-            y: stats[plotName].data.map((d) => d[i + 1]),
+            x: stats[plotName].x,
+            y: stats[plotName].ys?.[i] || [],
             name: name,
           }))}
           width={800}
@@ -165,7 +165,7 @@ export default function HomologyPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {stats[plotName].data.map((row, i) => (
+                {stats[plotName].x.map((_, i) => (
                   <TableRow
                     key={`row${i}`}
                     sx={{
@@ -178,9 +178,12 @@ export default function HomologyPage() {
                       },
                     }} // last element has no bottom border
                   >
-                    {row.map((n, j) => (
+                    <TableCell key={`row${i},col${-1}`}>
+                      {stats[plotName].x[i]}
+                    </TableCell>
+                    {stats[plotName].ys.map((y, j) => (
                       <TableCell key={`row${i},col${j}`}>
-                        {isNaN(n) ? "-" : n}
+                        {isNaN(y[i]) ? "-" : y[i]}
                       </TableCell>
                     ))}
                   </TableRow>

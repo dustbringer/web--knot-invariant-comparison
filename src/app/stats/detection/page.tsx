@@ -164,8 +164,8 @@ export default function DetectionPage() {
             const output = stats[plotName][
               abbr ? "columnsAbbr" : "columns" // when to abbreviate
             ].map((name, i) => ({
-              x: stats[plotName].data.map((d) => d[0]),
-              y: stats[plotName].data.map((d) => d[i + 1]),
+              x: stats[plotName].x,
+              y: stats[plotName].ys?.[i] || [],
               name: name,
             }));
 
@@ -209,10 +209,8 @@ export default function DetectionPage() {
             data={stats[plotName][
               stats[plotName].abbreviate ? "columnsAbbr" : "columns" // when to abbreviate
             ].map((name, i) => ({
-              x: stats[plotName].data
-                .slice(0, stats[plotName].data.length - 1)
-                .map((d) => d[0]),
-              y: successiveQuotients(stats[plotName].data.map((d) => d[i + 1])),
+              x: stats[plotName].x,
+              y: successiveQuotients(stats[plotName].ys?.[i] || []),
               name: name,
             }))}
             width={800}
@@ -293,6 +291,7 @@ export default function DetectionPage() {
                   value: k,
                 }))}
                 checked={uniqueCombsChecked}
+                disabled={{ BNvdV: true, "A+BNvdV": true }}
                 onChange={(name, e) =>
                   setUniqueCombsChecked(
                     (obj) =>
@@ -372,7 +371,7 @@ export default function DetectionPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {stats[plotName].data.map((row, i) => (
+                {stats[plotName].x.map((_, i) => (
                   <TableRow
                     key={`row${i}`}
                     sx={{
@@ -385,9 +384,12 @@ export default function DetectionPage() {
                       },
                     }} // last element has no bottom border
                   >
-                    {row.map((n, j) => (
+                    <TableCell key={`row${i},col${-1}`}>
+                      {stats[plotName].x[i]}
+                    </TableCell>
+                    {stats[plotName].ys.map((y, j) => (
                       <TableCell key={`row${i},col${j}`}>
-                        {isNaN(n) ? "-" : n}
+                        {isNaN(y[i]) ? "-" : y[i]}
                       </TableCell>
                     ))}
 

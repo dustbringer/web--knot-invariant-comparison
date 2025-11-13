@@ -9562,9 +9562,9 @@ const statsComb = (name: string): Array<number> => {
   if (name.split("+").length === 1) {
     const index = stats["unique"].columnsAbbr.indexOf(name);
     if (index < 0) {
-      return range(0, stats["unique"].data.length).map(() => NaN);
+      return range(0, stats["unique"].x.length).map(() => NaN);
     } else {
-      return stats["unique"].data.map((row) => row[index + 1]);
+      return stats["unique"].ys[index];
     }
   }
 
