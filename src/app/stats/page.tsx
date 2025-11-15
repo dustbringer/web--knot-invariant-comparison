@@ -79,8 +79,9 @@ export default function StatsPage() {
             onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
           />
           <Typography variant="body1">
-            (Note: Certain computable invariants have data up to 18 crossings.
-            We are not 100% certain on the 18 crossing data.)
+            (Note: We have high confidence in the data up to 16 crossings.
+            Beyond that point, confidence drops due to the large volume of data
+            (eg. unforeseen errors in the data or calculation).)
           </Typography>
         </div>
         <div style={{ marginBottom: "1em" }}>
