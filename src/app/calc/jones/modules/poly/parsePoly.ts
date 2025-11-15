@@ -64,7 +64,7 @@ export function parsePolyN_hfk(
 }
 
 // output of ???
-export function parsePolyN_homfly_homology(
+export function parsePolyN_homflypt_homology(
   str: string,
   vars: Array<string> = ["q", "t", "a"]
 ): PolyBaseN {

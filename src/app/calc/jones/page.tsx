@@ -65,7 +65,13 @@ export default function JonesCalcPage() {
       console.error(
         "Error in input:",
         validateInput.errors ||
-          "Every number in the knot PD must appear exactly twice"
+          `Every number in the knot PD must appear exactly twice. Invalid edges: ${[
+            ...new Set((data as Knot).flat()),
+          ]
+            .filter(
+              (n) => (data as Knot).flat().filter((m) => m === n).length !== 2
+            )
+            .join(",")}.`
       );
     }
   };
