@@ -65,7 +65,7 @@ function colorLerp(
 }
 
 export default function BallmapperPage() {
-  const [bmSaved, setBmSaved] = React.useState<{
+  const bmSaved = React.useRef<{
     [inv: string]: { edge: string; pcbl: string };
   }>({});
   const [bmType, setBmType] = React.useState<string>("b1");
@@ -79,9 +79,6 @@ export default function BallmapperPage() {
   const [svgData, setSvgData] = React.useState<SVGData>();
   const [selected, setSelected] = React.useState<{ [n: number]: boolean }>({});
 
-  const [bmCmpSaved, setBmCmpSaved] = React.useState<{
-    [inv: string]: { edge: string; pcbl: string };
-  }>({});
   const [bmCmpType, setBmCmpType] = React.useState<string>("jones");
   const [bmCmpLinks, setBmCmpLinks] = React.useState<Array<LinkDatum>>([]);
   const [bmCmpNodes, setBmCmpNodes] = React.useState<Array<NodeDatum>>([]);
@@ -101,95 +98,106 @@ export default function BallmapperPage() {
 
   React.useEffect(() => {
     setBmLoaded(false);
-    if (bmSaved[bmType] === undefined) {
-      console.log(`Fetching bm for ${bmType}`);
-      Promise.all([
-        fetch(staticify(`/static/bm/bm-${bmType}.edge.out`)),
-        fetch(staticify(`/static/bm/bm-${bmType}.pcbl.out`)),
-      ])
-        .then((res) => Promise.all(res.map((r) => r.text())))
-        .then((res) => {
-          setBmSaved({ ...bmSaved, [bmType]: { edge: res[0], pcbl: res[1] } });
-        });
-    } else {
-      console.log(`Loading bm for ${bmType}`);
-      const lines = bmSaved[bmType].edge
-        .trim()
-        .split("\n")
-        .map((line) => line.split(" "));
-      const PCBL = bmSaved[bmType].pcbl
-        .trim()
-        .split("\n")
-        .map((line) => line.split(" "));
-      const sizes = PCBL.map((line) => line.length);
+    Promise.resolve()
+      .then(() => {
+        if (bmSaved.current[bmType] === undefined) {
+          console.log(`Fetching bm for ${bmType}`);
+          return Promise.all([
+            fetch(staticify(`/static/bm/bm-${bmType}.edge.out`)),
+            fetch(staticify(`/static/bm/bm-${bmType}.pcbl.out`)),
+          ])
+            .then((res) => Promise.all(res.map((r) => r.text())))
+            .then((res) => {
+              bmSaved.current[bmType] = { edge: res[0], pcbl: res[1] };
+              return { edge: res[0], pcbl: res[1] };
+            });
+        } else {
+          return Promise.resolve(bmSaved.current[bmType]);
+        }
+      })
+      .then((data: { edge: string; pcbl: string }) => {
+        console.log(`Loading bm for ${bmType}`);
+        const lines = data.edge
+          .trim()
+          .split("\n")
+          .map((line) => line.split(" "));
+        const PCBL = data.pcbl
+          .trim()
+          .split("\n")
+          .map((line) => line.split(" "));
+        const sizes = PCBL.map((line) => line.length);
 
-      setBmPCBL(PCBL.map((line) => line.map(Number)));
-      setBmMaxNodeSize(Math.max(...sizes));
-      setBmNodes(
-        Array.from(Array(PCBL.length).keys()).map((i) => ({
-          id: i + 1,
-          group: 0,
-          size: sizes[i],
-        }))
-      );
+        setBmPCBL(PCBL.map((line) => line.map(Number)));
+        setBmMaxNodeSize(Math.max(...sizes));
+        setBmNodes(
+          Array.from(Array(PCBL.length).keys()).map((i) => ({
+            id: i + 1,
+            group: 0,
+            size: sizes[i],
+          }))
+        );
 
-      setBmLinks(
-        lines.map((edge) => ({
-          source: Number(edge[0]),
-          target: Number(edge[1]),
-          value: 1,
-        }))
-      );
-      setSelected([]);
-    }
-  }, [bmType, bmSaved]);
+        setBmLinks(
+          lines.map((edge) => ({
+            source: Number(edge[0]),
+            target: Number(edge[1]),
+            value: 1,
+          }))
+        );
+        setSelected([]);
+      });
+  }, [bmType]);
 
   React.useEffect(() => {
     setBmCmpLoaded(false);
-    if (bmCmpSaved[bmCmpType] === undefined) {
-      console.log(`Fetching bmCmp for ${bmCmpType}`);
-      Promise.all([
-        fetch(staticify(`/static/bm/bm-${bmCmpType}.edge.out`)),
-        fetch(staticify(`/static/bm/bm-${bmCmpType}.pcbl.out`)),
-      ])
-        .then((res) => Promise.all(res.map((r) => r.text())))
-        .then((res) => {
-          setBmCmpSaved({
-            ...bmCmpSaved,
-            [bmCmpType]: { edge: res[0], pcbl: res[1] },
-          });
-        });
-    } else {
-      console.log(`Loading bmCmp for ${bmCmpType}`);
-      const lines = bmCmpSaved[bmCmpType].edge
-        .trim()
-        .split("\n")
-        .map((line) => line.split(" "));
-      const PCBL = bmCmpSaved[bmCmpType].pcbl
-        .trim()
-        .split("\n")
-        .map((line) => line.split(" "));
-      const sizes = PCBL.map((line) => line.length);
+    Promise.resolve()
+      .then(() => {
+        if (bmSaved.current[bmCmpType] === undefined) {
+          console.log(`Fetching bmCmp for ${bmCmpType}`);
+          return Promise.all([
+            fetch(staticify(`/static/bm/bm-${bmCmpType}.edge.out`)),
+            fetch(staticify(`/static/bm/bm-${bmCmpType}.pcbl.out`)),
+          ])
+            .then((res) => Promise.all(res.map((r) => r.text())))
+            .then((res) => {
+              bmSaved.current[bmCmpType] = { edge: res[0], pcbl: res[1] };
+              return { edge: res[0], pcbl: res[1] };
+            });
+        } else {
+          return Promise.resolve(bmSaved.current[bmCmpType]);
+        }
+      })
+      .then((data: { edge: string; pcbl: string }) => {
+        console.log(`Loading bmCmp for ${bmCmpType}`);
+        const lines = data.edge
+          .trim()
+          .split("\n")
+          .map((line) => line.split(" "));
+        const PCBL = data.pcbl
+          .trim()
+          .split("\n")
+          .map((line) => line.split(" "));
+        const sizes = PCBL.map((line) => line.length);
 
-      setBmCmpPCBL(PCBL.map((line) => line.map(Number)));
-      setBmCmpMaxNodeSize(Math.max(...sizes));
-      setBmCmpNodes(
-        Array.from(Array(PCBL.length).keys()).map((i) => ({
-          id: i + 1,
-          group: 0,
-          size: sizes[i],
-        }))
-      );
+        setBmCmpPCBL(PCBL.map((line) => line.map(Number)));
+        setBmCmpMaxNodeSize(Math.max(...sizes));
+        setBmCmpNodes(
+          Array.from(Array(PCBL.length).keys()).map((i) => ({
+            id: i + 1,
+            group: 0,
+            size: sizes[i],
+          }))
+        );
 
-      setBmCmpLinks(
-        lines.map((edge) => ({
-          source: Number(edge[0]),
-          target: Number(edge[1]),
-          value: 1,
-        }))
-      );
-    }
-  }, [bmCmpType, bmCmpSaved]);
+        setBmCmpLinks(
+          lines.map((edge) => ({
+            source: Number(edge[0]),
+            target: Number(edge[1]),
+            value: 1,
+          }))
+        );
+      });
+  }, [bmCmpType]);
 
   React.useEffect(() => {
     if (bmNodes.length === 0) {
