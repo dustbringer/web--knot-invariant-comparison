@@ -11,7 +11,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import TableRow from "@/components/Table/TR";
 import Paper from "@mui/material/Paper";
 
 // import Plot from "react-plotly.js";
@@ -26,6 +26,7 @@ import Checkboxes from "@/components/Checkboxes";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
+import Accordion from "@/components/Accordion";
 import statsAll from "./stats";
 import statsA from "./stats_a";
 import statsN from "./stats_n";
@@ -99,8 +100,9 @@ export default function DetectionPage() {
             onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
           />
           <Typography variant="body1">
-            (Note: Certain computable invariants have data up to 18 crossings.
-            We are not 100% certain on the 18 crossing data.)
+            (Note: We have high confidence in the data up to 16 crossings.
+            Beyond that point, confidence drops due to the large volume of data
+            (eg. unforeseen errors in the data or calculation).)
           </Typography>
         </div>
         {plotName === "unique" && (
@@ -372,18 +374,7 @@ export default function DetectionPage() {
               </TableHead>
               <TableBody>
                 {stats[plotName].x.map((_, i) => (
-                  <TableRow
-                    key={`row${i}`}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      "&:nth-of-type(odd)": {
-                        backgroundColor: "white",
-                      },
-                      "&:nth-of-type(even)": {
-                        backgroundColor: "#f7f7f7",
-                      },
-                    }} // last element has no bottom border
-                  >
+                  <TableRow key={`row${i}`}>
                     <TableCell key={`row${i},col${-1}`}>
                       {stats[plotName].x[i]}
                     </TableCell>
@@ -409,6 +400,53 @@ export default function DetectionPage() {
           </TableContainer>
         )}
       </div>
+      <Accordion title="Abbreviations">
+        <Typography variant="body1">
+          The following table describes the abbreviations used in some of the
+          plots. For convenience, they may also be attained by hovering over the
+          headings in the data table above.
+        </Typography>
+        <TableContainer
+          sx={{
+            margin: "1em auto",
+            border: "1px solid lightgrey",
+            borderRadius: "5px",
+            width: "fit-content",
+          }}
+        >
+          <Table size="small" sx={{ width: "auto" }}>
+            <TableHead>
+              <TableRow
+                sx={{
+                  backgroundColor: "#f0f0f0",
+                }}
+              >
+                <TableCell
+                  sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
+                  align="right"
+                >
+                  Name
+                </TableCell>
+                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
+                  Abbreivation
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {stats[plotName].columns.map((col, i) => (
+                <TableRow key={`abbrTable-row${i}`}>
+                  <TableCell key={`abbrTable-row${i},col${0}`} align="right">
+                    {col}
+                  </TableCell>
+                  <TableCell key={`abbrTable-row${i},col${1}`}>
+                    {stats[plotName].columnsAbbr[i]}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Accordion>
     </Container>
   );
 }
