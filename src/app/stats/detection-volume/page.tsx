@@ -34,6 +34,7 @@ import statsAll from "./stats";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
+import Grid from "@/components/Plots/Grid";
 
 export default function DetectionVolumePage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
@@ -155,7 +156,7 @@ export default function DetectionVolumePage() {
         <Typography variant="body1" gutterBottom>
           <i>Interactive</i> plot: zoom, pan and toggle your desired invariants!
         </Typography>
-        <Line
+        {/* <Line
           data={(() => {
             const abbr = stats[plotName].abbreviate;
             const output = stats[plotName][
@@ -166,9 +167,7 @@ export default function DetectionVolumePage() {
               name: name,
             }));
 
-            {
-              /* TODO: Add more for other classChecked */
-            }
+            { /* TODO: Add more for other classChecked * / }
             // if (plotName === "unique" && classChecked === "all") {
             //   output.push({
             //     x: statsAllComb(plotUniqueCombName).map((_, i) => i + 3),
@@ -199,7 +198,82 @@ export default function DetectionVolumePage() {
             legend: { ...stats[plotName].legend },
           }}
           style={{ margin: "0 auto" }}
+        /> */}
+        <Plot
+          data={[
+            ...(() => {
+              const abbr = stats[plotName].abbreviate;
+              const output = stats[plotName][
+                abbr ? "columnsAbbr" : "columns" // when to abbreviate
+              ].map((name, i) => ({
+                x: stats[plotName].x,
+                y: stats[plotName].ys?.[i] || [],
+                name: name,
+                mode: "lines+markers",
+              }));
+
+              {
+                /* TODO: Add more for other classChecked */
+              }
+              // if (plotName === "unique" && classChecked === "all") {
+              //   output.push({
+              //     x: statsAllComb(plotUniqueCombName).map((_, i) => i + 3),
+              //     y: statsAllComb(plotUniqueCombName),
+              //     name: plotUniqueCombName,
+              //   });
+              // }
+              return output;
+            })(),
+            {
+              name: "Count",
+              z: [
+                [
+                  16, 0, 1, 6, 21, 31, 62, 74, 126, 250, 398, 800, 1378, 2487,
+                  4306, 7625, 13027, 21766, 35697, 55226, 82354, 116235, 152038,
+                  183785, 203015, 199178, 178472, 146039, 110068, 80652, 53104,
+                  31720, 15126, 5304, 1320, 210, 17, 1,
+                ],
+              ],
+              type: "heatmap",
+              yaxis: "y2",
+              showscale: false,
+              hoverinfo: "z+x+name",
+            },
+          ]}
+          config={{
+            scrollZoom: true,
+          }}
+          layout={{
+            dragmode: "pan",
+            xaxis: {
+              title: stats[plotName].xlabel,
+              linecolor: "black",
+              linewidth: 2,
+            },
+            yaxis: {
+              title: stats[plotName].ylabel,
+              linecolor: "black",
+              linewidth: 2,
+              ...(stats[plotName].ylogscale && { type: "log" }),
+              ...(stats[plotName].yrange !== undefined && {
+                range: stats[plotName].yrange,
+              }),
+              domain: [0.03, 1],
+            },
+            yaxis2: {
+              domain: [0, 0.03],
+              visible: false,
+            },
+            // legend: { ...stats[plotName].legend },
+            grid: {
+              rows: 2,
+              columns: 1,
+              subplots: ["xy", "xy2"],
+            },
+          }}
+          style={{ maxWidth: `${1200}px`, height: 900, margin: "0 auto" }}
         />
+        {/* [16,0,1,6,21,31,62,74,126,250,398,800,1378,2487,4306,7625,13027,21766,35697,55226,82354,116235,152038,183785,203015,199178,178472,146039,110068,80652,53104,31720,15126,5304,1320,210,17,1] */}
 
         {showSQ && (
           <Line
