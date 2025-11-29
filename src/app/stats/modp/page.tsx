@@ -30,7 +30,7 @@ import stats from "./stats";
 import staticify from "@/util/staticURLs";
 
 export default function ModPPage() {
-  const [plotName, setPlotName] = React.useState<string>("count");
+  const [plotName, setPlotName] = React.useState<string>("unique mod-p");
   const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
 
