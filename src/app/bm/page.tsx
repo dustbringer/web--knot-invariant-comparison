@@ -398,7 +398,7 @@ export default function BallmapperPage() {
     { name: "A2", value: "a2" },
     { name: "Alexander", value: "alexander" },
     { name: "B1", value: "b1" },
-    { name: "BNVdV 3-15", value: "bnvdv-3-15-e=0.15" },
+    { name: "BV 3-15", value: "bnvdv-3-15-e=0.15" },
     { name: "HFK2", value: "hfk2" },
     { name: "HFK2T1", value: "hfk2-t1" },
     { name: "HOMFLYPT", value: "homflypt-e=0.5" },

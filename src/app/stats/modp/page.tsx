@@ -66,7 +66,8 @@ export default function ModPPage() {
             ].
           </Typography> */}
           <Typography variant="body1">
-            Data for Jones polynomial with coefficients reduced mod p.
+            Data for Jones polynomials, with coefficients reduced mod p, that are
+            trivial.
           </Typography>
           <Radio
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}

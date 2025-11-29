@@ -36,7 +36,7 @@ export default function StatsBoxPlotPage() {
           "Alexander",
           "B1 (R-matrix)",
           "B1 (Skein theory)",
-          "BNvdV",
+          "BV",
           "Jones (R-matrix)",
           "Jones (Skein theory)",
           "Khovanov",

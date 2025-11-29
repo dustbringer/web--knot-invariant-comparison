@@ -43,10 +43,10 @@ const stats: StatsType = Object.freeze({
       "A2",
       "Alexander",
       "B1",
-      "BNvdV",
-      // "BNvdVSp",
-      "Alexander+BNVdV",
-      // "AlexanderSp+BNVdVSp",
+      "BV",
+      // "BVSp",
+      "Alexander+BV",
+      // "AlexanderSp+BVSp",
       "HFK2",
       "HFK2T1",
       "HOMFLYPT",
@@ -63,10 +63,10 @@ const stats: StatsType = Object.freeze({
       "A2",
       "A",
       "B1",
-      "BNvdV",
-      // "BNvdVSp",
-      "A+BNvdV",
-      // "ASp+BNvdVSp",
+      "BV",
+      // "BVSp",
+      "A+BV",
+      // "ASp+BVSp",
       "HFK2",
       "HFK2T1",
       "H",
@@ -105,7 +105,7 @@ const stats: StatsType = Object.freeze({
         83.8345, 83.8345,
       ],
       [
-        // BNVdV
+        // BV
         100, 100, 100, 100, 100, 98.6666, 97.8102, 98.1042, 98.5163, 97.4446,
         97.868, 97.9831, 98.1662, 98.3185, 98.4029, 98.5325, 98.3174, 98.2796,
         98.106, 97.9929, 97.8262, 97.6732, 97.5143, 97.4059, 97.3125, 97.2772,
@@ -113,10 +113,10 @@ const stats: StatsType = Object.freeze({
         97.5307, 97.5304, 97.5302, 97.5302,
       ],
       // [
-      //   // BNVdVSp
+      //   // BVSp
       // ],
       [
-        // A+BNvdV
+        // A+BV
         100, 100, 100, 100, 100, 100, 100, 100, 100, 99.3185, 99.1878, 98.8795,
         98.8934, 98.8849, 98.8549, 98.8624, 98.569, 98.4667, 98.2536, 98.106,
         97.9175, 97.7486, 97.5797, 97.4646, 97.3693, 97.3324, 97.3542, 97.4052,
@@ -124,7 +124,7 @@ const stats: StatsType = Object.freeze({
         97.6063, 97.6063,
       ],
       // [
-      //   // ASp+BNvdVSp
+      //   // ASp+BVSp
       // ],
       [
         // HFK2

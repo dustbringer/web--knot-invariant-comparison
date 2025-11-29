@@ -22,9 +22,9 @@ export default function Home() {
         <Link href="https://github.com/dtubbenhauer/knotdetection">GitHub</Link>
         ]. Relevant knot invariant data, scripts and more details on data
         collection are available on the corresponding GitHub pages. Most data
-        displayed on this webpage considers all prime knots (modulo mirrors) up
-        to 16 crossings. More computable invariants have data up to 18
-        crossings, while harder invariants have lower values.
+        displayed on this webpage considers all prime knots (not distinguishing
+        mirrors) up to 16 crossings. More computable invariants have data up to
+        19 crossings, while harder invariants have lower values.
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
         An online calculator for the Jones polynomial is{" "}
@@ -34,7 +34,7 @@ export default function Home() {
         .
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
-        <strong>Notice!</strong> While the website is expected to work on
+        <strong>Notice!</strong> While the website is probably works on
         phones, less care has been put into polishing the mobile experience.
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>

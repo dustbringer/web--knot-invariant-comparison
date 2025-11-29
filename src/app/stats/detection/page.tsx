@@ -31,6 +31,7 @@ import statsAll from "./stats";
 import statsA from "./stats_a";
 import statsN from "./stats_n";
 import statsAllComb from "./statsComb";
+import descriptions from "../descriptions";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
@@ -88,9 +89,16 @@ export default function DetectionPage() {
             <Link href="https://github.com/dtubbenhauer/quantumdata">
               GitHub
             </Link>
-            ]. For statistics of the polynomials, see{" "}
+            ].
+          </Typography>
+          <Typography variant="body1">
+            For statistics of the polynomials, see{" "}
             <Link href="/stats" inPlace>
               Stats
+            </Link>
+            . For the same picture ordered by hyperbolic volume, see{" "}
+            <Link href="/stats/detection-volume" inPlace>
+              Detection Volume
             </Link>
             .
           </Typography>
@@ -293,7 +301,12 @@ export default function DetectionPage() {
                   value: k,
                 }))}
                 checked={uniqueCombsChecked}
-                disabled={{ BNvdV: true, "A+BNvdV": true }}
+                disabled={{
+                  BV: true,
+                  "A+BV": true,
+                  BVSp: true,
+                  "ASp+BVSp": true,
+                }}
                 onChange={(name, e) =>
                   setUniqueCombsChecked(
                     (obj) =>
@@ -402,9 +415,9 @@ export default function DetectionPage() {
       </div>
       <Accordion title="Abbreviations">
         <Typography variant="body1">
-          The following table describes the abbreviations used in some of the
-          plots. For convenience, they may also be attained by hovering over the
-          headings in the data table above.
+          The following table shows abbreviations used in some of the plots and
+          their descriptions. For convenience, names may also be attained by
+          hovering over the headings in the data table above.
         </Typography>
         <TableContainer
           sx={{
@@ -421,25 +434,26 @@ export default function DetectionPage() {
                   backgroundColor: "#f0f0f0",
                 }}
               >
-                <TableCell
-                  sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
-                  align="right"
-                >
+                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
                   Name
                 </TableCell>
                 <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
                   Abbreivation
+                </TableCell>
+                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
+                  Description
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {stats[plotName].columns.map((col, i) => (
                 <TableRow key={`abbrTable-row${i}`}>
-                  <TableCell key={`abbrTable-row${i},col${0}`} align="right">
-                    {col}
-                  </TableCell>
+                  <TableCell key={`abbrTable-row${i},col${0}`}>{col}</TableCell>
                   <TableCell key={`abbrTable-row${i},col${1}`}>
                     {stats[plotName].columnsAbbr[i]}
+                  </TableCell>
+                  <TableCell key={`abbrTable-row${i},col${2}`}>
+                    {descriptions[stats[plotName].columns[i]] || "-"}
                   </TableCell>
                 </TableRow>
               ))}

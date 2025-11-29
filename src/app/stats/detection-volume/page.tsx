@@ -31,6 +31,7 @@ import statsAll from "./stats";
 // import statsA from "./stats_a";
 // import statsN from "./stats_n";
 // import statsAllComb from "./statsComb";
+import descriptions from "../descriptions";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
@@ -273,7 +274,6 @@ export default function DetectionVolumePage() {
           }}
           style={{ maxWidth: `${1200}px`, height: 900, margin: "0 auto" }}
         />
-        {/* [16,0,1,6,21,31,62,74,126,250,398,800,1378,2487,4306,7625,13027,21766,35697,55226,82354,116235,152038,183785,203015,199178,178472,146039,110068,80652,53104,31720,15126,5304,1320,210,17,1] */}
 
         {showSQ && (
           <Line
@@ -362,7 +362,7 @@ export default function DetectionVolumePage() {
                   value: k,
                 }))}
                 checked={uniqueCombsChecked}
-                disabled={{ BNvdV: true, "A+BNvdV": true }}
+                disabled={{ BV: true, "A+BV": true }}
                 onChange={(name, e) =>
                   setUniqueCombsChecked(
                     (obj) =>
@@ -471,9 +471,9 @@ export default function DetectionVolumePage() {
       </div>
       <Accordion title="Abbreviations">
         <Typography variant="body1">
-          The following table describes the abbreviations used in some of the
-          plots. For convenience, they may also be attained by hovering over the
-          headings in the data table above.
+          The following table shows abbreviations used in some of the plots and
+          their descriptions. For convenience, names may also be attained by
+          hovering over the headings in the data table above.
         </Typography>
         <TableContainer
           sx={{
@@ -490,25 +490,28 @@ export default function DetectionVolumePage() {
                   backgroundColor: "#f0f0f0",
                 }}
               >
-                <TableCell
-                  sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
-                  align="right"
-                >
+                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
                   Name
                 </TableCell>
                 <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
                   Abbreivation
+                </TableCell>
+                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
+                  Description
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {stats[plotName].columns.map((col, i) => (
                 <TableRow key={`abbrTable-row${i}`}>
-                  <TableCell key={`abbrTable-row${i},col${0}`} align="right">
+                  <TableCell key={`abbrTable-row${i},col${0}`}>
                     {col}
                   </TableCell>
                   <TableCell key={`abbrTable-row${i},col${1}`}>
                     {stats[plotName].columnsAbbr[i]}
+                  </TableCell>
+                  <TableCell key={`abbrTable-row${i},col${2}`}>
+                    {descriptions[stats[plotName].columns[i]] || "-"}
                   </TableCell>
                 </TableRow>
               ))}

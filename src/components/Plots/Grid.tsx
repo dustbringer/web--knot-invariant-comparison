@@ -143,7 +143,7 @@ export default function Grid({
   height = 800,
 }: {
   grid: Array<Array<number>>;
-  shapes: Partial<Shape>[];
+  shapes?: Partial<Shape>[];
   zmax?: number;
   width?: number;
   height?: number;
