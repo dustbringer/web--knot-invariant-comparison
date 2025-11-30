@@ -14,6 +14,21 @@ export default function AboutPage() {
       <Typography variant="h4" gutterBottom>
         Contact Details
       </Typography>
+      <Typography variant="h6">Tuomas Kelomäki</Typography>
+      <ul>
+        <li>
+          <Typography component="i">Address:</Typography> Aalto University,
+          Department of Mathematics and Systems Analysis, Otakaari 1, 02150,
+          Espoo, Finland
+        </li>
+        <li>
+          <Typography component="i">Email address:</Typography>{" "}
+          <Link href="mailto:tuomas.kelomaki@aalto.fi">
+            tuomas.kelomaki@aalto.fi
+          </Link>
+        </li>
+      </ul>
+
       <Typography variant="h6">Abel Lacabanne</Typography>
       <ul>
         <li>
@@ -24,7 +39,9 @@ export default function AboutPage() {
         </li>
         <li>
           <Typography component="i">Website:</Typography>{" "}
-          <Link href="https://www.normalesup.org/~lacabanne/">www.normalesup.org/~lacabanne/</Link>
+          <Link href="https://www.normalesup.org/~lacabanne/">
+            www.normalesup.org/~lacabanne/
+          </Link>
         </li>
         <li>
           <Typography component="i">Email address:</Typography>{" "}
@@ -54,12 +71,15 @@ export default function AboutPage() {
       <Typography variant="h6">Pedro Vaz</Typography>
       <ul>
         <li>
-          <Typography component="i">Address:</Typography> Institut de Recherche en Mathématique et Physique, Université catholique de Louvain, Che-
-min du Cyclotron 2, 1348 Louvain-la-Neuve, Belgium
+          <Typography component="i">Address:</Typography> Institut de Recherche
+          en Mathématique et Physique, Université catholique de Louvain, Che-
+          min du Cyclotron 2, 1348 Louvain-la-Neuve, Belgium
         </li>
         <li>
           <Typography component="i">Website:</Typography>{" "}
-          <Link href="https://perso.uclouvain.be/pedro.vaz/">perso.uclouvain.be/pedro.vaz/</Link>
+          <Link href="https://perso.uclouvain.be/pedro.vaz/">
+            perso.uclouvain.be/pedro.vaz/
+          </Link>
         </li>
         <li>
           <Typography component="i">Email address:</Typography>{" "}
