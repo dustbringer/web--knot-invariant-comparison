@@ -23,6 +23,7 @@ import Link from "@/components/Link";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
 import Checkboxes from "@/components/Checkboxes";
+import { max, min, sum } from "@/util/array-util";
 
 type NodeDatum = {
   id: number;
@@ -95,6 +96,9 @@ export default function BallmapperPage() {
   }>({});
   const [knotsText, setKnotsText] = React.useState<string>("");
   const [types, setTypes] = React.useState<Array<string> | null>(null);
+  const [vals, setVals] = React.useState<{
+    [name: string]: Array<number>;
+  } | null>(null);
 
   React.useEffect(() => {
     setBmLoaded(false);
@@ -315,16 +319,15 @@ export default function BallmapperPage() {
     const pcbl: { [index: number]: boolean } = {};
     ps.forEach((n) => (pcbl[n + 1] = true));
 
-    const sizes: { [index: number]: [number, number, number] } = {};
-    bmCmpNodes.forEach(
-      (d) =>
-        (sizes[d.id] = [
-          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
-            (d.size || 1),
-          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length,
-          d.size || 1,
-        ])
-    );
+    const nodeInfo: { [index: number]: [number, number, number] } = {}; // [fraction selected, no. selected, no. in node]
+    bmCmpNodes.forEach((d) => {
+      nodeInfo[d.id] = [
+        bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
+          (d.size || 1),
+        bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length,
+        d.size || 1,
+      ];
+    });
 
     // // Highglight things
     // svgData?.node
@@ -341,7 +344,11 @@ export default function BallmapperPage() {
           colorLerp(
             nodeColors[0],
             nodeColors[1],
-            useSolidHighlight ? (sizes[d.id][0] > 0 ? 1 : 0) : sizes[d.id][0]
+            useSolidHighlight
+              ? nodeInfo[d.id][0] > 0
+                ? 1
+                : 0
+              : nodeInfo[d.id][0]
           )
         )
       );
@@ -350,14 +357,68 @@ export default function BallmapperPage() {
     svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
       svgCmpData?.tooltip
         .html(
-          `#${d.id}<br>size: ${sizes[d.id][1]}/${d.size} (${Math.round(
-            (10000 * sizes[d.id][0]) / 100
+          `#${d.id}<br>size: ${nodeInfo[d.id][1]}/${d.size} (${Math.round(
+            (10000 * nodeInfo[d.id][0]) / 100
           )}%)`
         )
         .style("visibility", "visible");
     });
 
-    console.log(sizes);
+    // console.log(nodeInfo);
+  };
+
+  const highlightVals = async (
+    ps: Array<[number, number]>,
+    defaultVal: number = 0
+  ) => {
+    // ps has [knot index, value]
+    const pcbl: { [index: number]: number } = {};
+    ps.forEach(([n, v]) => (pcbl[n + 1] = v));
+
+    const nodeInfo: { [index: number]: [number, number, number] } = {}; // [avg val, sum vals, no. in node]
+    bmCmpNodes.forEach((d) => {
+      nodeInfo[d.id] = [
+        sum(
+          bmCmpPCBL[Number(d.id) - 1].map((n) =>
+            pcbl[n] !== undefined ? pcbl[n] : defaultVal
+          )
+        ) / (d.size || 1),
+        sum(
+          bmCmpPCBL[Number(d.id) - 1].map((n) =>
+            pcbl[n] !== undefined ? pcbl[n] : defaultVal
+          )
+        ),
+        d.size || 1,
+      ];
+    });
+    const maxavg = max(Object.values(nodeInfo).map((arr) => arr[0]));
+    const minavg = min(Object.values(nodeInfo).map((arr) => arr[0]));
+
+    // // Highglight things
+    svgCmpData?.node
+      // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
+      .attr("fill", (d) =>
+        rgbToText(
+          colorLerp(
+            nodeColors[0],
+            nodeColors[1],
+            (nodeInfo[d.id][0] - minavg) / (maxavg - minavg)
+          )
+        )
+      );
+
+    // Mouseover
+    svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
+      svgCmpData?.tooltip
+        .html(
+          `#${d.id}<br>avg: ${nodeInfo[d.id][0]} (${Math.round(
+            (10000 * (nodeInfo[d.id][0] - minavg)) / (maxavg - minavg) / 100
+          )}%)`
+        )
+        .style("visibility", "visible");
+    });
+
+    // console.log(nodeInfo);
   };
 
   const highlightType = async () => {
@@ -392,6 +453,28 @@ export default function BallmapperPage() {
       .map((s) => Number(s))
       .filter((n) => !isNaN(n));
     highlight(idxs);
+  };
+
+  const highlightValsInv = async (name: string) => {
+    if (!["hypvol", "det", "sig"].includes(name)) {
+      return;
+    }
+
+    const newVals: { [name: string]: Array<number> } = vals || {};
+    if (vals === null || vals[name] === undefined) {
+      // Fill types if it is empty
+      newVals[name] = (
+        await fetch(staticify(`/static/bm/${name}-3-16.out`)).then((res) =>
+          res.text()
+        )
+      )
+        .trim()
+        .split("\n")
+        .map(Number);
+      setVals(newVals);
+    }
+
+    highlightVals(newVals[name].map((v, i) => [i, v]));
   };
 
   const options = [
@@ -476,7 +559,7 @@ export default function BallmapperPage() {
           Nodes are semi-transparent so their color is not completely accurate
           when overlapping. To see which knots live inside each node, see [
           {options.map((option, i) => (
-            <>
+            <React.Fragment key={`frag ${option.value}`}>
               <Link
                 href={`/static/bm/bm-${option.value}.pcbl.out`}
                 key={option.value}
@@ -484,7 +567,7 @@ export default function BallmapperPage() {
                 {option.name}
               </Link>
               {i !== options.length - 1 && ", "}
-            </>
+            </React.Fragment>
           ))}
           ].
         </li>
@@ -614,6 +697,39 @@ export default function BallmapperPage() {
           onChange={(e) => setUseSolidHighlight(e.target.checked)}
         />
         Solid Highlighting
+      </Box>
+
+      <Box
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        Values:{" "}
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={() => highlightValsInv("hypvol")}
+          disableElevation
+        >
+          hypvol
+        </Button>
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={() => highlightValsInv("det")}
+          disableElevation
+        >
+          det
+        </Button>
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={() => highlightValsInv("sig")}
+          disableElevation
+        >
+          sig
+        </Button>
       </Box>
     </Container>
   );

@@ -11,7 +11,7 @@ type LinkDatum = { value?: number } & d3.SimulationLinkDatum<NodeDatum>;
 export const viewboxSetup = (h: number, w: number) => [-w / 2, -h / 2, w, h];
 
 export const colors: Array<[number, number, number]> = [
-  [1, 0.961, 0.941],
+  [1, 0.98431, 0.96863],
   [0.404, 0, 0.051],
 ];
 
@@ -78,11 +78,11 @@ export default function createGraphSVG({
     .force(
       "link",
       d3
-      .forceLink<NodeDatum, LinkDatum>(links)
-      .id((d) => d.id)
-      .distance(40)
-      .strength(0.2)
-      .iterations(50)
+        .forceLink<NodeDatum, LinkDatum>(links)
+        .id((d) => d.id)
+        .distance(40)
+        .strength(0.2)
+        .iterations(50)
     )
     // Force toward the center
     .force("x", d3.forceX(width / 2))
@@ -118,7 +118,7 @@ export default function createGraphSVG({
     .attr("id", (d) => {
       return "dot-" + d.id;
     })
-    .attr("fill-opacity", "80%")
+    .attr("fill-opacity", "100%")
     .attr(
       "r",
       (d: NodeDatum) =>
