@@ -65,6 +65,10 @@ function colorLerp(
   return [colorVal(0), colorVal(1), colorVal(2)];
 }
 
+// color interpolator
+const colorRainbow = (n: number) =>
+  d3.scaleSequential(d3.interpolateTurbo)(lerp(0.075, 0.95, n));
+
 export default function BallmapperPage() {
   const bmSaved = React.useRef<{
     [inv: string]: { edge: string; pcbl: string };
@@ -293,14 +297,19 @@ export default function BallmapperPage() {
     );
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
-      .attr("fill", (d) =>
-        rgbToText(
-          colorLerp(
-            nodeColors[0],
-            nodeColors[1],
+      .attr(
+        "fill",
+        (d) =>
+          colorRainbow(
             useSolidHighlight ? (sizes[d.id][0] > 0 ? 1 : 0) : sizes[d.id][0]
           )
-        )
+        // rgbToText(
+        //   colorLerp(
+        //     nodeColors[0],
+        //     nodeColors[1],
+        //     useSolidHighlight ? (sizes[d.id][0] > 0 ? 1 : 0) : sizes[d.id][0]
+        //   )
+        // )
       );
     svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
       svgCmpData?.tooltip
@@ -339,18 +348,27 @@ export default function BallmapperPage() {
     //   );
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
-      .attr("fill", (d) =>
-        rgbToText(
-          colorLerp(
-            nodeColors[0],
-            nodeColors[1],
+      .attr(
+        "fill",
+        (d) =>
+          colorRainbow(
             useSolidHighlight
               ? nodeInfo[d.id][0] > 0
                 ? 1
                 : 0
               : nodeInfo[d.id][0]
           )
-        )
+        // rgbToText(
+        //   colorLerp(
+        //     nodeColors[0],
+        //     nodeColors[1],
+        //     useSolidHighlight
+        //       ? nodeInfo[d.id][0] > 0
+        //         ? 1
+        //         : 0
+        //       : nodeInfo[d.id][0]
+        //   )
+        // )
       );
 
     // Mouseover
@@ -398,12 +416,8 @@ export default function BallmapperPage() {
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
       .attr("fill", (d) =>
-        rgbToText(
-          colorLerp(
-            nodeColors[0],
-            nodeColors[1],
-            (nodeInfo[d.id][0] - minavg) / (maxavg - minavg)
-          )
+        colorRainbow(
+          lerp(0.1, 0.95, (nodeInfo[d.id][0] - minavg) / (maxavg - minavg))
         )
       );
 
@@ -456,7 +470,7 @@ export default function BallmapperPage() {
   };
 
   const highlightValsInv = async (name: string) => {
-    if (!["hypvol", "det", "sig"].includes(name)) {
+    if (!["hypvol", "det", "sig", "sig-mod4"].includes(name)) {
       return;
     }
 
@@ -729,6 +743,15 @@ export default function BallmapperPage() {
           disableElevation
         >
           sig
+        </Button>
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={() => highlightValsInv("sig-mod4")}
+          disableElevation
+        >
+          sig-mod4
         </Button>
       </Box>
     </Container>
