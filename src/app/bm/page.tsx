@@ -470,9 +470,19 @@ export default function BallmapperPage() {
   };
 
   const highlightValsInv = async (name: string) => {
-    if (!["hypvol", "det", "sig", "sig-mod4"].includes(name)) {
+    if (
+      !["hypvol", "det", "det-primedivisors", "sig", "sig-mod4"].includes(name)
+    ) {
       return;
     }
+
+    const tanhPower = (times: number) => (n: number) => {
+      let out = n;
+      for (let i = 0; i < times; i++) {
+        out = Math.tanh(out);
+      }
+      return out;
+    };
 
     const newVals: { [name: string]: Array<number> } = vals || {};
     if (vals === null || vals[name] === undefined) {
@@ -484,7 +494,13 @@ export default function BallmapperPage() {
       )
         .trim()
         .split("\n")
-        .map(Number);
+        .map((line) => {
+          if (name === "det-primedivisors") {
+            return tanhPower(7)(Number(line));
+          } else {
+            return Number(line);
+          }
+        });
       setVals(newVals);
     }
 
@@ -734,6 +750,15 @@ export default function BallmapperPage() {
           disableElevation
         >
           det
+        </Button>
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={() => highlightValsInv("det-primedivisors")}
+          disableElevation
+        >
+          det-primedivisors
         </Button>
         <Button
           sx={{ margin: "0 5px" }}
