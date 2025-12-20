@@ -471,7 +471,14 @@ export default function BallmapperPage() {
 
   const highlightValsInv = async (name: string) => {
     if (
-      !["hypvol", "det", "det-primedivisors", "sig", "sig-mod4"].includes(name)
+      ![
+        "hypvol",
+        "det",
+        "det-primedivisors",
+        "sig",
+        "sig-mod4",
+        "3genus-avg",
+      ].includes(name)
     ) {
       return;
     }
@@ -777,6 +784,15 @@ export default function BallmapperPage() {
           disableElevation
         >
           sig-mod4
+        </Button>
+        <Button
+          sx={{ margin: "0 5px" }}
+          variant="contained"
+          size="small"
+          onClick={() => highlightValsInv("3genus-avg")}
+          disableElevation
+        >
+          3genus
         </Button>
       </Box>
     </Container>
