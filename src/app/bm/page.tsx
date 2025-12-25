@@ -69,6 +69,34 @@ function colorLerp(
 const colorRainbow = (n: number) =>
   d3.scaleSequential(d3.interpolateTurbo)(lerp(0.075, 0.95, n));
 
+const optionsBM = [
+  { name: "A2", value: "a2" },
+  { name: "Alexander", value: "alexander" },
+  { name: "B1", value: "b1" },
+  { name: "BV 3-15", value: "bnvdv-3-15-e=0.15" },
+  { name: "HFK2", value: "hfk2" },
+  { name: "HFK2T1", value: "hfk2-t1" },
+  { name: "HOMFLYPT", value: "homflypt-e=0.5" },
+  // { name: "HOMFLYPT", value: "homflypt-e=1" },
+  // { name: "HOMFLYPTHomology", value: "homflypt-partial-3-11-e=0.5" },
+  { name: "HOMFLYPTHomology 3-11", value: "homflypt-partial-3-11-e=1" },
+  { name: "Jones", value: "jones" },
+  { name: "Khovanov", value: "khovanov" },
+  { name: "KhovanovT1", value: "khovanov-t1" },
+  { name: "KhovanovOdd", value: "khodd" },
+  { name: "KR3 3-15", value: "kr3-3-15-e=0.5" },
+  // { name: "KR3", value: "kr3-3-15-e=1" },
+];
+const optionsVal: Array<{ name: string; display: string }> = [
+  { name: "hypvol", display: "hypvol" },
+  { name: "det", display: "det" },
+  { name: "det-primedivisors", display: "det-primedivisors" },
+  { name: "sig", display: "sig" },
+  { name: "sig-mod4", display: "sig-mod4" },
+  { name: "3genus-avg", display: "3genus" },
+  { name: "jones-q=i", display: "jones-i" },
+];
+
 export default function BallmapperPage() {
   const bmSaved = React.useRef<{
     [inv: string]: { edge: string; pcbl: string };
@@ -125,30 +153,31 @@ export default function BallmapperPage() {
       })
       .then((data: { edge: string; pcbl: string }) => {
         console.log(`Loading bm for ${bmType}`);
-        const lines = data.edge
+        const edges = data.edge
           .trim()
           .split("\n")
-          .map((line) => line.split(" "));
-        const PCBL = data.pcbl
+          .map((line) => line.split(" ").map((n) => Number(n) - 1));
+        const pcbl = data.pcbl
           .trim()
           .split("\n")
-          .map((line) => line.split(" "));
-        const sizes = PCBL.map((line) => line.length);
+          .map((line) => line.split(" ").map((n) => Number(n) - 1));
+        const sizes = pcbl.map((line) => line.length);
 
-        setBmPCBL(PCBL.map((line) => line.map(Number)));
-        setBmMaxNodeSize(Math.max(...sizes));
+        // Make sure to change index from 1-based to 0-based
+        setBmPCBL(pcbl);
+        setBmMaxNodeSize(max(sizes));
         setBmNodes(
-          Array.from(Array(PCBL.length).keys()).map((i) => ({
-            id: i + 1,
+          Array.from(Array(pcbl.length).keys()).map((i) => ({
+            id: i,
             group: 0,
             size: sizes[i],
           }))
         );
 
         setBmLinks(
-          lines.map((edge) => ({
-            source: Number(edge[0]),
-            target: Number(edge[1]),
+          edges.map((edge) => ({
+            source: edge[0],
+            target: edge[1],
             value: 1,
           }))
         );
@@ -177,30 +206,31 @@ export default function BallmapperPage() {
       })
       .then((data: { edge: string; pcbl: string }) => {
         console.log(`Loading bmCmp for ${bmCmpType}`);
-        const lines = data.edge
+        const edges = data.edge
           .trim()
           .split("\n")
-          .map((line) => line.split(" "));
-        const PCBL = data.pcbl
+          .map((line) => line.split(" ").map((n) => Number(n) - 1));
+        const pcbl = data.pcbl
           .trim()
           .split("\n")
-          .map((line) => line.split(" "));
-        const sizes = PCBL.map((line) => line.length);
+          .map((line) => line.split(" ").map((n) => Number(n) - 1));
+        const sizes = pcbl.map((line) => line.length);
 
-        setBmCmpPCBL(PCBL.map((line) => line.map(Number)));
+        // Make sure to change index from 1-based to 0-based
+        setBmCmpPCBL(pcbl);
         setBmCmpMaxNodeSize(Math.max(...sizes));
         setBmCmpNodes(
-          Array.from(Array(PCBL.length).keys()).map((i) => ({
-            id: i + 1,
+          Array.from(Array(pcbl.length).keys()).map((i) => ({
+            id: i,
             group: 0,
             size: sizes[i],
           }))
         );
 
         setBmCmpLinks(
-          lines.map((edge) => ({
-            source: Number(edge[0]),
-            target: Number(edge[1]),
+          edges.map((edge) => ({
+            source: edge[0],
+            target: edge[1],
             value: 1,
           }))
         );
@@ -278,10 +308,10 @@ export default function BallmapperPage() {
   }, [svgCmpRef, bmCmpNodes, bmCmpLinks, bmCmpMaxNodeSize]);
 
   const transferSelected = () => {
-    console.log(selected);
+    console.log(selected); // keys = id from bmNodes and bmCmpNodes
     const pcbl: { [index: number]: boolean } = {};
     Object.keys(selected).forEach((n) =>
-      bmPCBL[Number(n) - 1].forEach((n) => {
+      bmPCBL[Number(n)].forEach((n) => {
         pcbl[n] = true;
       })
     );
@@ -289,9 +319,8 @@ export default function BallmapperPage() {
     bmCmpNodes.forEach(
       (d) =>
         (sizes[d.id] = [
-          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
-            (d.size || 1),
-          bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length,
+          bmCmpPCBL[Number(d.id)].filter((n) => pcbl[n]).length / (d.size || 1),
+          bmCmpPCBL[Number(d.id)].filter((n) => pcbl[n]).length,
           d.size || 1,
         ])
     );
@@ -324,16 +353,15 @@ export default function BallmapperPage() {
     console.log(sizes);
   };
 
-  const highlight = async (ps: Array<number>) => {
+  const highlightBool = async (ps: Array<number>) => {
     const pcbl: { [index: number]: boolean } = {};
-    ps.forEach((n) => (pcbl[n + 1] = true));
+    ps.forEach((n) => (pcbl[n] = true));
 
     const nodeInfo: { [index: number]: [number, number, number] } = {}; // [fraction selected, no. selected, no. in node]
     bmCmpNodes.forEach((d) => {
       nodeInfo[d.id] = [
-        bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length /
-          (d.size || 1),
-        bmCmpPCBL[Number(d.id) - 1].filter((n) => pcbl[n]).length,
+        bmCmpPCBL[Number(d.id)].filter((n) => pcbl[n]).length / (d.size || 1),
+        bmCmpPCBL[Number(d.id)].filter((n) => pcbl[n]).length,
         d.size || 1,
       ];
     });
@@ -387,27 +415,41 @@ export default function BallmapperPage() {
 
   const highlightVals = async (
     ps: Array<[number, number]>,
+    transform: (val: number) => number = (n) => n,
     defaultVal: number = 0
   ) => {
     // ps has [knot index, value]
     const pcbl: { [index: number]: number } = {};
-    ps.forEach(([n, v]) => (pcbl[n + 1] = v));
+    const pcblOriginal: { [index: number]: number } = {};
+    ps.forEach(([n, v]) => {
+      pcbl[n] = transform(v);
+      pcblOriginal[n] = v;
+    });
 
-    const nodeInfo: { [index: number]: [number, number, number] } = {}; // [avg val, sum vals, no. in node]
+    const nodeInfo: { [index: number]: [number, number, number] } = {}; // [avg scaled val, sum vals, no. in node]
+    const avgs: { [index: number]: number } = {}; // avg val
+    const trDefaultVal = transform(defaultVal);
     bmCmpNodes.forEach((d) => {
       nodeInfo[d.id] = [
         sum(
-          bmCmpPCBL[Number(d.id) - 1].map((n) =>
-            pcbl[n] !== undefined ? pcbl[n] : defaultVal
+          bmCmpPCBL[Number(d.id)].map((n) =>
+            pcbl[n] !== undefined ? pcbl[n] : trDefaultVal
           )
         ) / (d.size || 1),
         sum(
-          bmCmpPCBL[Number(d.id) - 1].map((n) =>
-            pcbl[n] !== undefined ? pcbl[n] : defaultVal
+          bmCmpPCBL[Number(d.id)].map((n) =>
+            pcbl[n] !== undefined ? pcbl[n] : trDefaultVal
           )
         ),
         d.size || 1,
       ];
+
+      avgs[d.id] =
+        sum(
+          bmCmpPCBL[Number(d.id)].map((n) =>
+            pcblOriginal[n] !== undefined ? pcblOriginal[n] : defaultVal
+          )
+        ) / (d.size || 1);
     });
     const maxavg = max(Object.values(nodeInfo).map((arr) => arr[0]));
     const minavg = min(Object.values(nodeInfo).map((arr) => arr[0]));
@@ -425,7 +467,7 @@ export default function BallmapperPage() {
     svgCmpData?.node.on("mouseover", (e: MouseEvent, d: NodeDatum) => {
       svgCmpData?.tooltip
         .html(
-          `#${d.id}<br>avg: ${nodeInfo[d.id][0]} (${Math.round(
+          `#${d.id}<br>avg: ${avgs[d.id]} (${Math.round(
             (10000 * (nodeInfo[d.id][0] - minavg)) / (maxavg - minavg) / 100
           )}%)`
         )
@@ -435,7 +477,7 @@ export default function BallmapperPage() {
     // console.log(nodeInfo);
   };
 
-  const highlightType = async () => {
+  const highlightBoolType = async () => {
     let newTypes: Array<string> = types || [];
     if (types === null) {
       // Fill types if it is empty
@@ -458,28 +500,19 @@ export default function BallmapperPage() {
         output.push(i);
       }
     });
-    highlight(output);
+    highlightBool(output);
   };
 
-  const highlightSpecific = async () => {
+  const highlightBoolSpecific = async () => {
     const idxs = knotsText
       .split(",")
       .map((s) => Number(s))
       .filter((n) => !isNaN(n));
-    highlight(idxs);
+    highlightBool(idxs);
   };
 
   const highlightValsInv = async (name: string) => {
-    if (
-      ![
-        "hypvol",
-        "det",
-        "det-primedivisors",
-        "sig",
-        "sig-mod4",
-        "3genus-avg",
-      ].includes(name)
-    ) {
+    if (optionsVal.filter((data) => name === data.name).length === 0) {
       return;
     }
 
@@ -501,40 +534,20 @@ export default function BallmapperPage() {
       )
         .trim()
         .split("\n")
-        .map((line) => {
-          if (name === "det-primedivisors") {
-            return tanhPower(7)(Number(line));
-          } else {
-            return Number(line);
-          }
-        });
+        .map((line) => Number(line));
       setVals(newVals);
     }
+    const transform = ["det-primedivisors"].includes(name)
+      ? tanhPower(7)
+      : (n: number) => n;
 
-    highlightVals(newVals[name].map((v, i) => [i, v]));
+    highlightVals(
+      newVals[name].map((v, i) => [i, v]),
+      transform
+    );
   };
 
-  const options = [
-    { name: "A2", value: "a2" },
-    { name: "Alexander", value: "alexander" },
-    { name: "B1", value: "b1" },
-    { name: "BV 3-15", value: "bnvdv-3-15-e=0.15" },
-    { name: "HFK2", value: "hfk2" },
-    { name: "HFK2T1", value: "hfk2-t1" },
-    { name: "HOMFLYPT", value: "homflypt-e=0.5" },
-    // { name: "HOMFLYPT", value: "homflypt-e=1" },
-    // { name: "HOMFLYPTHomology", value: "homflypt-partial-3-11-e=0.5" },
-    { name: "HOMFLYPTHomology 3-11", value: "homflypt-partial-3-11-e=1" },
-    { name: "Jones", value: "jones" },
-    { name: "Khovanov", value: "khovanov" },
-    { name: "KhovanovT1", value: "khovanov-t1" },
-    { name: "KhovanovOdd", value: "khodd" },
-    { name: "KR3 3-15", value: "kr3-3-15-e=0.5" },
-    // { name: "KR3", value: "kr3-3-15-e=1" },
-  ];
-
   // Features
-  // TODO: Don't refetch to reuse, save all the ones we loaded to a dictionary (add this as a toggle, because some people don't have much memory)
   // TODO: Change node size when zooming or resizing (it's too small on phone)
 
   // Bugs
@@ -556,13 +569,13 @@ export default function BallmapperPage() {
         >
           <Radio
             title="Input"
-            options={options}
+            options={optionsBM}
             value={bmType}
             onChange={(e) => setBmType((e.target as HTMLInputElement).value)}
           />
           <Radio
             title="Output"
-            options={options}
+            options={optionsBM}
             value={bmCmpType}
             onChange={(e) => setBmCmpType((e.target as HTMLInputElement).value)}
           />
@@ -595,7 +608,7 @@ export default function BallmapperPage() {
           ballmapper). Color of nodes indicate percentage of knots selected.
           Nodes are semi-transparent so their color is not completely accurate
           when overlapping. To see which knots live inside each node, see [
-          {options.map((option, i) => (
+          {optionsBM.map((option, i) => (
             <React.Fragment key={`frag ${option.value}`}>
               <Link
                 href={`/static/bm/bm-${option.value}.pcbl.out`}
@@ -603,7 +616,7 @@ export default function BallmapperPage() {
               >
                 {option.name}
               </Link>
-              {i !== options.length - 1 && ", "}
+              {i !== optionsBM.length - 1 && ", "}
             </React.Fragment>
           ))}
           ].
@@ -693,7 +706,7 @@ export default function BallmapperPage() {
         <Button
           variant="contained"
           size="small"
-          onClick={highlightType}
+          onClick={highlightBoolType}
           disableElevation
         >
           Intersect
@@ -712,7 +725,7 @@ export default function BallmapperPage() {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              highlightSpecific();
+              highlightBoolSpecific();
             }
           }}
         />
@@ -720,7 +733,7 @@ export default function BallmapperPage() {
           sx={{ margin: "0 5px" }}
           variant="contained"
           size="small"
-          onClick={highlightSpecific}
+          onClick={highlightBoolSpecific}
           disableElevation
         >
           Highlight
@@ -740,60 +753,18 @@ export default function BallmapperPage() {
         sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         Values:{" "}
-        <Button
-          sx={{ margin: "0 5px" }}
-          variant="contained"
-          size="small"
-          onClick={() => highlightValsInv("hypvol")}
-          disableElevation
-        >
-          hypvol
-        </Button>
-        <Button
-          sx={{ margin: "0 5px" }}
-          variant="contained"
-          size="small"
-          onClick={() => highlightValsInv("det")}
-          disableElevation
-        >
-          det
-        </Button>
-        <Button
-          sx={{ margin: "0 5px" }}
-          variant="contained"
-          size="small"
-          onClick={() => highlightValsInv("det-primedivisors")}
-          disableElevation
-        >
-          det-primedivisors
-        </Button>
-        <Button
-          sx={{ margin: "0 5px" }}
-          variant="contained"
-          size="small"
-          onClick={() => highlightValsInv("sig")}
-          disableElevation
-        >
-          sig
-        </Button>
-        <Button
-          sx={{ margin: "0 5px" }}
-          variant="contained"
-          size="small"
-          onClick={() => highlightValsInv("sig-mod4")}
-          disableElevation
-        >
-          sig-mod4
-        </Button>
-        <Button
-          sx={{ margin: "0 5px" }}
-          variant="contained"
-          size="small"
-          onClick={() => highlightValsInv("3genus-avg")}
-          disableElevation
-        >
-          3genus
-        </Button>
+        {optionsVal.map(({ name, display }) => (
+          <Button
+            key={name}
+            sx={{ margin: "0 5px" }}
+            variant="contained"
+            size="small"
+            onClick={() => highlightValsInv(name)}
+            disableElevation
+          >
+            {display}
+          </Button>
+        ))}
       </Box>
     </Container>
   );
