@@ -94,7 +94,9 @@ const optionsVal: Array<{ name: string; display: string }> = [
   { name: "sig", display: "sig" },
   { name: "sig-mod4", display: "sig-mod4" },
   { name: "3genus-avg", display: "3genus" },
-  { name: "jones-q=i", display: "jones-i" },
+  { name: "arf", display: "Arf" },
+  { name: "s-inv", display: "s-inv" },
+  { name: "s-inv-abs", display: "s-inv-abs" },
 ];
 
 export default function BallmapperPage() {
@@ -415,27 +417,30 @@ export default function BallmapperPage() {
 
   const highlightVals = async (
     ps: Array<[number, number]>,
-    transform: (val: number) => number = (n) => n,
+    preTransform: (val: number) => number = (n) => n,
+    postTransform: (val: number) => number = (n) => n,
     defaultVal: number = 0
   ) => {
     // ps has [knot index, value]
     const pcbl: { [index: number]: number } = {};
     const pcblOriginal: { [index: number]: number } = {};
     ps.forEach(([n, v]) => {
-      pcbl[n] = transform(v);
+      pcbl[n] = preTransform(v);
       pcblOriginal[n] = v;
     });
 
     const nodeInfo: { [index: number]: [number, number, number] } = {}; // [avg scaled val, sum vals, no. in node]
     const avgs: { [index: number]: number } = {}; // avg val
-    const trDefaultVal = transform(defaultVal);
+    const trDefaultVal = preTransform(defaultVal);
     bmCmpNodes.forEach((d) => {
       nodeInfo[d.id] = [
-        sum(
-          bmCmpPCBL[Number(d.id)].map((n) =>
-            pcbl[n] !== undefined ? pcbl[n] : trDefaultVal
-          )
-        ) / (d.size || 1),
+        postTransform(
+          sum(
+            bmCmpPCBL[Number(d.id)].map((n) =>
+              pcbl[n] !== undefined ? pcbl[n] : trDefaultVal
+            )
+          ) / (d.size || 1)
+        ),
         sum(
           bmCmpPCBL[Number(d.id)].map((n) =>
             pcbl[n] !== undefined ? pcbl[n] : trDefaultVal
@@ -470,6 +475,10 @@ export default function BallmapperPage() {
           `#${d.id}<br>avg: ${avgs[d.id]} (${Math.round(
             (10000 * (nodeInfo[d.id][0] - minavg)) / (maxavg - minavg) / 100
           )}%)`
+          // // Actual colour output, for testing
+          // `#${d.id}<br>${nodeInfo[d.id][0]} (${Math.round(
+          //   (10000 * (nodeInfo[d.id][0] - minavg)) / (maxavg - minavg) / 100
+          // )}%)`
         )
         .style("visibility", "visible");
     });
@@ -537,13 +546,20 @@ export default function BallmapperPage() {
         .map((line) => Number(line));
       setVals(newVals);
     }
-    const transform = ["det-primedivisors"].includes(name)
-      ? tanhPower(7)
-      : (n: number) => n;
+
+    let preTransform = (n: number) => n;
+    let postTransform = (n: number) => n;
+    if (["det-primedivisors"].includes(name)) {
+      preTransform = tanhPower(7);
+    } else if (["arf"].includes(name)) {
+      // preTransform = (n) => (n*2 - 1);
+      postTransform = (n) => tanhPower(10)(n * 2 - 1);
+    }
 
     highlightVals(
       newVals[name].map((v, i) => [i, v]),
-      transform
+      preTransform,
+      postTransform
     );
   };
 
