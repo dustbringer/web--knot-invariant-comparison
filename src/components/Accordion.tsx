@@ -52,18 +52,21 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 /**
  * Wrap all the grouped accordions in a parent element eg. div
- * so that the styling is consistent
+ * so that the styling is consistent.
+ *
+ * Put "overflow: hidden" in the wrapping div, so that the contents
+ * don't mess up the spacing on the page
  */
 function MyAccordion({
   title,
   children,
   expand = false,
-  sx = {},
+  props = {},
 }: {
   title: string;
   children: NonNullable<React.ReactNode>;
   expand?: boolean;
-  sx?: object;
+  props?: object;
 }) {
   const [expanded, setExpanded] = React.useState(expand);
 
@@ -71,10 +74,10 @@ function MyAccordion({
     <Accordion
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
-      sx={sx}
+      {...props}
     >
       <AccordionSummary>
-        <Typography>{title}</Typography>
+        <Typography sx={{ margin: 0 }}>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>

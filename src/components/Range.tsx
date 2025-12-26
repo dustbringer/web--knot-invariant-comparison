@@ -8,12 +8,16 @@ function Range({
   value,
   onChange,
   step = 1,
+  disabled = false,
+  props = {},
 }: {
   max: number;
   min: number;
   value: number;
   step?: number;
   onChange: (event: Event) => void;
+  disabled?: boolean;
+  props?: object;
 }) {
   return (
     <>
@@ -25,16 +29,18 @@ function Range({
         defaultValue={min}
         value={value}
         onChange={onChange}
+        disabled={disabled}
         marks={[
           {
             value: min,
             label: String(min),
           },
           {
-            value: 10000,
-            label: "10000",
+            value: max,
+            label: String(max),
           },
         ]}
+        {...props}
       />
     </>
   );

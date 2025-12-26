@@ -26,6 +26,7 @@ export default function createGraphSVG({
   maxNodeSize,
   setSelected,
   disableLasso = false,
+  _forceSettings = {},
 }: {
   inputNodes: Array<NodeDatum>;
   inputLinks: Array<LinkDatum>;
@@ -34,7 +35,24 @@ export default function createGraphSVG({
   maxNodeSize: number;
   setSelected: (selected: { [n: number]: boolean }) => void;
   disableLasso?: boolean;
+  _forceSettings?: {
+    charge?: number;
+    gravity?: number;
+    linkDistance?: number;
+    linkStrength?: number;
+    linkIterations?: number;
+    ticks?: number;
+  };
 }) {
+  const forceSettings = { // default settings
+    charge: -300,
+    gravity: 0.8,
+    linkDistance: 40,
+    linkStrength: 0.2,
+    linkIterations: 50,
+    ticks: 50,
+    ..._forceSettings,
+  };
   const container = d3.create("div");
 
   const nodeStroke = 1;
@@ -74,24 +92,24 @@ export default function createGraphSVG({
 
   const simulation = d3
     .forceSimulation(nodes)
-    .force("charge", d3.forceManyBody().strength(-300))
+    .force("charge", d3.forceManyBody().strength(forceSettings.charge))
+    .force("gravity", d3.forceManyBody().strength(forceSettings.gravity))
     .force(
       "link",
       d3
         .forceLink<NodeDatum, LinkDatum>(links)
         .id((d) => d.id)
-        .distance(40)
-        .strength(0.2)
-        .iterations(50)
+        .distance(forceSettings.linkDistance)
+        .strength(forceSettings.linkStrength)
+        .iterations(forceSettings.linkIterations)
     )
     // Force toward the center
-    .force("x", d3.forceX(width / 2))
-    .force("y", d3.forceY(height / 2))
-    // .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("x", d3.forceX())
+    .force("y", d3.forceY())
+    // .force("center", d3.forceCenter())
     .stop();
-
-  // Run the simulation to its end, then draw. default 300
-  simulation.tick(50);
+  // Run the simulation to its end, then draw
+  simulation.tick(forceSettings.ticks);
 
   const link = svg
     .append("g")
