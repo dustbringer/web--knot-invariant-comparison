@@ -44,7 +44,8 @@ export default function createGraphSVG({
     ticks?: number;
   };
 }) {
-  const forceSettings = { // default settings
+  const forceSettings = {
+    // default settings
     charge: -300,
     gravity: 0.8,
     linkDistance: 40,
@@ -312,9 +313,11 @@ export default function createGraphSVG({
     tooltip.html(`#${d.id}<br>size: ${d.size}`).style("visibility", "visible");
   };
   const mouseMove = (e: MouseEvent, d: NodeDatum) => {
+    // Position relative to viewport
     tooltip
-      .style("top", e.pageY + 30 + "px")
-      .style("left", e.pageX + 30 + "px");
+      .style("position", "fixed")
+      .style("top", e.clientY + 30 + "px")
+      .style("left", e.clientX + 30 + "px");
   };
   const mouseLeave = (e: MouseEvent, d: NodeDatum) => {
     tooltip.style("visibility", "hidden");

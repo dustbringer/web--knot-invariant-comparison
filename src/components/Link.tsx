@@ -16,7 +16,11 @@ const StyledLink = styled(NextLink)`
 `;
 
 function Link(
-  props: React.PropsWithChildren<{ href: string; inPlace?: boolean }>
+  props: React.PropsWithChildren<{
+    href: string;
+    inPlace?: boolean;
+    sx?: object;
+  }>
 ) {
   const linkprops = props.inPlace
     ? {}

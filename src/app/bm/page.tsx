@@ -30,6 +30,7 @@ import Range from "@/components/Range";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
 import { max, min, sum } from "@/util/array-util";
+import { lerp, rgbLerp } from "@/util/number";
 
 type NodeDatum = {
   id: number;
@@ -57,19 +58,6 @@ type SVGData = {
   zoom: d3.ZoomBehavior<SVGSVGElement, undefined>;
   tooltip: d3.Selection<HTMLDivElement, undefined, null, undefined>;
 };
-
-function lerp(start: number, end: number, value: number) {
-  return start * (1 - value) + end * value;
-}
-
-function colorLerp(
-  rgb1: [number, number, number],
-  rgb2: [number, number, number],
-  value: number
-): [number, number, number] {
-  const colorVal = (prop: number) => lerp(rgb1[prop], rgb2[prop], value);
-  return [colorVal(0), colorVal(1), colorVal(2)];
-}
 
 // color interpolator
 const colorRainbow = (n: number) =>
@@ -660,6 +648,20 @@ export default function BallmapperPage() {
   return (
     <Container>
       <div>
+        <Typography variant="body1" gutterBottom>
+          Variants:{" "}
+          <Link href="/bm" inPlace sx={{ color: "secondary.main" }}>
+            (all)
+          </Link>{" "}
+          <Link href="/bm/a" inPlace>
+            (alternating)
+          </Link>{" "}
+          <Link href="/bm/n" inPlace>
+            (non-alternating)
+          </Link>
+        </Typography>
+      </div>
+      <div>
         <Typography variant="body1">
           Select invariant for output ballmapper.
         </Typography>
@@ -891,7 +893,7 @@ export default function BallmapperPage() {
             }}
           >
             <TextField
-              label="knots"
+              label="Specific Knots"
               variant="outlined"
               size="small"
               value={knotsText}
@@ -1003,6 +1005,17 @@ export default function BallmapperPage() {
               </IconButton>
             </Tooltip>
           </Box>
+        </Accordion>
+
+        <Accordion title="Epsilon movie">
+          Jones:{" "}
+          <Link href={`/static/bm/movie/jones-grow.gif`} inPlace>
+            growing
+          </Link>
+          ,{" "}
+          <Link href={`/static/bm/movie/jones-shrink.gif`} inPlace>
+            shrinking
+          </Link>
         </Accordion>
       </Box>
 
