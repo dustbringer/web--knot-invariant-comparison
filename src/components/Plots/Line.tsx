@@ -39,7 +39,7 @@ export default function Line({
         ...layout,
       }}
       useResizeHandler={true}
-      style={{ maxWidth: `${width}px`, height: height, ...style }}
+      style={{ maxWidth: `${width}px`, height: `${height}px`, ...style }}
     />
   );
 }

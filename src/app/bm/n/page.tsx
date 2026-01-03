@@ -31,6 +31,7 @@ import createGraphSVG, { colors as nodeColors, rgbToText } from "../graph-svg";
 import staticify from "@/util/staticURLs";
 import { max, min, range, sum } from "@/util/array-util";
 import { lerp, rgbLerp } from "@/util/number";
+import { optionsVal, optionsType } from "../coloring-options";
 
 type NodeDatum = {
   id: number;
@@ -67,34 +68,15 @@ const optionsBM: { [name: string]: string } = {
   ["a2-n"]: "A2-n",
   ["alexander-n"]: "Alexander-n",
   ["b1-n"]: "B1-n",
-  // ["bnvdv-3-15-e=0.15"]: "BV 3-15",
-  // ["hfk2"]: "HFK2",
-  // ["hfk2-t1"]: "HFK2T1",
-  // ["homflypt-e=0.5"]: "HOMFLYPT",
+  ["bnvdv-3-15-e=0.15-n"]: "BV-3-15-n",
+  ["hfk2-n"]: "HFK2-n",
+  ["hfk2-t1-n"]: "HFK2T1-n",
+  ["homflypt-e=0.5-n"]: "HOMFLYPT-n",
   ["jones-n"]: "Jones-n",
   ["khovanov-n"]: "Khovanov-n",
-  // ["khovanov-t1"]: "KhovanovT1",
-  // ["khodd"]: "KhovanovOdd",
-  // ["kr3-3-15-e=0.5"]: "KR3 3-15",
-};
-const optionsVal: { [name: string]: string } = {
-  ["hypvol"]: "hypvol",
-  ["det"]: "det",
-  ["det-primedivisors"]: "det-primedivisors",
-  ["sig"]: "sig",
-  ["sig-mod4"]: "sig-mod4",
-  ["3genus-avg"]: "3genus",
-  ["arf"]: "Arf",
-  ["s-inv"]: "s-inv",
-  ["s-inv-abs"]: "s-inv-abs",
-};
-
-const optionsType: { [name: string]: string } = {
-  ["a"]: "alternating",
-  ["n"]: "non-alternating",
-  ["t"]: "torus",
-  ["s"]: "satellite",
-  ["h"]: "hyperbolic",
+  ["khovanov-t1-n"]: "KhovanovT1-n",
+  ["khodd-n"]: "KhovanovOdd-n",
+  ["kr3-3-15-e=0.5-n"]: "KR3-3-15-n",
 };
 
 export default function BallmapperPage() {
@@ -275,17 +257,16 @@ export default function BallmapperPage() {
       maxNodeSize: bmMaxNodeSize,
       setSelected,
       ...{
-        _forceSettings:
-          bmInv !== "homflypt-e=0.5"
-            ? {}
-            : {
-                charge: -100,
-                // gravity: 0.8,
-                linkDistance: 80,
-                linkStrength: 0.2,
-                linkIterations: 50,
-                ticks: 20,
-              },
+        _forceSettings: !bmInv.startsWith("homflypt-e=0.5")
+          ? {}
+          : {
+              charge: -100,
+              // gravity: 0.8,
+              linkDistance: 80,
+              linkStrength: 0.2,
+              linkIterations: 50,
+              ticks: 20,
+            },
       },
     });
     setSvgData({ container, svg, node, link, drag, zoom, tooltip });
@@ -333,17 +314,16 @@ export default function BallmapperPage() {
       setSelected: () => {},
       disableLasso: true,
       ...{
-        _forceSettings:
-          bmCmpInv !== "homflypt-e=0.5"
-            ? {}
-            : {
-                charge: -100,
-                // gravity: 0.8,
-                linkDistance: 80,
-                linkStrength: 0.2,
-                linkIterations: 50,
-                ticks: 20,
-              },
+        _forceSettings: !bmCmpInv.startsWith("homflypt-e=0.5")
+          ? {}
+          : {
+              charge: -100,
+              // gravity: 0.8,
+              linkDistance: 50,
+              linkStrength: 0.2,
+              linkIterations: 50,
+              ticks: 20,
+            },
       },
     });
     setSvgCmpData({ container, svg, node, link, drag, zoom, tooltip });
