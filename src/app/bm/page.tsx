@@ -68,7 +68,7 @@ const optionsBM: { [name: string]: string } = {
   ["a2"]: "A2",
   ["alexander"]: "Alexander",
   ["b1"]: "B1",
-  ["bnvdv-3-15-e=0.15"]: "BV 3-15",
+  // ["bnvdv-3-15-e=0.15"]: "BV 3-15",
   ["bnvdv"]: "BV",
   ["hfk2"]: "HFK2",
   ["hfk2-t1"]: "HFK2T1",
