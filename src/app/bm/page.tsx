@@ -31,6 +31,7 @@ import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
 import { max, min, sum } from "@/util/array-util";
 import { lerp, rgbLerp } from "@/util/number";
+import { optionsVal, optionsType } from "./coloring-options";
 
 type NodeDatum = {
   id: number;
@@ -68,6 +69,7 @@ const optionsBM: { [name: string]: string } = {
   ["alexander"]: "Alexander",
   ["b1"]: "B1",
   ["bnvdv-3-15-e=0.15"]: "BV 3-15",
+  ["bnvdv"]: "BV",
   ["hfk2"]: "HFK2",
   ["hfk2-t1"]: "HFK2T1",
   ["homflypt-e=0.5"]: "HOMFLYPT",
@@ -82,25 +84,6 @@ const optionsBM: { [name: string]: string } = {
   ["khodd"]: "KhovanovOdd",
   ["kr3-3-15-e=0.5"]: "KR3 3-15",
   // ["kr3-3-15-e=1"]: "KR3",
-};
-const optionsVal: { [name: string]: string } = {
-  ["hypvol"]: "hypvol",
-  ["det"]: "det",
-  ["det-primedivisors"]: "det-primedivisors",
-  ["sig"]: "sig",
-  ["sig-mod4"]: "sig-mod4",
-  ["3genus-avg"]: "3genus",
-  ["arf"]: "Arf",
-  ["s-inv"]: "s-inv",
-  ["s-inv-abs"]: "s-inv-abs",
-};
-
-const optionsType: { [name: string]: string } = {
-  ["a"]: "alternating",
-  ["n"]: "non-alternating",
-  ["t"]: "torus",
-  ["s"]: "satellite",
-  ["h"]: "hyperbolic",
 };
 
 export default function BallmapperPage() {
