@@ -1,3 +1,15 @@
+export const optionsType: { [name: string]: string } = {
+  ["a"]: "alternating",
+  ["n"]: "non-alternating",
+  ["t"]: "torus",
+  ["s"]: "satellite",
+  ["h"]: "hyperbolic",
+};
+
+export const optionsBool: { [name: string]: string } = {
+  ["chiralpseudo-jones+b1"]: "chiral",
+};
+
 export const optionsVal: { [name: string]: string } = {
   ["hypvol"]: "hypvol",
   ["det"]: "det",
@@ -8,13 +20,4 @@ export const optionsVal: { [name: string]: string } = {
   ["arf"]: "Arf",
   ["s-inv"]: "s-inv",
   ["s-inv-abs"]: "s-inv-abs",
-  ["chiral"]: "chiral",
-};
-
-export const optionsType: { [name: string]: string } = {
-  ["a"]: "alternating",
-  ["n"]: "non-alternating",
-  ["t"]: "torus",
-  ["s"]: "satellite",
-  ["h"]: "hyperbolic",
 };

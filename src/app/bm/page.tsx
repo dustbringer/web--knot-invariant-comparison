@@ -29,9 +29,9 @@ import Tooltip from "@/components/Tooltip";
 import Range from "@/components/Range";
 import createGraphSVG, { colors as nodeColors, rgbToText } from "./graph-svg";
 import staticify from "@/util/staticURLs";
-import { max, min, sum } from "@/util/array-util";
+import { argFilter, max, min, sum } from "@/util/array-util";
 import { lerp, rgbLerp } from "@/util/number";
-import { optionsVal, optionsType } from "./coloring-options";
+import { optionsType, optionsBool, optionsVal } from "./coloring-options";
 
 type NodeDatum = {
   id: number;
@@ -62,7 +62,7 @@ type SVGData = {
 
 // color interpolator
 const colorRainbow = (n: number) =>
-  d3.scaleSequential(d3.interpolateTurbo)(lerp(0.075, 0.95, n));
+  d3.scaleSequential(d3.interpolateTurbo)(lerp(0.15, 0.9, n));
 
 const optionsBM: { [name: string]: string } = {
   ["a2"]: "A2",
@@ -87,10 +87,15 @@ const optionsBM: { [name: string]: string } = {
 };
 
 export default function BallmapperPage() {
-  const bmSaved = React.useRef<{
+  const savedBM = React.useRef<{
     [inv: string]: { edge: string; pcbl: string };
   }>({});
-  const [bmType, setBmType] = React.useState<string>("b1");
+  const savedVals = React.useRef<{
+    [inv: string]: Array<number>;
+  }>({});
+  const savedKnotTypes = React.useRef<Array<string>>([]);
+
+  const [bmInv, setBmInv] = React.useState<string>("b1");
   const [bmLinks, setBmLinks] = React.useState<Array<LinkDatum>>([]);
   const [bmNodes, setBmNodes] = React.useState<Array<NodeDatum>>([]);
   const [bmPCBL, setBmPCBL] = React.useState<Array<Array<number>>>([]);
@@ -101,7 +106,7 @@ export default function BallmapperPage() {
   const [svgData, setSvgData] = React.useState<SVGData>();
   const [selected, setSelected] = React.useState<{ [n: number]: boolean }>({});
 
-  const [bmCmpType, setBmCmpType] = React.useState<string>("jones");
+  const [bmCmpInv, setBmCmpInv] = React.useState<string>("jones");
   const [bmCmpLinks, setBmCmpLinks] = React.useState<Array<LinkDatum>>([]);
   const [bmCmpNodes, setBmCmpNodes] = React.useState<Array<NodeDatum>>([]);
   const [bmCmpPCBL, setBmCmpPCBL] = React.useState<Array<Array<number>>>([]);
@@ -110,21 +115,18 @@ export default function BallmapperPage() {
   const [svgCmpRef, setSvgCmpRef] = React.useState<HTMLDivElement | null>(null);
   const [svgCmpData, setSvgCmpData] = React.useState<SVGData>();
 
-  const [types, setTypes] = React.useState<Array<string> | null>(null);
-  const [useSolidHighlight, setUseSolidHighlight] =
-    React.useState<boolean>(false);
   const [checkedHighlight, setCheckedHighlight] = React.useState<{
     [s: string]: boolean;
   }>({});
   const [knotsText, setKnotsText] = React.useState<string>("");
-  const [vals, setVals] = React.useState<{
-    [name: string]: Array<number>;
-  } | null>(null);
-  const [valsInfo, setValsInfo] = React.useState<{
+
+  // Slider
+  const [sliderLimit, setSliderLimit] = React.useState<number>(0);
+  const [colorInfo, setColorInfo] = React.useState<{
     [index: number]: number;
   }>({});
-  const [sliderVal, setSliderVal] = React.useState<number>(0);
 
+  // Current colouring
   const [curColorType, setCurColorType] = React.useState<string>("");
   const [curColorName, setCurColorName] = React.useState<string>("");
 
@@ -132,23 +134,23 @@ export default function BallmapperPage() {
     setBmLoaded(false);
     Promise.resolve()
       .then(() => {
-        if (bmSaved.current[bmType] === undefined) {
-          console.log(`Fetching bm for ${bmType}`);
+        if (savedBM.current[bmInv] === undefined) {
+          console.log(`Fetching bm for ${bmInv}`);
           return Promise.all([
-            fetch(staticify(`/static/bm/bm-${bmType}.edge.out`)),
-            fetch(staticify(`/static/bm/bm-${bmType}.pcbl.out`)),
+            fetch(staticify(`/static/bm/bm-${bmInv}.edge.out`)),
+            fetch(staticify(`/static/bm/bm-${bmInv}.pcbl.out`)),
           ])
             .then((res) => Promise.all(res.map((r) => r.text())))
             .then((res) => {
-              bmSaved.current[bmType] = { edge: res[0], pcbl: res[1] };
+              savedBM.current[bmInv] = { edge: res[0], pcbl: res[1] };
               return { edge: res[0], pcbl: res[1] };
             });
         } else {
-          return Promise.resolve(bmSaved.current[bmType]);
+          return Promise.resolve(savedBM.current[bmInv]);
         }
       })
       .then((data: { edge: string; pcbl: string }) => {
-        console.log(`Loading bm for ${bmType}`);
+        console.log(`Loading bm for ${bmInv}`);
         const edges = data.edge
           .trim()
           .split("\n")
@@ -179,29 +181,29 @@ export default function BallmapperPage() {
         );
         setSelected([]);
       });
-  }, [bmType]);
+  }, [bmInv]);
 
   React.useEffect(() => {
     setBmCmpLoaded(false);
     Promise.resolve()
       .then(() => {
-        if (bmSaved.current[bmCmpType] === undefined) {
-          console.log(`Fetching bmCmp for ${bmCmpType}`);
+        if (savedBM.current[bmCmpInv] === undefined) {
+          console.log(`Fetching bmCmp for ${bmCmpInv}`);
           return Promise.all([
-            fetch(staticify(`/static/bm/bm-${bmCmpType}.edge.out`)),
-            fetch(staticify(`/static/bm/bm-${bmCmpType}.pcbl.out`)),
+            fetch(staticify(`/static/bm/bm-${bmCmpInv}.edge.out`)),
+            fetch(staticify(`/static/bm/bm-${bmCmpInv}.pcbl.out`)),
           ])
             .then((res) => Promise.all(res.map((r) => r.text())))
             .then((res) => {
-              bmSaved.current[bmCmpType] = { edge: res[0], pcbl: res[1] };
+              savedBM.current[bmCmpInv] = { edge: res[0], pcbl: res[1] };
               return { edge: res[0], pcbl: res[1] };
             });
         } else {
-          return Promise.resolve(bmSaved.current[bmCmpType]);
+          return Promise.resolve(savedBM.current[bmCmpInv]);
         }
       })
       .then((data: { edge: string; pcbl: string }) => {
-        console.log(`Loading bmCmp for ${bmCmpType}`);
+        console.log(`Loading bmCmp for ${bmCmpInv}`);
         const edges = data.edge
           .trim()
           .split("\n")
@@ -233,7 +235,7 @@ export default function BallmapperPage() {
       });
     setCurColorType("");
     setCurColorName("");
-  }, [bmCmpType]);
+  }, [bmCmpInv]);
 
   React.useEffect(() => {
     if (bmNodes.length === 0) {
@@ -249,17 +251,16 @@ export default function BallmapperPage() {
       maxNodeSize: bmMaxNodeSize,
       setSelected,
       ...{
-        _forceSettings:
-          bmType !== "homflypt-e=0.5"
-            ? {}
-            : {
-                charge: -100,
-                // gravity: 0.8,
-                linkDistance: 80,
-                linkStrength: 0.2,
-                linkIterations: 50,
-                ticks: 20,
-              },
+        _forceSettings: !bmInv.startsWith("homflypt-e=0.5")
+          ? {}
+          : {
+              charge: -100,
+              // gravity: 0.8,
+              linkDistance: 80,
+              linkStrength: 0.2,
+              linkIterations: 50,
+              ticks: 20,
+            },
       },
     });
     setSvgData({ container, svg, node, link, drag, zoom, tooltip });
@@ -271,7 +272,7 @@ export default function BallmapperPage() {
     );
 
     setBmLoaded(true);
-  }, [svgRef, bmType, bmNodes, bmLinks, bmMaxNodeSize]);
+  }, [svgRef, bmInv, bmNodes, bmLinks, bmMaxNodeSize]);
 
   React.useEffect(() => {
     const drag = svgData?.drag;
@@ -307,17 +308,16 @@ export default function BallmapperPage() {
       setSelected: () => {},
       disableLasso: true,
       ...{
-        _forceSettings:
-          bmCmpType !== "homflypt-e=0.5"
-            ? {}
-            : {
-                charge: -100,
-                // gravity: 0.8,
-                linkDistance: 80,
-                linkStrength: 0.2,
-                linkIterations: 50,
-                ticks: 20,
-              },
+        _forceSettings: !bmCmpInv.startsWith("homflypt-e=0.5")
+          ? {}
+          : {
+              charge: -100,
+              // gravity: 0.8,
+              linkDistance: 80,
+              linkStrength: 0.2,
+              linkIterations: 50,
+              ticks: 20,
+            },
       },
     });
     setSvgCmpData({ container, svg, node, link, drag, zoom, tooltip });
@@ -329,7 +329,7 @@ export default function BallmapperPage() {
     );
 
     setBmCmpLoaded(true);
-  }, [svgCmpRef, bmCmpType, bmCmpNodes, bmCmpLinks, bmCmpMaxNodeSize]);
+  }, [svgCmpRef, bmCmpInv, bmCmpNodes, bmCmpLinks, bmCmpMaxNodeSize]);
 
   const transferSelected = () => {
     console.log(selected); // keys = id from bmNodes and bmCmpNodes
@@ -352,10 +352,7 @@ export default function BallmapperPage() {
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
       .attr(
         "fill",
-        (d) =>
-          colorRainbow(
-            useSolidHighlight ? (sizes[d.id][0] > 0 ? 1 : 0) : sizes[d.id][0]
-          )
+        (d) => colorRainbow(sizes[d.id][0])
         // rgbToText(
         //   colorLerp(
         //     nodeColors[0],
@@ -375,11 +372,17 @@ export default function BallmapperPage() {
     });
 
     console.log(sizes);
+
+    setColorInfo(
+      Object.fromEntries(
+        Object.entries(sizes).map((data) => [data[0], data[1][0]])
+      )
+    );
     setCurColorType("compare");
-    setCurColorName(`${optionsBM[bmType] ?? "Unknown"}`);
+    setCurColorName(`${optionsBM[bmInv] ?? "Unknown"}`);
   };
 
-  const highlightBool = async (ps: Array<number>, name: string) => {
+  const highlightBools = async (ps: Array<number>, name: string) => {
     const pcbl: { [index: number]: boolean } = {};
     ps.forEach((n) => (pcbl[n] = true));
 
@@ -404,14 +407,7 @@ export default function BallmapperPage() {
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
       .attr(
         "fill",
-        (d) =>
-          colorRainbow(
-            useSolidHighlight
-              ? nodeInfo[d.id][0] > 0
-                ? 1
-                : 0
-              : nodeInfo[d.id][0]
-          )
+        (d) => colorRainbow(nodeInfo[d.id][0])
         // rgbToText(
         //   colorLerp(
         //     nodeColors[0],
@@ -438,6 +434,11 @@ export default function BallmapperPage() {
 
     // console.log(nodeInfo);
 
+    setColorInfo(
+      Object.fromEntries(
+        Object.entries(nodeInfo).map((data) => [data[0], data[1][0]])
+      )
+    );
     setCurColorType("bool");
     setCurColorName(`${name}`);
   };
@@ -491,9 +492,7 @@ export default function BallmapperPage() {
     svgCmpData?.node
       // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
       .attr("fill", (d) =>
-        colorRainbow(
-          lerp(0.1, 0.95, (nodeInfo[d.id][0] - minavg) / (maxavg - minavg))
-        )
+        colorRainbow((nodeInfo[d.id][0] - minavg) / (maxavg - minavg))
       );
 
     // Mouseover
@@ -514,7 +513,8 @@ export default function BallmapperPage() {
     });
 
     // console.log(nodeInfo);
-    setValsInfo(
+
+    setColorInfo(
       Object.fromEntries(
         Object.entries(nodeInfo).map((data) => [
           data[0],
@@ -522,64 +522,92 @@ export default function BallmapperPage() {
         ])
       )
     );
-
     setCurColorType("scalar");
     setCurColorName(`${name}`);
   };
 
-  const highlightValsSlider = async (
-    limit: number // number between 0 and 1
+  const highlightSlider = async (
+    limit: number // number between 0 and 100
   ) => {
-    setSliderVal(limit);
-
-    const nodeInfo = valsInfo;
-    // // Highlight things
-    svgCmpData?.node
-      // .attr("opacity", (d) => `${lerp(0.8, 1, sizes[d.id]) * 100}%`)
-      .attr("fill", (d) =>
-        colorRainbow(nodeInfo[d.id] * 100 <= limit ? 0.1 : 0.95)
+    // // Highlight things (changing the inequality on each extreme)
+    if (limit !== 100) {
+      svgCmpData?.node.attr("fill", (d) =>
+        colorRainbow(colorInfo[d.id] * 100 <= limit ? 0 : 1)
       );
+    } else {
+      svgCmpData?.node.attr("fill", (d) =>
+        colorRainbow(colorInfo[d.id] * 100 < limit ? 0 : 1)
+      );
+    }
   };
 
-  const highlightBoolType = async () => {
-    let newTypes: Array<string> = types || [];
-    if (types === null) {
+  const highlightBoolsType = async () => {
+    if (
+      savedKnotTypes.current === null ||
+      savedKnotTypes.current.length === 0
+    ) {
       // Fill types if it is empty
-      newTypes = (
+      savedKnotTypes.current = (
         await fetch(staticify(`/static/bm/types-3-16.out`)).then((res) =>
           res.text()
         )
       )
         .trim()
         .split("\n");
-      setTypes(newTypes);
     }
 
     const checked = ["a", "n", "t", "s", "h"].filter(
       (c) => checkedHighlight[c]
     );
     const output: Array<number> = [];
-    newTypes?.forEach((t, i) => {
+    savedKnotTypes.current.forEach((t, i) => {
       if (checked.every((c) => t.includes(c))) {
         output.push(i);
       }
     });
-    highlightBool(output, checked.map((s) => optionsType[s]).join(" AND "));
+    highlightBools(output, checked.map((s) => optionsType[s]).join(" AND "));
   };
 
-  const highlightBoolSpecific = async () => {
+  const highlightBoolsSpecific = async () => {
     const idxs = knotsText
       .split(",")
       .filter((s) => s.trim() !== "")
       .map((s) => Number(s))
       .filter((n) => !isNaN(n));
-    highlightBool(idxs, `custom selected size=${idxs.length}`);
+    highlightBools(idxs, `custom selected size=${idxs.length}`);
   };
 
-  const highlightValsInv = async (name: string) => {
-    if (
-      Object.keys(optionsVal).filter((_name) => name === _name).length === 0
-    ) {
+  const highlightBoolsInv = async (
+    name: string,
+    options: { [name: string]: string } = optionsBool
+  ) => {
+    if (Object.keys(options).filter((_name) => name === _name).length === 0) {
+      return;
+    }
+
+    if (savedVals.current === null || savedVals.current[name] === undefined) {
+      // Fill types if it is empty
+      savedVals.current[name] = (
+        await fetch(staticify(`/static/bm/${name}-3-16.out`)).then((res) =>
+          res.text()
+        )
+      )
+        .trim()
+        .split("\n")
+        .map((line) => Number(line));
+    }
+
+    highlightBools(
+      argFilter((v: number) => v === 1)(savedVals.current[name]),
+      `${options[name]}`
+    );
+  };
+
+  const highlightValsInv = async (
+    name: string,
+    options: { [name: string]: string } = optionsVal
+  ) => {
+    if (Object.keys(options).filter((_name) => name === _name).length === 0) {
       return;
     }
 
@@ -591,10 +619,9 @@ export default function BallmapperPage() {
       return out;
     };
 
-    const newVals: { [name: string]: Array<number> } = vals || {};
-    if (vals === null || vals[name] === undefined) {
+    if (savedVals.current === null || savedVals.current[name] === undefined) {
       // Fill types if it is empty
-      newVals[name] = (
+      savedVals.current[name] = (
         await fetch(staticify(`/static/bm/${name}-3-16.out`)).then((res) =>
           res.text()
         )
@@ -602,7 +629,6 @@ export default function BallmapperPage() {
         .trim()
         .split("\n")
         .map((line) => Number(line));
-      setVals(newVals);
     }
 
     let preTransform = (n: number) => n;
@@ -616,8 +642,8 @@ export default function BallmapperPage() {
     }
 
     highlightVals(
-      newVals[name].map((v, i) => [i, v]),
-      `${optionsVal[name]}`,
+      savedVals.current[name].map((v, i) => [i, v]),
+      `${options[name]}`,
       preTransform,
       postTransform
     );
@@ -659,8 +685,8 @@ export default function BallmapperPage() {
               name: v,
               value: k,
             }))}
-            value={bmCmpType}
-            onChange={(e) => setBmCmpType((e.target as HTMLInputElement).value)}
+            value={bmCmpInv}
+            onChange={(e) => setBmCmpInv((e.target as HTMLInputElement).value)}
           />
         </div>
         <Typography variant="body1">
@@ -722,8 +748,8 @@ export default function BallmapperPage() {
                 name: v,
                 value: k,
               }))}
-              value={bmType}
-              onChange={(e) => setBmType((e.target as HTMLInputElement).value)}
+              value={bmInv}
+              onChange={(e) => setBmInv((e.target as HTMLInputElement).value)}
             />
           </Box>
 
@@ -773,27 +799,6 @@ export default function BallmapperPage() {
                   </IconButton>
                 </Tooltip>
               </Box>
-
-              <Box>
-                <Switch
-                  checked={useSolidHighlight}
-                  onChange={(e) => setUseSolidHighlight(e.target.checked)}
-                />
-                Solid Highlighting
-                <Tooltip
-                  title={<>Binary highlighting of empty and non-empty nodes.</>}
-                >
-                  <IconButton
-                    size="small"
-                    disableFocusRipple
-                    disableRipple
-                    // disableTouchRipple
-                    sx={{ margin: "0 7px" }}
-                  >
-                    <InfoIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
             </Box>
 
             <Box
@@ -817,7 +822,31 @@ export default function BallmapperPage() {
         </Accordion>
 
         <Accordion title="Colours">
-          <Typography variant="body1">Types of knots</Typography>
+          <Typography variant="body1">Boolean invariants</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {Object.entries(optionsBool).map(([name, display]) => (
+              <Button
+                key={name}
+                sx={{ margin: "0 5px" }}
+                variant={
+                  curColorType === "bool" && curColorName === display
+                    ? "contained"
+                    : "outlined"
+                }
+                size="small"
+                onClick={() => highlightBoolsInv(name)}
+                disableElevation
+              >
+                {display}
+              </Button>
+            ))}
+          </Box>
           <Box
             sx={{
               display: "flex",
@@ -862,7 +891,7 @@ export default function BallmapperPage() {
             <Button
               variant="contained"
               size="small"
-              onClick={highlightBoolType}
+              onClick={highlightBoolsType}
               disableElevation
             >
               Intersect
@@ -885,7 +914,7 @@ export default function BallmapperPage() {
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  highlightBoolSpecific();
+                  highlightBoolsSpecific();
                 }
               }}
             />
@@ -893,38 +922,20 @@ export default function BallmapperPage() {
               sx={{ margin: "0 5px" }}
               variant="contained"
               size="small"
-              onClick={highlightBoolSpecific}
+              onClick={highlightBoolsSpecific}
               disableElevation
             >
               Highlight
             </Button>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Switch
-              checked={useSolidHighlight}
-              onChange={(e) => setUseSolidHighlight(e.target.checked)}
-            />
-            Solid Highlighting
-            <Tooltip
-              title={<>Binary highlighting of empty and non-empty nodes.</>}
-            >
-              <IconButton
-                size="small"
-                disableFocusRipple
-                disableRipple
-                // disableTouchRipple
-                sx={{ margin: "0 7px" }}
-              >
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
+
+          <ul>
+            <li>
+              <strong>Warning!</strong> &quot;Chiral&quot; here means the
+              pseudo-chirality according to palindromicity of B1 and Jones
+              invariants.
+            </li>
+          </ul>
 
           <HorizontalRule />
 
@@ -953,41 +964,6 @@ export default function BallmapperPage() {
               </Button>
             ))}
           </Box>
-          <Box
-            sx={{
-              margin: "5px 20px",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "start",
-            }}
-          >
-            <Range
-              // props={{ sx: { width: "100px" } }}
-              disabled={curColorType !== "scalar"}
-              min={0}
-              max={100}
-              value={sliderVal}
-              step={1}
-              onChange={(e) =>
-                highlightValsSlider(
-                  Number((e.target as HTMLInputElement)?.value || 0)
-                )
-              }
-            />
-            <Tooltip
-              title={<>Binary highlighting separated by value in slider.</>}
-            >
-              <IconButton
-                size="small"
-                disableFocusRipple
-                disableRipple
-                // disableTouchRipple
-                sx={{ margin: "0 0 0 1em" }}
-              >
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
         </Accordion>
 
         <Accordion title="Epsilon movie">
@@ -1006,6 +982,49 @@ export default function BallmapperPage() {
         {curColorType !== "" &&
           `Current colours: (${curColorType}) ${curColorName}`}
       </Typography>
+      <Box
+        sx={{
+          margin: "5px 20px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "start",
+        }}
+      >
+        <Range
+          // props={{ sx: { width: "100px" } }}
+          disabled={curColorType === ""}
+          min={0}
+          max={100}
+          value={sliderLimit}
+          step={1}
+          onChange={(e) => {
+            const limit = Number((e.target as HTMLInputElement)?.value || 0);
+            setSliderLimit(limit);
+            highlightSlider(limit);
+          }}
+        />
+        <Tooltip
+          title={
+            <>
+              Binary highlighting separated by value in slider.
+              <ul style={{ margin: 0 }}>
+                <li>0 = all except 0%</li>
+                <li>100 = only 100%</li>
+              </ul>
+            </>
+          }
+        >
+          <IconButton
+            size="small"
+            disableFocusRipple
+            disableRipple
+            // disableTouchRipple
+            sx={{ margin: "0 0 0 1em" }}
+          >
+            <InfoIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
       <Box
         sx={{
           // border: "1px solid black",
