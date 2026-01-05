@@ -100,6 +100,10 @@ export default function DetectionPage() {
             <Link href="/stats/detection-volume" inPlace>
               Detection Volume
             </Link>
+            . For invariant distribution histograms, see{" "}
+            <Link href="/stats/dist" inPlace>
+              Distribution
+            </Link>
             .
           </Typography>
           <Radios
