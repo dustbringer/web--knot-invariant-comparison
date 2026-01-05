@@ -956,8 +956,9 @@ export default function BallmapperPage() {
           <ul>
             <li>
               <strong>Warning!</strong> &quot;Chiral&quot; here means the
-              pseudo-chirality according to palindromicity of B1 and Jones
-              invariants.
+              pseudo-chirality according to non-palindromicity of B1 and Jones
+              invariants, so there may be some false negatives (chiral knots
+              shown as achiral).
             </li>
           </ul>
 

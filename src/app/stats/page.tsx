@@ -67,9 +67,16 @@ export default function StatsPage() {
             <Link href="https://github.com/dtubbenhauer/quantumdata">
               GitHub
             </Link>
-            ]. For detection data of the polynomials, see{" "}
+            ].
+          </Typography>
+          <Typography variant="body1">
+            For detection data of the polynomials, see{" "}
             <Link href="/stats/detection" inPlace>
               Detection
+            </Link>
+            . For rank correlation graphs, see{" "}
+            <Link href="/stats/rank" inPlace>
+              Rank
             </Link>
             .
           </Typography>
