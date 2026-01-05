@@ -155,11 +155,12 @@ export default function DistributionsPage() {
         </div>
 
         <Plot
-          data={data.map((d) => ({
+          data={data.map((d, i) => ({
             type: "histogram",
             mode: "markers",
             x: d,
             opacity: 0.4,
+            name: ["all", "alternating", "non-alternating"][i],
           }))}
           config={{
             scrollZoom: true,
