@@ -31,7 +31,7 @@ import Accordion from "@/components/Accordion";
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
 
-export const optionsVal: { [name: string]: string } = {
+const optionsVal: { [name: string]: string } = {
   ["hypvol"]: "hypvol",
   ["det"]: "det",
   ["det-primedivisors"]: "det-primedivisors",
