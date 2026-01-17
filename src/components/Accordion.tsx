@@ -8,12 +8,12 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 
-const Accordion = styled(
+const _Accordion = styled(
   (props: {
     children: NonNullable<React.ReactNode>;
     expanded: boolean;
     onChange: () => void;
-  }) => <MuiAccordion disableGutters elevation={0} square {...props} />
+  }) => <MuiAccordion disableGutters elevation={0} square {...props} />,
 )(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: "4px",
@@ -57,7 +57,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
  * Put "overflow: hidden" in the wrapping div, so that the contents
  * don't mess up the spacing on the page
  */
-function MyAccordion({
+function Accordion({
   title,
   children,
   expand = false,
@@ -71,7 +71,7 @@ function MyAccordion({
   const [expanded, setExpanded] = React.useState(expand);
 
   return (
-    <Accordion
+    <_Accordion
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
       {...props}
@@ -80,8 +80,8 @@ function MyAccordion({
         <Typography sx={{ margin: 0 }}>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>{children}</AccordionDetails>
-    </Accordion>
+    </_Accordion>
   );
 }
 
-export default MyAccordion;
+export default Accordion;

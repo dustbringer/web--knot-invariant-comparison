@@ -30,6 +30,7 @@ import Accordion from "@/components/Accordion";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
+import HorizontalRule from "@/components/styled/HorizontalRule";
 
 const optionsInv: { [name: string]: string } = {
   ["a2-3-16"]: "A2",
@@ -116,6 +117,9 @@ export default function DistributionsPage() {
             </Link>
             .
           </Typography> */}
+
+          <HorizontalRule />
+
           <Typography variant="body1">Invariant</Typography>
           <Radios
             options={Object.keys(optionsInv).map((k) => ({

@@ -73,7 +73,7 @@ function Footer() {
     <div>
       <StyledAppBar position="static" color="transparent" elevation={0}>
         <StyledToolbar variant="dense">
-          <StyledContainer maxWidth="md">
+          <StyledContainer maxWidth="lg">
             <DivRowSpaceBetween>
               <Typography> </Typography>
               <SocialIcons>

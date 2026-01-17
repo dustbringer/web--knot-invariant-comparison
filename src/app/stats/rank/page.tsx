@@ -30,6 +30,7 @@ import Accordion from "@/components/Accordion";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
+import HorizontalRule from "@/components/styled/HorizontalRule";
 
 const optionsVal: { [name: string]: string } = {
   ["hypvol"]: "hypvol",
@@ -80,7 +81,7 @@ export default function RankPage() {
         ) {
           console.log(`Fetching rank-${xName} for ${invName}`);
           return fetch(
-            staticify(`/static/rank/rank-${xName}-${invName}.sample.txt`)
+            staticify(`/static/rank/rank-${xName}-${invName}.sample.txt`),
           )
             .then((res) => res.text())
             .then((res) => {
@@ -90,7 +91,7 @@ export default function RankPage() {
                 .split("\n")
                 .map(
                   (lines) =>
-                    lines.split(",").map(Number) as [number, number, number]
+                    lines.split(",").map(Number) as [number, number, number],
                 );
               return savedVals.current[xName][invName];
             });
@@ -112,7 +113,7 @@ export default function RankPage() {
             name: _cn,
             x: cnBuckets[Number(_cn)].map((line) => line[1]),
             y: cnBuckets[Number(_cn)].map((line) => line[0]),
-          }))
+          })),
         );
       })
       .finally(() => {
@@ -127,6 +128,12 @@ export default function RankPage() {
           <Typography variant="body1" gutterBottom>
             Polynomial invariant rank correlated with numerical invariants.
           </Typography>
+          <Typography variant="body1" gutterBottom>
+            The set of knots displayed are the same across plots.
+          </Typography>
+
+          <HorizontalRule />
+
           {/* <Typography variant="body1">
             Supplement to <em>Big data comparison of quantum invariants</em> [
             <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>;{" "}

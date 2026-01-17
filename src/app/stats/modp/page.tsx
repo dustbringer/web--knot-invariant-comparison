@@ -25,14 +25,44 @@ import Radio from "@/components/Radios";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
-import stats from "./stats";
+import { statsJones, statsKhovanov } from "./stats";
 
 import staticify from "@/util/staticURLs";
+import HorizontalRule from "@/components/styled/HorizontalRule";
+
+type StatsType = {
+  [name: string]: {
+    ylabel: string;
+    xlabel: string;
+    ylogscale?: boolean;
+    yrange?: [number, number];
+    legend: {
+      yanchor: "top" | "bottom";
+      y: number;
+      xanchor: "left" | "right";
+      x: number;
+    };
+    columns: Array<string>;
+    x: Array<number>;
+    ys: Array<Array<number>>;
+  };
+};
+const nameToStat: { [name: string]: StatsType } = {
+  jones: statsJones,
+  khovanov: statsKhovanov,
+};
 
 export default function ModPPage() {
-  const [plotName, setPlotName] = React.useState<string>("unique mod-p");
+  const [plotName, setPlotName] = React.useState<string>("count");
+  const [invName, setInvName] = React.useState<string>("jones");
+  const [invStats, setInvStats] = React.useState<StatsType>(statsJones);
   const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setInvStats(nameToStat[invName] ?? statsJones);
+    setPlotName("count");
+  }, [invName]);
 
   const successiveQuotients = (arr: Array<number>) => {
     const ret = [];
@@ -66,14 +96,34 @@ export default function ModPPage() {
             ].
           </Typography> */}
           <Typography variant="body1">
-            Data for Jones polynomials, with coefficients reduced mod p, that are
-            trivial.
+            Data for Jones polynomials, with coefficients reduced mod p, that
+            are trivial.
           </Typography>
-          <Radio
-            options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
-            value={plotName}
-            onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
-          />
+          <HorizontalRule />
+          <div>
+            <Radio
+              title="Invariant"
+              options={[
+                { name: "Jones", value: "jones" },
+                { name: "Khovanov", value: "khovanov" },
+              ]}
+              value={invName}
+              onChange={(e) => setInvName((e.target as HTMLInputElement).value)}
+            />
+          </div>
+          <div>
+            <Radio
+              title="Plot"
+              options={Object.keys(invStats).map((k) => ({
+                name: k,
+                value: k,
+              }))}
+              value={plotName}
+              onChange={(e) =>
+                setPlotName((e.target as HTMLInputElement).value)
+              }
+            />
+          </div>
         </div>
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
@@ -108,38 +158,38 @@ export default function ModPPage() {
           <i>Interactive</i> plot: zoom, pan and toggle your desired options!
         </Typography>
         <Line
-          data={stats[plotName].columns.map((name, i) => ({
-            x: stats[plotName].x,
-            y: stats[plotName].ys?.[i] || [],
+          data={invStats[plotName].columns.map((name, i) => ({
+            x: invStats[plotName].x,
+            y: invStats[plotName].ys?.[i] || [],
             name: name,
           }))}
           width={800}
           height={600}
           layout={{
             xaxis: {
-              title: stats[plotName].xlabel,
+              title: invStats[plotName].xlabel,
               linecolor: "black",
               linewidth: 2,
             },
             yaxis: {
-              title: stats[plotName].ylabel,
+              title: invStats[plotName].ylabel,
               linecolor: "black",
               linewidth: 2,
-              ...(stats[plotName].ylogscale && { type: "log" }),
-              ...(stats[plotName].yrange !== undefined && {
-                range: stats[plotName].yrange,
+              ...(invStats[plotName].ylogscale && { type: "log" }),
+              ...(invStats[plotName].yrange !== undefined && {
+                range: invStats[plotName].yrange,
               }),
             },
-            legend: { ...stats[plotName].legend },
+            legend: { ...invStats[plotName].legend },
           }}
           style={{ margin: "0 auto" }}
         />
 
         {showSQ && (
           <Line
-            data={stats[plotName]["columns"].map((name, i) => ({
-              x: stats[plotName].x,
-              y: successiveQuotients(stats[plotName].ys?.[i] || []),
+            data={invStats[plotName]["columns"].map((name, i) => ({
+              x: invStats[plotName].x,
+              y: successiveQuotients(invStats[plotName].ys?.[i] || []),
               name: name,
             }))}
             width={800}
@@ -187,7 +237,7 @@ export default function ModPPage() {
                     backgroundColor: "#f0f0f0",
                   }}
                 >
-                  {["n", ...stats[plotName].columns].map((name) => (
+                  {["n", ...invStats[plotName].columns].map((name) => (
                     <TableCell
                       key={name}
                       sx={{ fontWeight: "600", borderBottomWidth: "3px" }}
@@ -198,7 +248,7 @@ export default function ModPPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {stats[plotName].x.map((_, i) => (
+                {invStats[plotName].x.map((_, i) => (
                   <TableRow
                     key={`row${i}`}
                     sx={{
@@ -212,9 +262,9 @@ export default function ModPPage() {
                     }} // last element has no bottom border
                   >
                     <TableCell key={`row${i},col${-1}`}>
-                      {stats[plotName].x[i]}
+                      {invStats[plotName].x[i]}
                     </TableCell>
-                    {stats[plotName].ys.map((y, j) => (
+                    {invStats[plotName].ys.map((y, j) => (
                       <TableCell key={`row${i},col${j}`}>
                         {isNaN(y[i]) ? "-" : y[i]}
                       </TableCell>

@@ -78,6 +78,8 @@ const optionsBM: { [name: string]: string } = {
   ["khovanov-t1-a"]: "KhovanovT1-a",
   ["khodd-a"]: "KhovanovOdd-a",
   ["kr3-3-15-e=0.5-a"]: "KR3-3-15-a",
+  ["v1-a"]: "V1-a",
+  ["v2-3-15-a"]: "V2-3-15-a",
 };
 
 export default function BallmapperPage() {
@@ -673,6 +675,12 @@ export default function BallmapperPage() {
 
   return (
     <Container>
+      <Typography variant="body1">
+        Supplement to <em>Big data comparison of quantum invariants</em> [
+        <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>;{" "}
+        <Link href="https://github.com/dtubbenhauer/quantumdata">GitHub</Link>
+        ].
+      </Typography>
       <div>
         <Typography variant="body1" gutterBottom>
           Variants:{" "}

@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 
 import Container from "@/components/Container";
 import Link from "@/components/Link";
+import Accordion from "@/components/Accordion";
 
 export default function AboutPage() {
   return (
@@ -110,21 +111,20 @@ export default function AboutPage() {
         </li>
       </ul>
 
-      <Typography variant="h4" gutterBottom>
-        Boring website construction details
-      </Typography>
-      <Typography variant="body1">
-        The source code can be found on{" "}
-        <Link href="https://github.com/dustbringer/web--knot-invariant-comparison">
-          GitHub
-        </Link>
-        . The look uses <Link href="https://mui.com/"></Link>MaterialUI
-        components. Statistic and root plots are displayed using{" "}
-        <Link href="https://plotly.com/javascript/">Plotly</Link>. Ballmapper
-        comparison is built with d3, using{" "}
-        <Link href="https://d3js.org/d3-force">d3.force</Link> and{" "}
-        <Link href="https://d3js.org/d3-drag">d3.drag</Link>.
-      </Typography>
+      <Accordion title="Boring website construction details">
+        <Typography variant="body1">
+          The source code can be found on{" "}
+          <Link href="https://github.com/dustbringer/web--knot-invariant-comparison">
+            GitHub
+          </Link>
+          . The look uses <Link href="https://mui.com/"></Link>MaterialUI
+          components. Statistic and root plots are displayed using{" "}
+          <Link href="https://plotly.com/javascript/">Plotly</Link>. Ballmapper
+          comparison is built with d3, using{" "}
+          <Link href="https://d3js.org/d3-force">d3.force</Link> and{" "}
+          <Link href="https://d3js.org/d3-drag">d3.drag</Link>.
+        </Typography>
+      </Accordion>
     </Container>
   );
 }

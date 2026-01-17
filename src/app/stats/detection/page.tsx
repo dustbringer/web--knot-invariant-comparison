@@ -30,20 +30,14 @@ import Accordion from "@/components/Accordion";
 import statsAll from "./stats";
 import statsA from "./stats_a";
 import statsN from "./stats_n";
-import statsAllComb from "./statsComb";
-import descriptions from "../descriptions";
+// import statsAllComb from "./specialised/statsComb";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
+import HorizontalRule from "@/components/styled/HorizontalRule";
 
 export default function DetectionPage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
-  const [plotUniqueCombName, setPlotUniqueCombName] =
-    React.useState<string>("J+KT1");
-  const [uniqueCombsChecked, setUniqueCombsChecked] = React.useState<{
-    [name: string]: boolean;
-    // }>({ A2: true, A: true, B1: true, J: true, K: true });
-  }>({ J: true, KT1: true });
   const [classChecked, setClassChecked] = React.useState<string>("all");
   const [showSQ, setShowSQ] = React.useState<boolean>(false);
   // const [showEE, setShowEE] = React.useState<boolean>(false);
@@ -92,11 +86,7 @@ export default function DetectionPage() {
             ].
           </Typography>
           <Typography variant="body1">
-            For statistics of the polynomials, see{" "}
-            <Link href="/stats" inPlace>
-              Stats
-            </Link>
-            . For the same picture ordered by hyperbolic volume, see{" "}
+            For the same picture ordered by hyperbolic volume, see{" "}
             <Link href="/stats/detection-volume" inPlace>
               Detection Volume
             </Link>
@@ -106,6 +96,9 @@ export default function DetectionPage() {
             </Link>
             .
           </Typography>
+
+          <HorizontalRule />
+
           <Radios
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
             value={plotName}
@@ -183,16 +176,6 @@ export default function DetectionPage() {
               name: name,
             }));
 
-            {
-              /* TODO: Add more for other classChecked */
-            }
-            if (plotName === "unique" && classChecked === "all") {
-              output.push({
-                x: statsAllComb(plotUniqueCombName).map((_, i) => i + 3),
-                y: statsAllComb(plotUniqueCombName),
-                name: plotUniqueCombName,
-              });
-            }
             return output;
           })()}
           // original: width={800} height={600}
@@ -285,63 +268,6 @@ export default function DetectionPage() {
           />
         )} */}
 
-        {/* TODO: Add more for other classChecked */}
-        {plotName === "unique" && classChecked === "all" && (
-          <>
-            <Typography variant="body1">
-              Choose your own combination:
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Checkboxes
-                options={stats["unique"].columnsAbbr.map((k) => ({
-                  name: k,
-                  value: k,
-                }))}
-                checked={uniqueCombsChecked}
-                disabled={{
-                  BV: true,
-                  "A+BV": true,
-                  BVSp: true,
-                  "ASp+BVSp": true,
-                }}
-                onChange={(name, e) =>
-                  setUniqueCombsChecked(
-                    (obj) =>
-                      ({
-                        ...obj,
-                        [name]: (e.target as HTMLInputElement).checked,
-                      } as { [name: string]: boolean })
-                  )
-                }
-              />
-              {/* TODO: A help dialogue for which combinations are cool */}
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() =>
-                  setPlotUniqueCombName(
-                    stats["unique"].columnsAbbr
-                      .filter((name) => uniqueCombsChecked[name])
-                      .join("+")
-                  )
-                }
-                disabled={
-                  Object.values(uniqueCombsChecked).filter((v) => v).length < 2
-                }
-                disableElevation
-              >
-                Change
-              </Button>
-            </Box>
-          </>
-        )}
         {showTable && (
           <TableContainer
             sx={{
@@ -369,11 +295,6 @@ export default function DetectionPage() {
                         stats[plotName].columns[i],
                         stats[plotName].columnsAbbr[i],
                       ]),
-
-                      /* TODO: Add more for other classChecked */
-                      ...(plotName === "unique" && classChecked === "all"
-                        ? [[plotUniqueCombName, plotUniqueCombName]]
-                        : []),
                     ] as [string, string][]
                   ).map((name) => {
                     const isAbbr = stats[plotName].abbreviate;
@@ -400,16 +321,6 @@ export default function DetectionPage() {
                         {isNaN(y[i]) ? "-" : y[i]}
                       </TableCell>
                     ))}
-
-                    {/* TODO: Add more for other classChecked */}
-                    {/* For combs */}
-                    {plotName === "unique" && classChecked === "all" && (
-                      <TableCell key={`row${i},col;combs`}>
-                        {isNaN(statsAllComb(plotUniqueCombName)[i])
-                          ? "-"
-                          : statsAllComb(plotUniqueCombName)[i]}
-                      </TableCell>
-                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -417,54 +328,12 @@ export default function DetectionPage() {
           </TableContainer>
         )}
       </div>
-      <Accordion title="Abbreviations">
-        <Typography variant="body1">
-          The following table shows abbreviations used in some of the plots and
-          their descriptions. For convenience, names may also be attained by
-          hovering over the headings in the data table above.
-        </Typography>
-        <TableContainer
-          sx={{
-            margin: "1em auto",
-            border: "1px solid lightgrey",
-            borderRadius: "5px",
-            width: "fit-content",
-          }}
-        >
-          <Table size="small" sx={{ width: "auto" }}>
-            <TableHead>
-              <TableRow
-                sx={{
-                  backgroundColor: "#f0f0f0",
-                }}
-              >
-                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
-                  Name
-                </TableCell>
-                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
-                  Abbreivation
-                </TableCell>
-                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
-                  Description
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {stats[plotName].columns.map((col, i) => (
-                <TableRow key={`abbrTable-row${i}`}>
-                  <TableCell key={`abbrTable-row${i},col${0}`}>{col}</TableCell>
-                  <TableCell key={`abbrTable-row${i},col${1}`}>
-                    {stats[plotName].columnsAbbr[i]}
-                  </TableCell>
-                  <TableCell key={`abbrTable-row${i},col${2}`}>
-                    {descriptions[stats[plotName].columns[i]] || "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Accordion>
+
+      <Typography variant="body1">
+        <strong>Note.</strong> Specialised invariants give approximations of the
+        real values. However, the exact values must not be trusted due to adhoc
+        mutations caused by floating point arithmetic.
+      </Typography>
     </Container>
   );
 }

@@ -12,7 +12,6 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@/components/Table/TR";
-import Paper from "@mui/material/Paper";
 
 // import Plot from "react-plotly.js";
 // // Plotly nextjs ssr issue fix: https://github.com/plotly/react-plotly.js/issues/272
@@ -31,11 +30,11 @@ import statsAll from "./stats";
 // import statsA from "./stats_a";
 // import statsN from "./stats_n";
 // import statsAllComb from "./statsComb";
-import descriptions from "../descriptions";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
 import Grid from "@/components/Plots/Grid";
+import HorizontalRule from "@/components/styled/HorizontalRule";
 
 export default function DetectionVolumePage() {
   const [plotName, setPlotName] = React.useState<string>("unique");
@@ -90,12 +89,11 @@ export default function DetectionVolumePage() {
             <Link href="https://github.com/dtubbenhauer/quantumdata">
               GitHub
             </Link>
-            ]. For statistics of the polynomials, see{" "}
-            <Link href="/stats" inPlace>
-              Stats
-            </Link>
-            .
+            ].
           </Typography>
+
+          <HorizontalRule />
+
           <Radios
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
             value={plotName}
@@ -469,56 +467,6 @@ export default function DetectionVolumePage() {
           </TableContainer>
         )}
       </div>
-      <Accordion title="Abbreviations">
-        <Typography variant="body1">
-          The following table shows abbreviations used in some of the plots and
-          their descriptions. For convenience, names may also be attained by
-          hovering over the headings in the data table above.
-        </Typography>
-        <TableContainer
-          sx={{
-            margin: "1em auto",
-            border: "1px solid lightgrey",
-            borderRadius: "5px",
-            width: "fit-content",
-          }}
-        >
-          <Table size="small" sx={{ width: "auto" }}>
-            <TableHead>
-              <TableRow
-                sx={{
-                  backgroundColor: "#f0f0f0",
-                }}
-              >
-                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
-                  Name
-                </TableCell>
-                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
-                  Abbreivation
-                </TableCell>
-                <TableCell sx={{ fontWeight: "600", borderBottomWidth: "3px" }}>
-                  Description
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {stats[plotName].columns.map((col, i) => (
-                <TableRow key={`abbrTable-row${i}`}>
-                  <TableCell key={`abbrTable-row${i},col${0}`}>
-                    {col}
-                  </TableCell>
-                  <TableCell key={`abbrTable-row${i},col${1}`}>
-                    {stats[plotName].columnsAbbr[i]}
-                  </TableCell>
-                  <TableCell key={`abbrTable-row${i},col${2}`}>
-                    {descriptions[stats[plotName].columns[i]] || "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Accordion>
     </Container>
   );
 }

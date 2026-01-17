@@ -28,6 +28,7 @@ import Link from "@/components/Link";
 import stats from "./stats";
 
 import staticify from "@/util/staticURLs";
+import HorizontalRule from "@/components/styled/HorizontalRule";
 
 export default function HomologyPage() {
   const [plotName, setPlotName] = React.useState<string>("khovanovFamily");
@@ -64,6 +65,9 @@ export default function HomologyPage() {
             </Link>
             ].
           </Typography>
+
+          <HorizontalRule />
+
           <Radio
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
             value={plotName}

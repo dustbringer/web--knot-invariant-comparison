@@ -26,6 +26,7 @@ import Checkboxes from "@/components/Checkboxes";
 import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
+import HorizontalRule from "@/components/styled/HorizontalRule";
 import statsAll from "./stats";
 
 import staticify from "@/util/staticURLs";
@@ -80,6 +81,9 @@ export default function StatsPage() {
             </Link>
             .
           </Typography>
+
+          <HorizontalRule />
+
           <Radios
             options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
             value={plotName}

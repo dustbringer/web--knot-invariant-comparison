@@ -36,6 +36,7 @@ export default function Line({
       }}
       layout={{
         dragmode: "pan",
+        margin: { t: 10, r: 0 },
         ...layout,
       }}
       useResizeHandler={true}

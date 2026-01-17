@@ -4,6 +4,7 @@ export type Link = {
 };
 
 const navLinks: Link[] = [
+  { name: "Overview", path: "/" },
   { name: "Detection", path: "/stats/detection" },
   { name: "Stats", path: "/stats" },
   { name: "Homology", path: "/stats/homology" },
@@ -14,5 +15,3 @@ const navLinks: Link[] = [
 ];
 
 export default navLinks;
-
-

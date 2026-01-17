@@ -16,7 +16,7 @@ export const optionsVal: { [name: string]: string } = {
   ["det-primedivisors"]: "det-primedivisors",
   ["sig"]: "sig",
   ["sig-mod4"]: "sig-mod4",
-  ["3genus-avg"]: "3genus",
+  ["3genus"]: "3genus",
   ["arf"]: "Arf",
   ["s-inv"]: "s-inv",
   ["s-inv-abs"]: "s-inv-abs",

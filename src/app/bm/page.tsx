@@ -77,13 +77,15 @@ const optionsBM: { [name: string]: string } = {
   // ["homflypt-e=1"]: "HOMFLYPT",
   // ["homflypt-3-13"]: "HOMFLYPT-small",
   // ["homflypt-partial-3-11-e=0.5"]: "HOMFLYPTHomology",
-  ["homflypt-partial-3-11-e=1"]: "HOMFLYPTHomology 3-11",
+  ["homflypt-partial-3-11-e=1"]: "HOMFLYPTHomology-3-11",
   ["jones"]: "Jones",
   ["khovanov"]: "Khovanov",
   ["khovanov-t1"]: "KhovanovT1",
   ["khodd"]: "KhovanovOdd",
-  ["kr3-3-15-e=0.5"]: "KR3 3-15",
+  ["kr3-3-15-e=0.5"]: "KR3-3-15",
   // ["kr3-3-15-e=1"]: "KR3",
+  ["v1"]: "V1",
+  ["v2-3-15"]: "V2-3-15",
 };
 
 export default function BallmapperPage() {
@@ -656,6 +658,12 @@ export default function BallmapperPage() {
   // TODO: Lasso broken when page is resized
   return (
     <Container>
+      <Typography variant="body1">
+        Supplement to <em>Big data comparison of quantum invariants</em> [
+        <Link href="https://arxiv.org/abs/2503.15810">arXiv</Link>;{" "}
+        <Link href="https://github.com/dtubbenhauer/quantumdata">GitHub</Link>
+        ].
+      </Typography>
       <div>
         <Typography variant="body1" gutterBottom>
           Variants:{" "}
