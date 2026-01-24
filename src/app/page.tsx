@@ -138,7 +138,8 @@ export default function Home() {
         References and acknowledgements
       </Typography>
       <Typography variant="body1" component={"span"} gutterBottom>
-        Papers (submitted after 2019) detailing invariants and techniques we used
+        Papers (submitted after 2019) detailing invariants and techniques we
+        used
         <ul>
           <li>
             P. Dłotko,{" "}
@@ -152,6 +153,11 @@ export default function Home() {
               automorphisms
             </em>
             , 2023 [<Link href="https://arxiv.org/abs/2311.11528">arXiv</Link>]
+          </li>
+          <li>
+            S. Garoufalidis, S.Y. Li,{" "}
+            <em>Patterns of the V_2-polynomial of knots</em>, 2024 [
+            <Link href="https://arxiv.org/abs/2409.03557">arXiv</Link>]
           </li>
           <li>
             D. Bar-Natan, R. van der Veen,{" "}
