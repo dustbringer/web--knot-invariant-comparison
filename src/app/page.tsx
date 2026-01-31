@@ -61,6 +61,11 @@ export default function Home() {
               </Link>
             </li>
             <li>
+              <Link href="/stats/detection/mutants" inPlace>
+                Detection (up to mutation)
+              </Link>
+            </li>
+            <li>
               <Link href="/stats/detection-volume" inPlace>
                 Detection (ordered by volume)
               </Link>
