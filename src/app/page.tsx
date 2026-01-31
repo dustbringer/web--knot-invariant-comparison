@@ -134,6 +134,14 @@ export default function Home() {
         </li>
       </Typography>
 
+      <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
+        The analogous webpage for Kazhdan--Lusztig polnomials can be found{" "}
+        <Link href="https://dustbringer.github.io/web--kl-poly-data/">
+          here
+        </Link>
+        .
+      </Typography>
+
       <Typography variant="h5" gutterBottom>
         References and acknowledgements
       </Typography>
