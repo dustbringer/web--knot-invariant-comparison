@@ -12,6 +12,7 @@ import Radios from "@/components/Radios";
 
 import staticify from "@/util/staticURLs";
 import { Switch } from "@mui/material";
+import Image from "next/image";
 
 const options: {
   [name: string]: {
@@ -35,7 +36,7 @@ const options: {
   // ["v2-3-13"]: { display: "V2" },
 };
 
-export default function kNNPage() {
+export default function KNNPage() {
   const [inv, setInv] = React.useState<string>("jones-3-13");
   const [onlyMutualEdges, setOnlyMutualEdges] = React.useState<boolean>(false);
 
@@ -77,14 +78,14 @@ export default function kNNPage() {
       </div>
 
       {!onlyMutualEdges ? (
-        <img
-          src={staticify(`/static/k-nearest-neighbours/knn-${inv}-pca10.gif`)}
+        <Image
+          src={`/static/k-nearest-neighbours/knn-${inv}-pca10.gif`}
+          alt={`knn-${inv}-pca10.gif`}
         />
       ) : (
-        <img
-          src={staticify(
-            `/static/k-nearest-neighbours/knn-${inv}-pca10.min.gif`,
-          )}
+        <Image
+          src={`/static/k-nearest-neighbours/knn-${inv}-pca10.min.gif`}
+          alt={`knn-${inv}-pca10.min.gif`}
         />
       )}
     </Container>
