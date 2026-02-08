@@ -54,7 +54,6 @@ const stats: {
       "V2",
       "All",
       "J+KT1",
-      "test",
     ],
     abbreviate: true,
     columnsAbbr: [

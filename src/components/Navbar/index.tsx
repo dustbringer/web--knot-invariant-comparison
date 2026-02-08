@@ -24,7 +24,7 @@ import DropdownList from "./DropdownList";
 
 import navLinks from "../../data/navLinks";
 
-const RESPONSIVE_WIDTH = "855px";
+const RESPONSIVE_WIDTH = "975px";
 
 // const styles = {
 //   icon: {

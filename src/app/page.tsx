@@ -16,6 +16,28 @@ import Link from "@/components/Link";
 import Accordion from "@/components/Accordion";
 
 import descriptions from "./descriptions";
+import websiteMap, { type Link as LinkT } from "@/data/websiteMap";
+
+function generateLinks(ls: LinkT[]) {
+  return (
+    <>
+      {ls.map((l, i) => (
+        <li key={`li-${i}`}>
+          {l.path !== undefined ? (
+            <Link href={l.path} inPlace={l.path.startsWith("/")}>
+              {l.name}
+            </Link>
+          ) : (
+            l.name
+          )}
+          {l.sub !== undefined && l.sub.length > 0 && (
+            <ul>{generateLinks(l.sub)}</ul>
+          )}
+        </li>
+      ))}
+    </>
+  );
+}
 
 export default function Home() {
   return (
@@ -41,7 +63,7 @@ export default function Home() {
         less care has been put into polishing the mobile experience.
       </Typography>
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
-        <strong>Warning!</strong> The <Link href="/bm">Ballmapper</Link> page
+        <strong>Warning!</strong> The <Link href="/tda/ballmapper">Ballmapper</Link> page
         and old versions of the website fetch large files (~30-50MB per figure).
         So beware if you have bandwidth limits or slow internet.
       </Typography>
@@ -50,93 +72,7 @@ export default function Home() {
         Website Map
       </Typography>
       <Typography variant="body1" component={"ul"} sx={{ margin: "0 0 1em" }}>
-        <li>
-          <Link href="/stats" inPlace>
-            Stats
-          </Link>
-          <ul>
-            <li>
-              <Link href="/stats/detection" inPlace>
-                Detection
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/detection/mutants" inPlace>
-                Detection (up to mutation)
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/detection-volume" inPlace>
-                Detection (ordered by volume)
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/homology" inPlace>
-                Homology
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/dist" inPlace>
-                Distribution
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/rank" inPlace>
-                Rank plots
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/boxplot" inPlace>
-                Boxplot (computation time)
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats/modp" inPlace>
-                Mod p
-              </Link>
-            </li>
-          </ul>
-        </li>
-
-        <li>
-          <Link href="/roots" inPlace>
-            Roots
-          </Link>
-        </li>
-        <li>
-          <Link href="/bm" inPlace>
-            Ballmapper
-          </Link>
-          <ul>
-            <li>
-              <Link href="/bm/a" inPlace>
-                Alternating
-              </Link>
-            </li>
-            <li>
-              <Link href="/bm/n" inPlace>
-                Non-alternating
-              </Link>
-            </li>
-          </ul>
-        </li>
-
-        <li>
-          <Link href="/calc/jones" inPlace>
-            Jones calculator
-          </Link>
-        </li>
-        <li>
-          <Link href="/plot" inPlace>
-            Plot tool
-          </Link>
-        </li>
-
-        <li>
-          <Link href="/about" inPlace>
-            About
-          </Link>
-        </li>
+        {generateLinks(websiteMap)}
       </Typography>
 
       <Typography variant="body1" sx={{ marginBottom: ".5em" }}>
