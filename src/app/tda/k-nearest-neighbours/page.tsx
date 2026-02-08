@@ -77,17 +77,27 @@ export default function KNNPage() {
         </div>
       </div>
 
-      {!onlyMutualEdges ? (
-        <Image
-          src={`/static/k-nearest-neighbours/knn-${inv}-pca10.gif`}
-          alt={`knn-${inv}-pca10.gif`}
-        />
-      ) : (
-        <Image
-          src={`/static/k-nearest-neighbours/knn-${inv}-pca10.min.gif`}
-          alt={`knn-${inv}-pca10.min.gif`}
-        />
-      )}
+      <div>
+        {!onlyMutualEdges ? (
+          <Image
+            src={staticify(`/static/k-nearest-neighbours/knn-${inv}-pca10.gif`)}
+            alt={`knn-${inv}-pca10.gif`}
+            width={0}
+            height={0}
+            style={{ width: "100%", height: "auto" }} // optional
+          />
+        ) : (
+          <Image
+            src={staticify(
+              `/static/k-nearest-neighbours/knn-${inv}-pca10.min.gif`,
+            )}
+            alt={`knn-${inv}-pca10.min.gif`}
+            width={0}
+            height={0}
+            style={{ width: "100%", height: "auto" }} // optional
+          />
+        )}
+      </div>
     </Container>
   );
 }
