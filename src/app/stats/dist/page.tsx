@@ -36,6 +36,7 @@ const optionsInv: { [name: string]: string } = {
   ["a2-3-16"]: "A2",
   ["alexander-3-16"]: "Alexander",
   ["b1-3-16"]: "B1",
+  ["alexander+bnvdv-3-16"]: "Alexander+BV",
   ["bnvdv-3-16"]: "BV",
   ["hfk2-3-16"]: "HFK2",
   ["hfk2-t1-3-16"]: "HFK2T1",

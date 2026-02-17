@@ -45,16 +45,90 @@ const options: {
   ["v2-3-13"]: { display: "V2", diameter: 33747487.106025 },
 };
 
+type SavedPH = {
+  [inv: string]: {
+    h0: Array<[number, number]>;
+    h1: Array<[number, number]>;
+    h0Inf: Array<[number, number]>;
+    h1Inf: Array<[number, number]>;
+    plotMax: number;
+  };
+};
+
+const updateData = (name: string, savedPH: { current: SavedPH }) => {
+  if (savedPH.current[name] === undefined) {
+    console.log(`Fetching ph data for ${name}`);
+    return Promise.all([
+      fetch(
+        staticify(`/static/persistent-homology/points-${name}-pca15.h0.out`),
+      ),
+      fetch(
+        staticify(`/static/persistent-homology/points-${name}-pca15.h1.out`),
+      ),
+    ])
+      .then((res) => Promise.all(res.map((r) => r.text())))
+      .then((res) => {
+        const h0 = res[0]
+          .trim()
+          .split("\n")
+          .map(
+            (line) =>
+              line
+                .split(";")
+                .map((nStr) => (nStr === "inf" ? Infinity : Number(nStr))) as [
+                number,
+                number,
+              ],
+          );
+        const h1 = res[1]
+          .trim()
+          .split("\n")
+          .map(
+            (line) =>
+              line
+                .split(";")
+                .map((nStr) => (nStr === "inf" ? Infinity : Number(nStr))) as [
+                number,
+                number,
+              ],
+          );
+
+        const h0maxX = max(
+          h0
+            .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
+            .map(([x, _]) => x),
+        );
+        const h0maxY = max(
+          h0
+            .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
+            .map(([_, y]) => y),
+        );
+        const h1maxX = max(
+          h1
+            .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
+            .map(([x, _]) => x),
+        );
+        const h1maxY = max(
+          h1
+            .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
+            .map(([_, y]) => y),
+        );
+        savedPH.current[name] = {
+          h0: h0.filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity),
+          h1: h1.filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity),
+          h0Inf: h0.filter((xy) => xy[0] === Infinity || xy[1] === Infinity),
+          h1Inf: h1.filter((xy) => xy[0] === Infinity || xy[1] === Infinity),
+          plotMax: max([h0maxX, h1maxX, h0maxY, h1maxY]),
+        };
+        return savedPH.current[name];
+      });
+  } else {
+    return Promise.resolve(savedPH.current[name]);
+  }
+};
+
 export default function PersistentHomologyPage() {
-  const savedPH = React.useRef<{
-    [inv: string]: {
-      h0: Array<[number, number]>;
-      h1: Array<[number, number]>;
-      h0Inf: Array<[number, number]>;
-      h1Inf: Array<[number, number]>;
-      plotMax: number;
-    };
-  }>({});
+  const savedPH = React.useRef<SavedPH>({});
   const [phInv1, setPhInv1] = React.useState<string>("b1-3-13");
   const [phInv2, setPhInv2] = React.useState<string>("jones-3-13");
 
@@ -66,79 +140,7 @@ export default function PersistentHomologyPage() {
     Promise.resolve()
       .then(() => setRevise(0))
       .then(() => {
-        if (savedPH.current[phInv1] === undefined) {
-          console.log(`Fetching ph data for ${phInv1}`);
-          return Promise.all([
-            fetch(
-              staticify(
-                `/static/persistent-homology/points-${phInv1}-pca15.h0.out`,
-              ),
-            ),
-            fetch(
-              staticify(
-                `/static/persistent-homology/points-${phInv1}-pca15.h1.out`,
-              ),
-            ),
-          ])
-            .then((res) => Promise.all(res.map((r) => r.text())))
-            .then((res) => {
-              const h0 = res[0]
-                .split("\n")
-                .map(
-                  (line) =>
-                    line
-                      .split(";")
-                      .map((nStr) =>
-                        nStr === "inf" ? Infinity : Number(nStr),
-                      ) as [number, number],
-                );
-              const h1 = res[1]
-                .split("\n")
-                .map(
-                  (line) =>
-                    line
-                      .split(";")
-                      .map((nStr) =>
-                        nStr === "inf" ? Infinity : Number(nStr),
-                      ) as [number, number],
-                );
-
-              const h0maxX = max(
-                h0
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([x, _]) => x),
-              );
-              const h0maxY = max(
-                h0
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([_, y]) => y),
-              );
-              const h1maxX = max(
-                h1
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([x, _]) => x),
-              );
-              const h1maxY = max(
-                h1
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([_, y]) => y),
-              );
-              savedPH.current[phInv1] = {
-                h0: h0.filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity),
-                h1: h1.filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity),
-                h0Inf: h0.filter(
-                  (xy) => xy[0] === Infinity || xy[1] === Infinity,
-                ),
-                h1Inf: h1.filter(
-                  (xy) => xy[0] === Infinity || xy[1] === Infinity,
-                ),
-                plotMax: max([h0maxX, h1maxX, h0maxY, h1maxY]),
-              };
-              return savedPH.current[phInv1];
-            });
-        } else {
-          return Promise.resolve(savedPH.current[phInv1]);
-        }
+        return updateData(phInv1, savedPH);
       })
       .finally(() => {
         console.log("Done");
@@ -150,79 +152,7 @@ export default function PersistentHomologyPage() {
     Promise.resolve()
       .then(() => setRevise(2))
       .then(() => {
-        if (savedPH.current[phInv2] === undefined) {
-          console.log(`Fetching ph data for ${phInv2}`);
-          return Promise.all([
-            fetch(
-              staticify(
-                `/static/persistent-homology/points-${phInv2}-pca15.h0.out`,
-              ),
-            ),
-            fetch(
-              staticify(
-                `/static/persistent-homology/points-${phInv2}-pca15.h1.out`,
-              ),
-            ),
-          ])
-            .then((res) => Promise.all(res.map((r) => r.text())))
-            .then((res) => {
-              const h0 = res[0]
-                .split("\n")
-                .map(
-                  (line) =>
-                    line
-                      .split(";")
-                      .map((nStr) =>
-                        nStr === "inf" ? Infinity : Number(nStr),
-                      ) as [number, number],
-                );
-              const h1 = res[1]
-                .split("\n")
-                .map(
-                  (line) =>
-                    line
-                      .split(";")
-                      .map((nStr) =>
-                        nStr === "inf" ? Infinity : Number(nStr),
-                      ) as [number, number],
-                );
-
-              const h0maxX = max(
-                h0
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([x, _]) => x),
-              );
-              const h0maxY = max(
-                h0
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([_, y]) => y),
-              );
-              const h1maxX = max(
-                h1
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([x, _]) => x),
-              );
-              const h1maxY = max(
-                h1
-                  .filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity)
-                  .map(([_, y]) => y),
-              );
-              savedPH.current[phInv2] = {
-                h0: h0.filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity),
-                h1: h1.filter((xy) => xy[0] !== Infinity && xy[1] !== Infinity),
-                h0Inf: h0.filter(
-                  (xy) => xy[0] === Infinity || xy[1] === Infinity,
-                ),
-                h1Inf: h1.filter(
-                  (xy) => xy[0] === Infinity || xy[1] === Infinity,
-                ),
-                plotMax: max([h0maxX, h1maxX, h0maxY, h1maxY]),
-              };
-              return savedPH.current[phInv2];
-            });
-        } else {
-          return Promise.resolve(savedPH.current[phInv2]);
-        }
+        return updateData(phInv2, savedPH);
       })
       .finally(() => {
         console.log("Done");
@@ -231,6 +161,7 @@ export default function PersistentHomologyPage() {
   }, [phInv2]);
 
   React.useEffect(() => {
+    // Update the position of "infininty"
     if (revise === 0) {
       return;
     }
@@ -252,7 +183,7 @@ export default function PersistentHomologyPage() {
       ]),
     );
     setRevise(0);
-  }, [revise]);
+  }, [revise, phInv1, phInv2]);
 
   const yLog = false;
 
@@ -263,7 +194,7 @@ export default function PersistentHomologyPage() {
       </Typography>
 
       <Typography variant="body1">
-        Select invariant for persistence graph.
+        Select invariants for persistence graph.
       </Typography>
       <div
         style={{
@@ -313,8 +244,7 @@ export default function PersistentHomologyPage() {
               color: "gray",
             },
             // Don't show it as a trace
-            // showlegend: false,
-            name: "infinity",
+            showlegend: false,
             hoverinfo: "skip",
           },
           ...[phInv1, phInv2]
@@ -386,11 +316,13 @@ export default function PersistentHomologyPage() {
             type: "linear",
             zeroline: false,
             range: [-plotMax / 20, plotMax * 1.1],
+            title: "Birth",
           },
           yaxis: {
             type: "linear",
             zeroline: false,
             range: [-plotMax / 20, plotMax * 1.1],
+            title: "Death",
           },
           datarevision: revise,
         }}

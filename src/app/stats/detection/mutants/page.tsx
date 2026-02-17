@@ -34,6 +34,7 @@ import statsN from "./stats_n";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
+import { floor10 } from "@/util/number";
 import HorizontalRule from "@/components/styled/HorizontalRule";
 
 export default function DetectionPage() {
@@ -100,13 +101,8 @@ export default function DetectionPage() {
             .
           </Typography> */}
           <HorizontalRule />
-          {/* <Radios
-            options={Object.keys(stats).map((k) => ({ name: k, value: k }))}
-            value={plotName}
-            onChange={(e) => setPlotName((e.target as HTMLInputElement).value)}
-          /> */}
         </div>
-        {/* {plotName === "unique" && (
+        {plotName === "unique" && (
           <div style={{ marginBottom: "1em" }}>
             <Typography variant="body1">
               Restrict to a class of knots
@@ -128,7 +124,7 @@ export default function DetectionPage() {
               />
             </div>
           </div>
-        )} */}
+        )}
         <div style={{ marginBottom: "1em" }}>
           <Typography variant="body1">
             Toggle successive quotients plot and data table.
@@ -314,7 +310,7 @@ export default function DetectionPage() {
                     </TableCell>
                     {stats[plotName].ys.map((y, j) => (
                       <TableCell key={`row${i},col${j}`}>
-                        {isNaN(y[i]) ? "-" : y[i]}
+                        {isNaN(y[i]) ? "-" : floor10(y[i], -4).toFixed(4)}
                       </TableCell>
                     ))}
                   </TableRow>
