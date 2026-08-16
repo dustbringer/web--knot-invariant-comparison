@@ -27,7 +27,7 @@ import Histogram from "@/components/Plots/Histogram";
 import Line from "@/components/Plots/Line";
 import Link from "@/components/Link";
 import Accordion from "@/components/Accordion";
-import stats from "./stats";
+import stats, { totals } from "./stats";
 
 import staticify from "@/util/staticURLs";
 import { range } from "@/util/array-util";
@@ -52,10 +52,12 @@ const optionsInv: { [name: string]: string } = {
 
 const tableDescriptions: { [name: string]: string } = {
   ["%single"]:
+    "Percentage of equivalence classes of size 1, in all prime knots",
+  ["%single equiv"]:
     "Percentage of equivalence classes of size 1, in all equivalence classes",
-  ["%double"]:
+  ["%double equiv"]:
     "Percentage of equivalence classes of size 2, in all equivalence classes",
-  ["%triple"]:
+  ["%triple equiv"]:
     "Percentage of equivalence classes of size 3, in all equivalence classes",
   ["max-dupes"]: "Maximum size of an equivalence class",
 };
@@ -247,9 +249,24 @@ export default function DistributionsPage() {
             {(["all", "a", "n"] as ("all" | "a" | "n")[]).map((type) => {
               return (
                 <React.Fragment key={type}>
+                  <TableRow key={`row-%-0-${type}`}>
+                    <TableCell key={`row-%-0-${type},col${-1}`}>
+                      {`%single (${type})`}
+                    </TableCell>
+                    {Object.entries(optionsInv).map(([key, value], j) => {
+                      return (
+                        <TableCell key={`row-%-1-${type},col${j}`}>
+                          {(
+                            (100 * stats[key][type][0]) /
+                            totals[stats[key][`nCrossings`]][type]
+                          ).toFixed(4)}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
                   <TableRow key={`row-%-1-${type}`}>
                     <TableCell key={`row-%-1-${type},col${-1}`}>
-                      {`%single (${type})`}
+                      {`%single equiv (${type})`}
                     </TableCell>
                     {Object.entries(optionsInv).map(([key, value], j) => {
                       return (
@@ -264,7 +281,7 @@ export default function DistributionsPage() {
                   </TableRow>
                   <TableRow key={`row-%-2-${type}`}>
                     <TableCell key={`row-%-2-${type},col${-1}`}>
-                      {`%pair (${type})`}
+                      {`%pair equiv (${type})`}
                     </TableCell>
                     {Object.entries(optionsInv).map(([key, value], j) => {
                       return (
@@ -279,7 +296,7 @@ export default function DistributionsPage() {
                   </TableRow>
                   <TableRow key={`row-%-3-${type}`}>
                     <TableCell key={`row-%-3-${type},col${-1}`}>
-                      {`%triple (${type})`}
+                      {`%triple equiv (${type})`}
                     </TableCell>
                     {Object.entries(optionsInv).map(([key, value], j) => {
                       return (

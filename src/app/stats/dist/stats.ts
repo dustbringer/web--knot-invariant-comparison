@@ -3,6 +3,7 @@ import { range } from "@/util/array-util";
 // [# only 1 knot, # only 2 knots, most duplicates]
 type StatsType = {
   [name: string]: {
+    nCrossings: number;
     all: number[];
     all_total: number;
     all_max: number;
@@ -16,6 +17,7 @@ type StatsType = {
 };
 const stats: StatsType = {
   ["a2-3-16"]: {
+    nCrossings: 16,
     all: [967274, 217054, 32384],
     all_total: 1259538,
     all_max: 24,
@@ -27,6 +29,7 @@ const stats: StatsType = {
     n_max: 24,
   },
   ["alexander-3-16"]: {
+    nCrossings: 16,
     all: [141352, 57426, 28313],
     all_total: 317540,
     all_max: 923,
@@ -38,6 +41,7 @@ const stats: StatsType = {
     n_max: 922,
   },
   ["b1-3-16"]: {
+    nCrossings: 16,
     all: [1219002, 173224, 5720],
     all_total: 1425505,
     all_max: 16,
@@ -49,6 +53,7 @@ const stats: StatsType = {
     n_max: 16,
   },
   ["alexander+bnvdv-3-16"]: {
+    nCrossings: 16,
     all: [1626688, 31328, 954],
     all_total: 1661196,
     all_max: 11,
@@ -60,6 +65,7 @@ const stats: StatsType = {
     n_max: 10,
   },
   ["bnvdv-3-16"]: {
+    nCrossings: 16,
     all: [1625754, 31112, 874],
     all_total: 1659901,
     all_max: 1919,
@@ -71,6 +77,7 @@ const stats: StatsType = {
     n_max: 565,
   },
   ["hfk2-3-16"]: {
+    nCrossings: 16,
     all: [402627, 124710, 42343],
     all_total: 663079,
     all_max: 410,
@@ -82,6 +89,7 @@ const stats: StatsType = {
     n_max: 390,
   },
   ["hfk2-t1-3-16"]: {
+    nCrossings: 16,
     all: [137296, 56311, 27333],
     all_total: 308923,
     all_max: 510,
@@ -93,6 +101,7 @@ const stats: StatsType = {
     n_max: 494,
   },
   ["homflypt-3-16"]: {
+    nCrossings: 16,
     all: [967853, 216890, 32325],
     all_total: 1259880,
     all_max: 24,
@@ -104,6 +113,7 @@ const stats: StatsType = {
     n_max: 24,
   },
   ["homflypt-homology-3-11"]: {
+    nCrossings: 11,
     all: [743, 26, 2],
     all_total: 771,
     all_max: 3,
@@ -115,6 +125,7 @@ const stats: StatsType = {
     n_max: 2,
   },
   ["homflypt-homology-partial-3-13"]: {
+    nCrossings: 13,
     all: [10767, 826, 119],
     all_total: 11756,
     all_max: 7,
@@ -126,6 +137,7 @@ const stats: StatsType = {
     n_max: 4,
   },
   ["jones-3-16"]: {
+    nCrossings: 16,
     all: [495163, 179862, 60803],
     all_total: 841145,
     all_max: 61,
@@ -137,6 +149,7 @@ const stats: StatsType = {
     n_max: 61,
   },
   ["khovanov-3-16"]: {
+    nCrossings: 16,
     all: [586298, 193876, 58619],
     all_total: 931204,
     all_max: 52,
@@ -148,6 +161,7 @@ const stats: StatsType = {
     n_max: 52,
   },
   ["khovanov-t1-3-16"]: {
+    nCrossings: 16,
     all: [565054, 192900, 59640],
     all_total: 912778,
     all_max: 67,
@@ -159,6 +173,7 @@ const stats: StatsType = {
     n_max: 64,
   },
   ["khodd-3-16"]: {
+    nCrossings: 16,
     all: [561497, 190180, 59094],
     all_total: 906628,
     all_max: 52,
@@ -170,6 +185,7 @@ const stats: StatsType = {
     n_max: 52,
   },
   ["kr3-3-15"]: {
+    nCrossings: 15,
     all: [195851, 38493, 5350],
     all_total: 245072,
     all_max: 15,
@@ -179,6 +195,60 @@ const stats: StatsType = {
     n: [120685, 26395, 3596],
     n_total: 154515,
     n_max: 15,
+  },
+};
+
+// the total numbers
+export const totals: { [n: number]: { all: number; a: number; n: number } } = {
+  10: {
+    all: 249,
+    a: 196,
+    n: 53,
+  },
+  11: {
+    all: 801,
+    a: 563,
+    n: 238,
+  },
+  12: {
+    all: 2977,
+    a: 1851,
+    n: 1126,
+  },
+  13: {
+    all: 12965,
+    a: 6729,
+    n: 6236,
+  },
+  14: {
+    all: 59937,
+    a: 26265,
+    n: 33672,
+  },
+  15: {
+    all: 313230,
+    a: 111528,
+    n: 201702,
+  },
+  16: {
+    all: 1701935,
+    a: 491327,
+    n: 1210608,
+  },
+  17: {
+    all: 9755328,
+    a: 2261306,
+    n: 7494022,
+  },
+  18: {
+    all: 58021794,
+    a: 10661591,
+    n: 47360203,
+  },
+  19: {
+    all: 352152252,
+    a: 51280976,
+    n: 300871276,
   },
 };
 
